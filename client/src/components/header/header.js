@@ -13,7 +13,7 @@ const Header = () => {
 
   return (
     <div className="w-full bg-gray-800 text-white p-4 flex justify-between items-center">
-      <h1 className="text-xl font-bold">Inventory Management System</h1>
+      <h1 className="text-xl font-bold">PillPal</h1>
       <div>
         <button
           className="bg-red-500 p-2 rounded text-white"

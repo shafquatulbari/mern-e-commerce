@@ -5,6 +5,7 @@ import ProductForm from "../products/ProductForm";
 import { AuthContext } from "../../context/AuthContext";
 import Header from "../header/header";
 import BackButton from "../common/BackButton"; // Import the BackButton
+import moment from "moment";
 
 const CategoryProducts = () => {
   const { categoryId } = useParams(); // Get the category ID from the URL
@@ -55,10 +56,13 @@ const CategoryProducts = () => {
           {products.map((product) => (
             <div key={product._id} className="border p-4 rounded-lg shadow-md">
               <h3 className="text-xl font-bold mb-2">{product.name}</h3>
+              <img src={product.image} alt={product.name} className="mb-2" />
               <p>Price: ${product.price}</p>
               <p>Stock: {product.stock_level}</p>
               <p>{product.description}</p>
-
+              <p>
+                Updated: {moment(product.updatedAt).format("MMMM Do, YYYY")}
+              </p>
               {/* Only show Edit button if user is an admin */}
               {user && user.isAdmin && (
                 <button

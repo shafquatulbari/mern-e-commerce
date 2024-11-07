@@ -27,7 +27,7 @@ const Login = () => {
 
   return (
     <div className="flex flex-col justify-center items-center h-screen">
-      <h1 className="text-4xl font-bold mb-6">Inventory Management System</h1>
+      <h1 className="text-4xl font-bold mb-6">PillPal</h1>
       <form
         className="w-1/3 bg-white p-8 rounded-lg shadow-md"
         onSubmit={handleSubmit}

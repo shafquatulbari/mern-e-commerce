@@ -4,6 +4,7 @@ import ProductForm from "./ProductForm";
 import { AuthContext } from "../../context/AuthContext";
 import Header from "../header/header";
 import BackButton from "../common/BackButton";
+import moment from "moment";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -71,6 +72,7 @@ const ProductList = () => {
           {products.map((product) => (
             <div key={product._id} className="border p-4 rounded-lg shadow-md">
               <h3 className="text-xl font-bold mb-2">{product.name}</h3>
+              <img src={product.images[0]} alt={product.name} />
               <p>Price: ${product.price}</p>
               <p>Stock: {product.stock_level}</p>
               <p>
@@ -79,6 +81,11 @@ const ProductList = () => {
               </p>{" "}
               {/* Handle null category */}
               <p>{product.description}</p>
+              <p>
+                {" "}
+                Date Updated:{" "}
+                {moment(product.updatedAt).format("MMMM Do YYYY, h:mm:ss a")}
+              </p>
               {user && user.isAdmin && (
                 <>
                   <button

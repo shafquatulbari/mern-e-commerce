@@ -1,6 +1,23 @@
 const asyncHandler = require("express-async-handler");
 const Product = require("../models/Product");
 
+//Search for a product by name
+const searchProducts = asyncHandler(async (req, res) => {
+  const searchQuery = req.query.q; // Get the search query from the URL query string
+
+  if (!searchQuery) {
+    res.status(400);
+    throw new Error("Search query is required");
+  }
+
+  // Using a regular expression to search for products where the name contains the search query
+  const products = await Product.find({
+    name: { $regex: searchQuery, $options: "i" }, // "i" makes the search case-insensitive
+  });
+
+  res.json(products);
+});
+
 // Get all products
 const getProducts = asyncHandler(async (req, res) => {
   const products = await Product.find({}).populate("category", "name");
@@ -62,4 +79,10 @@ const deleteProduct = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { getProducts, addProduct, updateProduct, deleteProduct };
+module.exports = {
+  getProducts,
+  addProduct,
+  updateProduct,
+  deleteProduct,
+  searchProducts,
+};
