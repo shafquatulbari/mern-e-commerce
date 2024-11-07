@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Header from "../components/header/header";
 import { AuthContext } from "../context/AuthContext";
 import api from "../services/api";
@@ -7,6 +7,8 @@ import api from "../services/api";
 const HomePage = () => {
   const { user } = useContext(AuthContext);
   const [lowStockProducts, setLowStockProducts] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate(); // Hook to navigate
 
   // Fetch products and check for low stock
   const checkLowStock = async () => {
@@ -18,6 +20,13 @@ const HomePage = () => {
       setLowStockProducts(lowStockItems);
     } catch (error) {
       console.error("Error fetching products:", error);
+    }
+  };
+
+  // Handle search and navigate to ProductsList
+  const handleSearch = () => {
+    if (searchQuery.trim() !== "") {
+      navigate(`/products?search=${searchQuery}`);
     }
   };
 
@@ -38,6 +47,23 @@ const HomePage = () => {
               : `Hello ${user.username}, welcome to the user dashboard`
             : "Loading..."}
         </h1>
+
+        {/* Search bar */}
+        <div className="mb-6">
+          <input
+            type="text"
+            placeholder="Search for a product..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="p-2 border rounded mr-2"
+          />
+          <button
+            onClick={handleSearch}
+            className="bg-blue-500 text-white p-2 rounded"
+          >
+            Search
+          </button>
+        </div>
 
         {/* Display low stock alert if admin */}
         {user && user.isAdmin && lowStockProducts.length > 0 && (
@@ -66,6 +92,12 @@ const HomePage = () => {
               className="bg-green-500 text-white p-4 rounded"
             >
               View Categories
+            </Link>
+            <Link
+              to="/manufacturers"
+              className="bg-yellow-500 text-white p-4 rounded ml-4"
+            >
+              View Manufacturers
             </Link>
           </div>
         )}

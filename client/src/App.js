@@ -8,6 +8,8 @@ import CategoryList from "./components/categories/CategoryList";
 import HomePage from "./pages/HomePage";
 import NotFound from "./pages/NotFound";
 import CategoryProducts from "./components/categories/CategoryProducts";
+import ManufacturerList from "./components/manufacturers/ManufacturerList";
+import ManufacturerProducts from "./components/manufacturers/ManufacturerProducts";
 
 function App() {
   return (
@@ -23,6 +25,11 @@ function App() {
             <Route
               path="/categories/:categoryId/products"
               element={<CategoryProducts />}
+            />
+            <Route path="/manufacturers" element={<ManufacturerList />} />
+            <Route
+              path="/manufacturers/:manufacturerId/products"
+              element={<ManufacturerProducts />}
             />
             <Route path="*" element={<NotFound />} />
           </Routes>
