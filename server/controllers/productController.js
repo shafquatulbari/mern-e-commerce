@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const Product = require("../models/Product");
+const mongoose = require("mongoose");
 
 //Search for a product by name
 const searchProducts = asyncHandler(async (req, res) => {
@@ -20,9 +21,43 @@ const searchProducts = asyncHandler(async (req, res) => {
 
 // Get all products
 const getProducts = asyncHandler(async (req, res) => {
-  const products = await Product.find({}).populate("category", "name");
+  const { category, manufacturer, sortBy, order = "desc" } = req.query;
+  let query = {};
+
+  // Filtering by category
+  if (category) {
+    // Check if the category is a valid ObjectId
+    if (mongoose.Types.ObjectId.isValid(category)) {
+      query.category = category;
+    } else {
+      return res.status(400).json({ message: "Invalid category ID" });
+    }
+  }
+  // Filtering by manufacturer
+  if (manufacturer) {
+    // Check if the manufacturer is a valid ObjectId
+    if (mongoose.Types.ObjectId.isValid(manufacturer)) {
+      query.manufacturer = manufacturer;
+    } else {
+      return res.status(400).json({ message: "Invalid manufacturer ID" });
+    }
+  }
+
+  // Sorting logic
+  let sortOptions = {};
+  if (sortBy === "dateAdded") {
+    sortOptions.createdAt = order === "asc" ? 1 : -1; // Ascending or Descending
+  } else if (sortBy === "dateUpdated") {
+    sortOptions.updatedAt = order === "asc" ? 1 : -1; // Ascending or Descending
+  }
+
+  const products = await Product.find(query)
+    .populate("category", "name")
+    .populate("manufacturer", "name")
+    .sort(sortOptions); // Apply sorting options
   // With this, each product will have a category field that includes the name
   //of the category, accessible as product.category.name in your frontend.
+  // With this, each product will have a manufacturer field that includes the name
   res.json(products);
 });
 
