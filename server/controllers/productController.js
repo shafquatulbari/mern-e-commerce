@@ -114,10 +114,72 @@ const deleteProduct = asyncHandler(async (req, res) => {
   }
 });
 
+// Add a review to a product
+const addReview = asyncHandler(async (req, res) => {
+  const { productId } = req.params;
+  const { name, rating, comment } = req.body;
+
+  const product = await Product.findById(productId);
+
+  if (product) {
+    const review = {
+      name: name || "Anonymous",
+      rating: Number(rating),
+      comment,
+      timestamp: new Date(),
+    };
+
+    // Add the new review
+    product.reviews.push(review);
+
+    // Update average rating and review count
+    product.ratingsCount = product.reviews.length;
+    product.averageRating =
+      product.reviews.reduce((acc, review) => acc + review.rating, 0) /
+      product.reviews.length;
+
+    await product.save();
+    res.status(201).json(product);
+  } else {
+    res.status(404);
+    throw new Error("Product not found");
+  }
+});
+
+// Delete a review from a product
+const deleteReview = asyncHandler(async (req, res) => {
+  const { productId, reviewIndex } = req.params; // Assuming reviewIndex is passed in URL
+  const product = await Product.findById(productId);
+
+  if (product) {
+    if (product.reviews[reviewIndex]) {
+      // Remove the review at the specified index
+      product.reviews.splice(reviewIndex, 1);
+
+      // Update average rating and review count
+      product.ratingsCount = product.reviews.length;
+      product.averageRating =
+        product.reviews.reduce((acc, review) => acc + review.rating, 0) /
+        (product.reviews.length || 1); // Avoid division by zero
+
+      await product.save();
+      res.json(product);
+    } else {
+      res.status(404);
+      throw new Error("Review not found");
+    }
+  } else {
+    res.status(404);
+    throw new Error("Product not found");
+  }
+});
+
 module.exports = {
   getProducts,
   addProduct,
   updateProduct,
   deleteProduct,
   searchProducts,
+  addReview,
+  deleteReview,
 };

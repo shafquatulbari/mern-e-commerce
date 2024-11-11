@@ -5,6 +5,8 @@ const {
   updateProduct,
   deleteProduct,
   searchProducts,
+  addReview,
+  deleteReview,
 } = require("../controllers/productController");
 const { protect, admin } = require("../middleware/authMiddleware");
 const router = express.Router();
@@ -16,5 +18,9 @@ router
   .delete(protect, admin, deleteProduct);
 
 router.route("/search").get(protect, searchProducts);
+
+//Add review routes
+router.post("/:productId/reviews", protect, addReview); // Add review
+router.delete("/:productId/reviews/:reviewIndex", protect, deleteReview); // Delete review
 
 module.exports = router;

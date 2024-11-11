@@ -55,8 +55,14 @@ const CategoryProducts = () => {
         <div className="grid grid-cols-3 gap-4">
           {products.map((product) => (
             <div key={product._id} className="border p-4 rounded-lg shadow-md">
-              <h3 className="text-xl font-bold mb-2">{product.name}</h3>
-              <img src={product.image} alt={product.name} className="mb-2" />
+              <Link to={`/products/${product._id}`}>
+                <h3 className="text-xl font-bold mb-2">{product.name}</h3>
+                <img
+                  src={product.images[0]}
+                  alt={product.name}
+                  className="mb-2"
+                />
+              </Link>
               <p>Price: ${product.price}</p>
               <p>Stock: {product.stock_level}</p>
               <p>{product.description}</p>

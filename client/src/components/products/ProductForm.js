@@ -5,12 +5,19 @@ const ProductForm = ({ product = null, onSave }) => {
   const [name, setName] = useState(product ? product.name : "");
   const [category, setCategory] = useState(product ? product.category : "");
   const [price, setPrice] = useState(product ? product.price : "");
-  const [quantity, setQuantity] = useState(product ? product.quantity : 0); // Add quantity state for new product
+  const [quantity, setQuantity] = useState(product ? product.quantity : 0);
   const [quantityChange, setQuantityChange] = useState(0);
   const [quantityOperation, setQuantityOperation] = useState("Add");
+
+  // Fix: Ensure that manufacturer state is initialized correctly
+  const [manufacturer, setManufacturer] = useState(
+    product && product.manufacturer ? product.manufacturer : ""
+  );
+
   const [description, setDescription] = useState(
     product ? product.description : ""
   );
+  const [manufacturers, setManufacturers] = useState([]);
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState("");
 
@@ -20,6 +27,14 @@ const ProductForm = ({ product = null, onSave }) => {
       setCategories(response.data);
     };
     fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    const fetchManufacturers = async () => {
+      const response = await api.get("manufacturers/");
+      setManufacturers(response.data);
+    };
+    fetchManufacturers();
   }, []);
 
   const handleSubmit = async (e) => {
@@ -32,7 +47,6 @@ const ProductForm = ({ product = null, onSave }) => {
         : product.stock_level - quantityChange
       : quantity;
 
-    // Check for initial product addition and stock level adjustments
     if (!product && quantity < 1) {
       setError("Initial quantity must be at least 1.");
       return;
@@ -47,6 +61,7 @@ const ProductForm = ({ product = null, onSave }) => {
       price,
       stock_level: adjustedStockLevel,
       description,
+      manufacturer,
     };
 
     try {
@@ -58,13 +73,11 @@ const ProductForm = ({ product = null, onSave }) => {
       }
 
       if (response.data.error) {
-        console.log("Error response:", response.data.error); // Log error response
         setError(response.data.error);
       } else {
         onSave();
       }
     } catch (error) {
-      console.error("An error occurred while saving the product:", error); // Log catch error
       setError("An error occurred while saving the product.");
     }
   };
@@ -75,7 +88,6 @@ const ProductForm = ({ product = null, onSave }) => {
         {product ? "Edit" : "Add"} Product
       </h2>
 
-      {/* Display error message */}
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
       <input
@@ -97,6 +109,18 @@ const ProductForm = ({ product = null, onSave }) => {
           </option>
         ))}
       </select>
+      <select
+        value={manufacturer}
+        onChange={(e) => setManufacturer(e.target.value)}
+        className="w-full mb-4 p-2 border rounded"
+      >
+        <option value="">Select Manufacturer</option>
+        {manufacturers.map((man) => (
+          <option key={man._id} value={man._id}>
+            {man.name}
+          </option>
+        ))}
+      </select>
       <div className="mb-4 flex items-center">
         <span className="text-gray-600 mr-2">$</span>
         <input
@@ -108,7 +132,6 @@ const ProductForm = ({ product = null, onSave }) => {
         />
       </div>
 
-      {/* Quantity Input for New Product */}
       {!product && (
         <div className="mb-4">
           <label className="block mb-2 text-gray-600">Initial Quantity</label>
@@ -122,7 +145,6 @@ const ProductForm = ({ product = null, onSave }) => {
         </div>
       )}
 
-      {/* Quantity Adjustment for Existing Product */}
       {product && (
         <div className="flex items-center mb-4">
           <select

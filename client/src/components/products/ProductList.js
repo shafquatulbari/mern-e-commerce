@@ -5,17 +5,32 @@ import { AuthContext } from "../../context/AuthContext";
 import Header from "../header/header";
 import BackButton from "../common/BackButton";
 import moment from "moment";
+import { useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [editingProduct, setEditingProduct] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const { user } = useContext(AuthContext);
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const searchQuery = searchParams.get("search");
 
+  // Fetch products and filter by search query if provided
   const fetchProducts = async () => {
     try {
       const response = await api.get("products/");
-      setProducts(response.data);
+      let filteredProducts = response.data;
+
+      // Apply search filter if a search query is present
+      if (searchQuery) {
+        filteredProducts = filteredProducts.filter((product) =>
+          product.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      }
+
+      setProducts(filteredProducts);
     } catch (error) {
       console.error("Error fetching products:", error);
     }
@@ -23,7 +38,7 @@ const ProductList = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [searchQuery]); // Re-fetch products when search query changes
 
   const handleAddProduct = () => {
     setEditingProduct(null);
@@ -71,8 +86,14 @@ const ProductList = () => {
         <div className="grid grid-cols-3 gap-4">
           {products.map((product) => (
             <div key={product._id} className="border p-4 rounded-lg shadow-md">
-              <h3 className="text-xl font-bold mb-2">{product.name}</h3>
-              <img src={product.images[0]} alt={product.name} />
+              <Link to={`/products/${product._id}`}>
+                <h3 className="text-xl font-bold mb-2">{product.name}</h3>
+                <img
+                  src={product.images[0]}
+                  alt={product.name}
+                  className="mb-2"
+                />
+              </Link>
               <p>Price: ${product.price}</p>
               <p>Stock: {product.stock_level}</p>
               <p>

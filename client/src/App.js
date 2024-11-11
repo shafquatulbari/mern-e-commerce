@@ -10,6 +10,8 @@ import NotFound from "./pages/NotFound";
 import CategoryProducts from "./components/categories/CategoryProducts";
 import ManufacturerList from "./components/manufacturers/ManufacturerList";
 import ManufacturerProducts from "./components/manufacturers/ManufacturerProducts";
+import CartModal from "./components/cart/CartModal";
+import ProductDetails from "./components/products/ProductDetails";
 
 function App() {
   return (
@@ -18,6 +20,7 @@ function App() {
         <div className="container mx-auto">
           <Routes>
             <Route path="/" element={<Login />} />
+            <Route path="/cart" element={<CartModal />} />
             <Route path="/register" element={<Register />} />
             <Route path="/homepage" element={<HomePage />} />
             <Route path="/products" element={<ProductList />} />
@@ -31,6 +34,7 @@ function App() {
               path="/manufacturers/:manufacturerId/products"
               element={<ManufacturerProducts />}
             />
+            <Route path="/products/:productId" element={<ProductDetails />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>

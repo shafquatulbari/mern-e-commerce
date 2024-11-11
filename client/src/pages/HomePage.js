@@ -23,10 +23,11 @@ const HomePage = () => {
     }
   };
 
-  // Handle search and navigate to ProductsList
+  // Handle search
   const handleSearch = () => {
-    if (searchQuery.trim() !== "") {
-      navigate(`/products?search=${searchQuery}`);
+    if (searchQuery.trim()) {
+      // Navigate to ProductList page and pass the search query as a URL parameter
+      navigate(`/products?search=${encodeURIComponent(searchQuery)}`);
     }
   };
 
