@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
 import api from "../../services/api";
 import { AuthContext } from "../../context/AuthContext";
+import { CartContext } from "../../context/CartContext";
 import BackButton from "../common/BackButton";
 import Header from "../header/header";
 import moment from "moment";
@@ -9,25 +10,26 @@ import moment from "moment";
 const ProductDetails = () => {
   const { productId } = useParams(); // Get the product ID from the URL
   const [product, setProduct] = useState(null);
-  const [name, setName] = useState("");
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
+  const [quantity, setQuantity] = useState(1); // Default quantity
+
   const { user } = useContext(AuthContext);
-
+  const { addItem } = useContext(CartContext);
+  // check the cart context
+  console.log("Cart Context", CartContext);
   // Fetch product details
-  const fetchProduct = async () => {
-    try {
-      console.log("productId:", productId); // Log the product ID
-      const response = await api.get(`products/${productId}/`);
-      console.log("Product data:", response.data); // Log product data
-
-      setProduct(response.data);
-    } catch (error) {
-      console.error("Error fetching product details:", error);
-    }
-  };
-
   useEffect(() => {
+    const fetchProduct = async () => {
+      if (!productId) return; // Ensure productId is defined
+      try {
+        const response = await api.get(`products/${productId}/`);
+        setProduct(response.data);
+      } catch (error) {
+        console.error("Error fetching product details:", error);
+      }
+    };
+
     fetchProduct();
   }, [productId]);
 
@@ -41,11 +43,17 @@ const ProductDetails = () => {
         comment,
       });
       setProduct(response.data); // Update the product with the new review
-      setName("");
       setRating(0);
       setComment("");
     } catch (error) {
       console.error("Error submitting review:", error);
+    }
+  };
+
+  // Handle adding item to the cart
+  const handleAddToCart = () => {
+    if (product) {
+      addItem(product.id, quantity); // Ensure correct use of addItem
     }
   };
 
@@ -78,7 +86,7 @@ const ProductDetails = () => {
         </p>
 
         <h2 className="text-2xl font-bold mb-4">Reviews</h2>
-        {product?.reviews?.length > 0 ? (
+        {product.reviews && product.reviews.length > 0 ? (
           product.reviews.map((review, index) => (
             <div key={index} className="border p-4 rounded mb-2">
               <p className="font-bold">{review.name}</p>
@@ -123,6 +131,29 @@ const ProductDetails = () => {
             Submit Review
           </button>
         </form>
+
+        <div className="flex items-center mb-4">
+          <button
+            className="bg-gray-300 px-2 py-1 rounded"
+            onClick={() => setQuantity(Math.max(1, quantity - 1))}
+          >
+            -
+          </button>
+          <span className="mx-2">{quantity}</span>
+          <button
+            className="bg-gray-300 px-2 py-1 rounded"
+            onClick={() => setQuantity(quantity + 1)}
+          >
+            +
+          </button>
+        </div>
+
+        <button
+          className="bg-green-500 text-white p-2 rounded mb-4"
+          onClick={handleAddToCart}
+        >
+          Add to Cart
+        </button>
       </div>
     </>
   );

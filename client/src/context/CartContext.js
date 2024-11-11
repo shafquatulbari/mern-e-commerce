@@ -4,7 +4,7 @@ import api from "../services/api"; // Import your API service
 
 export const CartContext = createContext();
 
-const CartProvider = ({ children }) => {
+export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
 
@@ -71,4 +71,3 @@ const CartProvider = ({ children }) => {
   );
 };
 
-export default CartProvider;

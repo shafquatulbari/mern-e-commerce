@@ -1,13 +1,12 @@
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
-import { Link } from "react-router-dom";
 import CartModal from "../cart/CartModal";
 
 const Header = () => {
-  const { user, logout } = useContext(AuthContext); // Access the user from AuthContext
+  const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [showCartModal, setShowCartModal] = useState(false); // State for cart modal visibility
+  const [showCartModal, setShowCartModal] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -15,14 +14,13 @@ const Header = () => {
   };
 
   const toggleCartModal = () => {
-    setShowCartModal(!showCartModal);
+    setShowCartModal((prevState) => !prevState);
   };
 
   return (
     <div className="w-full bg-gray-800 text-white p-4 flex justify-between items-center">
       <h1 className="text-xl font-bold">PillPal</h1>
       <div className="flex items-center space-x-4">
-        {/* Conditionally render the cart icon and modal for non-admin users */}
         {user && !user.isAdmin && (
           <>
             <button
@@ -31,8 +29,8 @@ const Header = () => {
             >
               Cart
             </button>
-            {showCartModal && <CartModal />}{" "}
-            {/* Display CartModal if state is true */}
+            {showCartModal && <CartModal closeModal={toggleCartModal} />}{" "}
+            {/* Pass closeModal */}
           </>
         )}
         <button

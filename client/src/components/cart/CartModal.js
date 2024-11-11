@@ -1,8 +1,7 @@
-// components/cart/CartModal.js
 import React, { useContext, useState } from "react";
 import { CartContext } from "../../context/CartContext";
 
-const CartModal = () => {
+const CartModal = ({ closeModal }) => {
   const { cartItems, addItem, checkout, totalAmount } = useContext(CartContext);
   const [shippingAddress, setShippingAddress] = useState({
     address: "",
@@ -16,6 +15,7 @@ const CartModal = () => {
       const response = await checkout(shippingAddress);
       alert("Order placed successfully!");
       console.log("Order details:", response);
+      closeModal(); // Close the modal after successful checkout
     } catch (error) {
       console.error("Error during checkout:", error);
     }
@@ -23,9 +23,16 @@ const CartModal = () => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white p-4 rounded shadow-lg w-96">
+      <div className="bg-white p-4 rounded shadow-lg w-96 relative">
+        {/* Close button */}
+        <button
+          className="absolute top-2 right-2 text-gray-600 hover:text-black"
+          onClick={closeModal}
+        >
+          &times;
+        </button>
         <h2 className="text-xl font-bold mb-4">Your Cart</h2>
-        {cartItems.length > 0 ? (
+        {cartItems && cartItems.length > 0 ? (
           <>
             <ul>
               {cartItems.map((item) => (
