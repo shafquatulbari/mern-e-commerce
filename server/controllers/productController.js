@@ -61,6 +61,20 @@ const getProducts = asyncHandler(async (req, res) => {
   res.json(products);
 });
 
+// Get a product by ID
+const getProductById = asyncHandler(async (req, res) => {
+  const product = await Product.findById(req.params.id)
+    .populate("category", "name")
+    .populate("manufacturer", "name");
+
+  if (product) {
+    res.json(product);
+  } else {
+    res.status(404);
+    throw new Error("Product not found");
+  }
+});
+
 // Add a new product
 const addProduct = asyncHandler(async (req, res) => {
   const { name, category, manufacturer, price, stock_level, description } =
@@ -186,4 +200,5 @@ module.exports = {
   searchProducts,
   addReview,
   deleteReview,
+  getProductById,
 };

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
 import api from "../../services/api";
 import { AuthContext } from "../../context/AuthContext";
+import BackButton from "../common/BackButton";
 import Header from "../header/header";
 import moment from "moment";
 
@@ -16,7 +17,10 @@ const ProductDetails = () => {
   // Fetch product details
   const fetchProduct = async () => {
     try {
-      const response = await api.get(`/products/${productId}`);
+      console.log("productId:", productId); // Log the product ID
+      const response = await api.get(`products/${productId}/`);
+      console.log("Product data:", response.data); // Log product data
+
       setProduct(response.data);
     } catch (error) {
       console.error("Error fetching product details:", error);
@@ -51,6 +55,7 @@ const ProductDetails = () => {
     <>
       <Header />
       <div className="p-6">
+        <BackButton />
         <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
         <img
           src={product.images?.[0] || "https://via.placeholder.com/150"}
