@@ -41,6 +41,11 @@ const ProductForm = ({ product = null, onSave }) => {
     e.preventDefault();
     setError("");
 
+    if (!manufacturer) {
+      setError("Manufacturer is required.");
+      return;
+    }
+
     const adjustedStockLevel = product
       ? quantityOperation === "Add"
         ? product.stock_level + quantityChange

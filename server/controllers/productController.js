@@ -63,7 +63,8 @@ const getProducts = asyncHandler(async (req, res) => {
 
 // Add a new product
 const addProduct = asyncHandler(async (req, res) => {
-  const { name, category, price, stock_level, description } = req.body;
+  const { name, category, manufacturer, price, stock_level, description } =
+    req.body;
   const existingProduct = await Product.findOne({ name });
 
   if (existingProduct) {
@@ -77,6 +78,7 @@ const addProduct = asyncHandler(async (req, res) => {
     price,
     stock_level,
     description,
+    manufacturer,
   });
   const createdProduct = await product.save();
   res.status(201).json(createdProduct);
@@ -85,7 +87,8 @@ const addProduct = asyncHandler(async (req, res) => {
 // Update product
 const updateProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { name, category, price, description, stock_level } = req.body;
+  const { name, category, manufacturer, price, description, stock_level } =
+    req.body;
   const product = await Product.findById(id);
 
   if (product) {
@@ -94,6 +97,7 @@ const updateProduct = asyncHandler(async (req, res) => {
     product.price = price || product.price;
     product.description = description || product.description;
     product.stock_level = stock_level || product.stock_level;
+    product.manufacturer = manufacturer || product.manufacturer;
 
     const updatedProduct = await product.save();
     res.json(updatedProduct);

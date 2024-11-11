@@ -100,8 +100,12 @@ const ProductList = () => {
                 Category:{" "}
                 {product.category ? product.category.name : "No Category"}
               </p>{" "}
+              <p>
+                Manufacturer:{" "}
+                {product.manufacturer ? product.manufacturer.name : "Unknown"}
+              </p>
               {/* Handle null category */}
-              <p>{product.description}</p>
+              <p>Description: {product.description}</p>
               <p>
                 {" "}
                 Date Updated:{" "}
