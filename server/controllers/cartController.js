@@ -1,24 +1,59 @@
 const asyncHandler = require("express-async-handler");
 const Product = require("../models/Product");
 const Order = require("../models/Order");
+const User = require("../models/User");
+const mongoose = require("mongoose");
 
-// Add to cart (handled on frontend, just an example structure)
+// Add item to cart
 const addToCart = asyncHandler(async (req, res) => {
   const { productId, quantity } = req.body;
-  const product = await Product.findById(productId);
+  console.log("Product ID received:", productId);
 
+  // Check if the productId is a valid ObjectId
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    res.status(400);
+    throw new Error("Invalid Product ID");
+  }
+
+  const product = await Product.findById(productId);
   if (!product) {
     res.status(404);
     throw new Error("Product not found");
   }
 
-  if (product.stock_level < quantity) {
-    res.status(400);
-    throw new Error("Insufficient stock");
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
   }
 
-  // Add the item to the cart (frontend logic, not stored in backend)
-  res.json({ message: "Product added to cart", product, quantity });
+  // Check if the item is already in the cart
+  const existingCartItem = user.cart.find((item) =>
+    item.product.equals(productId)
+  );
+  if (existingCartItem) {
+    existingCartItem.quantity += quantity;
+  } else {
+    user.cart.push({ product: productId, quantity });
+  }
+
+  await user.save();
+  res.json(user.cart);
+});
+
+// Remove item from cart
+const removeFromCart = asyncHandler(async (req, res) => {
+  const { productId } = req.params;
+  const user = await User.findById(req.user._id);
+
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  user.cart = user.cart.filter((item) => !item.product.equals(productId));
+  await user.save();
+  res.json(user.cart);
 });
 
 // Checkout and Create Order
@@ -47,6 +82,21 @@ const checkout = asyncHandler(async (req, res) => {
 
   const createdOrder = await order.save();
   res.status(201).json(createdOrder);
+});
+
+// Get user's cart
+const getCart = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id).populate(
+    "cart.product",
+    "name price"
+  );
+
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  res.json(user.cart);
 });
 
 // Get all orders for a user
@@ -100,4 +150,6 @@ module.exports = {
   getOrders,
   cancelOrder,
   updateOrderStatus,
+  removeFromCart,
+  getCart,
 };

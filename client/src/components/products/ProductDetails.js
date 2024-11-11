@@ -50,10 +50,9 @@ const ProductDetails = () => {
     }
   };
 
-  // Handle adding item to the cart
   const handleAddToCart = () => {
     if (product) {
-      addItem(product.id, quantity); // Ensure correct use of addItem
+      addItem(product._id, quantity); // Use the correct _id property
     }
   };
 
