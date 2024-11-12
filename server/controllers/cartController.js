@@ -59,7 +59,7 @@ const removeFromCart = asyncHandler(async (req, res) => {
 // Checkout and Create Order
 const checkout = asyncHandler(async (req, res) => {
   const { items, totalAmount, shippingAddress } = req.body; // Include shippingAddress in the request body
-  const user = req.user._id;
+  const user = await User.findById(req.user._id);
 
   if (
     !shippingAddress ||
@@ -72,6 +72,17 @@ const checkout = asyncHandler(async (req, res) => {
     throw new Error("All fields in the shipping address are required");
   }
 
+  // Deduct stock levels for each product in the cart
+  for (const item of items) {
+    const product = await Product.findById(item.product);
+    if (product.stock_level < item.quantity) {
+      res.status(400);
+      throw new Error(`Not enough stock for ${product.name}`);
+    }
+    product.stock_level -= item.quantity;
+    await product.save();
+  }
+
   // Create a new order with the shipping address
   const order = new Order({
     user,
@@ -81,6 +92,11 @@ const checkout = asyncHandler(async (req, res) => {
   });
 
   const createdOrder = await order.save();
+
+  //clear the user's cart
+  user.cart = [];
+  await user.save();
+
   res.status(201).json(createdOrder);
 });
 

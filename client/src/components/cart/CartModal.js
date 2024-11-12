@@ -42,18 +42,24 @@ const CartModal = ({ closeModal }) => {
                   <div>
                     {item.product.name} (x{item.quantity})
                   </div>
-                  <div>
+                  <div className="flex items-center">
                     <button
                       className="bg-green-500 p-1 rounded text-white mr-2"
-                      onClick={() => addItem(item.product._id)}
+                      onClick={() => addItem(item.product._id)} // Add one item (increase quantity)
                     >
                       +
                     </button>
                     <button
-                      className="bg-red-500 p-1 rounded text-white"
-                      onClick={() => removeItem(item.product._id)}
+                      className="bg-red-500 p-1 rounded text-white mr-2"
+                      onClick={() => removeItem(item.product._id)} // Remove one item (reduce quantity)
                     >
                       -
+                    </button>
+                    <button
+                      className="bg-gray-500 p-1 rounded text-white"
+                      onClick={() => removeItem(item.product._id, true)} // Pass true to remove item completely
+                    >
+                      Remove
                     </button>
                   </div>
                 </li>

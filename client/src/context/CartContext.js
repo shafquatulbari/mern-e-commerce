@@ -34,7 +34,16 @@ export const CartProvider = ({ children }) => {
   // Function to add an item to the cart
   const addItem = async (productId, quantity = 1) => {
     try {
+      // Prevent negative quantity from being added
+      if (quantity <= 0) {
+        console.warn("Quantity must be greater than zero.");
+        return;
+      }
+
+      // Make the API call to add the item to the cart
       const response = await api.post("/cart", { productId, quantity });
+
+      // Update cart items and calculate total
       setCartItems(response.data);
       calculateTotal(response.data);
     } catch (error) {
@@ -43,11 +52,22 @@ export const CartProvider = ({ children }) => {
   };
 
   // Function to remove an item from the cart
-  const removeItem = async (productId) => {
+  const removeItem = async (productId, removeCompletely = false) => {
     try {
-      const response = await api.delete(`/cart/${productId}`);
-      setCartItems(response.data);
-      calculateTotal(response.data);
+      if (removeCompletely) {
+        const response = await api.delete(`/cart/${productId}`);
+        setCartItems(response.data);
+      } else {
+        // Logic for decreasing quantity
+        const item = cartItems.find((item) => item.product._id === productId);
+        if (item && item.quantity > 1) {
+          await addItem(productId, -1); // Decrease quantity by 1
+        } else {
+          const response = await api.delete(`/cart/${productId}`);
+          setCartItems(response.data);
+        }
+      }
+      calculateTotal(cartItems);
     } catch (error) {
       console.error("Error removing item from cart:", error);
     }
