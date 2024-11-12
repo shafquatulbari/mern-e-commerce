@@ -77,7 +77,7 @@ export const CartProvider = ({ children }) => {
   const checkout = async (shippingAddress) => {
     try {
       const items = cartItems.map((item) => ({
-        product: item.id,
+        product: item.product._id,
         quantity: item.quantity,
       }));
       const response = await api.post("/cart/checkout", {

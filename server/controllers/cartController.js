@@ -75,10 +75,19 @@ const checkout = asyncHandler(async (req, res) => {
   // Deduct stock levels for each product in the cart
   for (const item of items) {
     const product = await Product.findById(item.product);
+    // Check if the product exists
+    if (!product) {
+      res.status(404);
+      throw new Error(`Product with ID ${item.product} not found`);
+    }
+
+    // Check if there is enough stock
     if (product.stock_level < item.quantity) {
       res.status(400);
       throw new Error(`Not enough stock for ${product.name}`);
     }
+
+    // Deduct the stock level
     product.stock_level -= item.quantity;
     await product.save();
   }
