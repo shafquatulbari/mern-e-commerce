@@ -16,8 +16,7 @@ const ProductDetails = () => {
 
   const { user } = useContext(AuthContext);
   const { addItem } = useContext(CartContext);
-  // check the cart context
-  console.log("Cart Context", CartContext);
+
   // Fetch product details
   useEffect(() => {
     const fetchProduct = async () => {
@@ -47,6 +46,17 @@ const ProductDetails = () => {
       setComment("");
     } catch (error) {
       console.error("Error submitting review:", error);
+    }
+  };
+
+  const deleteReview = async (reviewIndex) => {
+    try {
+      await api.delete(`/products/${productId}/reviews/${reviewIndex}`);
+      // Refresh product details to update reviews
+      const response = await api.get(`products/${productId}/`);
+      setProduct(response.data);
+    } catch (error) {
+      console.error("Error deleting review:", error);
     }
   };
 
@@ -83,7 +93,6 @@ const ProductDetails = () => {
           Average Rating: {product.averageRating} (Based on{" "}
           {product.ratingsCount} reviews)
         </p>
-
         <h2 className="text-2xl font-bold mb-4">Reviews</h2>
         {product.reviews && product.reviews.length > 0 ? (
           product.reviews.map((review, index) => (
@@ -94,65 +103,80 @@ const ProductDetails = () => {
               <p className="text-sm text-gray-500">
                 {moment(review.timestamp).format("MMMM Do, YYYY")}
               </p>
+              {/* Show delete button for the review author or admin */}
+              {(user?.username === review.name || user?.isAdmin) && (
+                <button
+                  className="text-red-500 mt-2"
+                  onClick={() => deleteReview(index)}
+                >
+                  Delete Review
+                </button>
+              )}
             </div>
           ))
         ) : (
           <p>No reviews yet.</p>
         )}
-
-        <h2 className="text-2xl font-bold mt-6 mb-4">Leave a Review</h2>
-        <form onSubmit={submitReview} className="mb-6">
-          <div className="mb-4">
-            <label className="block mb-2">Rating</label>
-            <select
-              value={rating}
-              onChange={(e) => setRating(Number(e.target.value))}
-              className="p-2 border rounded w-full"
+        {!user?.isAdmin && (
+          <form onSubmit={submitReview} className="mb-6">
+            <p2 className="text-2xl font-bold mt-6 mb-4">Leave a Review</p2>
+            <div className="mb-4">
+              <label className="block mb-2">Rating</label>
+              <select
+                value={rating}
+                onChange={(e) => setRating(Number(e.target.value))}
+                className="p-2 border rounded w-full"
+              >
+                <option value="">Select Rating</option>
+                {[1, 2, 3, 4, 5].map((value) => (
+                  <option key={value} value={value}>
+                    {value}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="mb-4">
+              <label className="block mb-2">Comment</label>
+              <textarea
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                className="p-2 border rounded w-full"
+                placeholder="Write your review here..."
+              ></textarea>
+            </div>
+            <button
+              type="submit"
+              className="bg-blue-500 text-white p-2 rounded"
             >
-              <option value="">Select Rating</option>
-              {[1, 2, 3, 4, 5].map((value) => (
-                <option key={value} value={value}>
-                  {value}
-                </option>
-              ))}
-            </select>
+              Submit Review
+            </button>
+          </form>
+        )}
+        {!user?.isAdmin && (
+          <div className="flex items-center mb-4">
+            <button
+              className="bg-gray-300 px-2 py-1 rounded"
+              onClick={() => setQuantity(Math.max(1, quantity - 1))}
+            >
+              -
+            </button>
+            <span className="mx-2">{quantity}</span>
+            <button
+              className="bg-gray-300 px-2 py-1 rounded"
+              onClick={() => setQuantity(quantity + 1)}
+            >
+              +
+            </button>
           </div>
-          <div className="mb-4">
-            <label className="block mb-2">Comment</label>
-            <textarea
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              className="p-2 border rounded w-full"
-              placeholder="Write your review here..."
-            ></textarea>
-          </div>
-          <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-            Submit Review
-          </button>
-        </form>
-
-        <div className="flex items-center mb-4">
+        )}
+        {!user?.isAdmin && (
           <button
-            className="bg-gray-300 px-2 py-1 rounded"
-            onClick={() => setQuantity(Math.max(1, quantity - 1))}
+            className="bg-green-500 text-white p-2 rounded mb-4"
+            onClick={handleAddToCart}
           >
-            -
+            Add to Cart
           </button>
-          <span className="mx-2">{quantity}</span>
-          <button
-            className="bg-gray-300 px-2 py-1 rounded"
-            onClick={() => setQuantity(quantity + 1)}
-          >
-            +
-          </button>
-        </div>
-
-        <button
-          className="bg-green-500 text-white p-2 rounded mb-4"
-          onClick={handleAddToCart}
-        >
-          Add to Cart
-        </button>
+        )}
       </div>
     </>
   );
