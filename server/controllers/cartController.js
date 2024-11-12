@@ -169,6 +169,19 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
   res.json(updatedOrder);
 });
 
+// Get all orders (Admin only)
+const getAllOrders = asyncHandler(async (req, res) => {
+  // Check if the user is an admin
+  if (!req.user || !req.user.isAdmin) {
+    res.status(403);
+    throw new Error("Access denied. Admins only.");
+  }
+
+  // Fetch all orders and populate the product details
+  const orders = await Order.find().populate("items.product", "name price");
+  res.json(orders);
+});
+
 module.exports = {
   addToCart,
   checkout,
@@ -177,4 +190,5 @@ module.exports = {
   updateOrderStatus,
   removeFromCart,
   getCart,
+  getAllOrders,
 };
