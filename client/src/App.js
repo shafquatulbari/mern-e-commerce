@@ -1,3 +1,4 @@
+// src/App.js
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
@@ -13,6 +14,7 @@ import ManufacturerList from "./components/manufacturers/ManufacturerList";
 import ManufacturerProducts from "./components/manufacturers/ManufacturerProducts";
 import CartModal from "./components/cart/CartModal";
 import ProductDetails from "./components/products/ProductDetails";
+import UserOrders from "./components/orders/UserOrders";
 
 function App() {
   return (
@@ -22,7 +24,6 @@ function App() {
           <div className="container mx-auto">
             <Routes>
               <Route path="/" element={<Login />} />
-              <Route path="/cart" element={<CartModal />} />
               <Route path="/register" element={<Register />} />
               <Route path="/homepage" element={<HomePage />} />
               <Route path="/products" element={<ProductList />} />
@@ -37,6 +38,8 @@ function App() {
                 element={<ManufacturerProducts />}
               />
               <Route path="/products/:productId" element={<ProductDetails />} />
+              <Route path="/cart" element={<CartModal />} />
+              <Route path="/orders" element={<UserOrders />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </div>

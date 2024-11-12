@@ -1,8 +1,9 @@
 import React, { useContext, useState } from "react";
 import { CartContext } from "../../context/CartContext";
+import PaymentForm from "../payment/PaymentForm";
 
 const CartModal = ({ closeModal }) => {
-  const { cartItems, addItem, removeItem, checkout, totalAmount } =
+  const { cartItems, addItem, removeItem, totalAmount } =
     useContext(CartContext);
   const [shippingAddress, setShippingAddress] = useState({
     address: "",
@@ -10,16 +11,6 @@ const CartModal = ({ closeModal }) => {
     postalCode: "",
     country: "",
   });
-
-  const handleCheckout = async () => {
-    try {
-      await checkout(shippingAddress);
-      alert("Order placed successfully!");
-      closeModal();
-    } catch (error) {
-      console.error("Error during checkout:", error);
-    }
-  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
@@ -45,19 +36,19 @@ const CartModal = ({ closeModal }) => {
                   <div className="flex items-center">
                     <button
                       className="bg-green-500 p-1 rounded text-white mr-2"
-                      onClick={() => addItem(item.product._id)} // Add one item (increase quantity)
+                      onClick={() => addItem(item.product._id)}
                     >
                       +
                     </button>
                     <button
                       className="bg-red-500 p-1 rounded text-white mr-2"
-                      onClick={() => removeItem(item.product._id)} // Remove one item (reduce quantity)
+                      onClick={() => removeItem(item.product._id)}
                     >
                       -
                     </button>
                     <button
                       className="bg-gray-500 p-1 rounded text-white"
-                      onClick={() => removeItem(item.product._id, true)} // Pass true to remove item completely
+                      onClick={() => removeItem(item.product._id, true)}
                     >
                       Remove
                     </button>
@@ -118,12 +109,10 @@ const CartModal = ({ closeModal }) => {
                 className="w-full p-2 border rounded mb-2 text-black"
               />
             </div>
-            <button
-              className="bg-blue-500 w-full p-2 rounded text-white mt-4"
-              onClick={handleCheckout}
-            >
-              Proceed to Checkout
-            </button>
+            <PaymentForm
+              closeModal={closeModal}
+              shippingAddress={shippingAddress}
+            />
           </>
         ) : (
           <p className="text-black">Your cart is empty.</p>
