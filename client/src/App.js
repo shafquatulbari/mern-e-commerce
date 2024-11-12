@@ -14,6 +14,7 @@ import ManufacturerList from "./components/manufacturers/ManufacturerList";
 import ManufacturerProducts from "./components/manufacturers/ManufacturerProducts";
 import CartModal from "./components/cart/CartModal";
 import ProductDetails from "./components/products/ProductDetails";
+import UserOrders from "./components/orders/UserOrders";
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
               />
               <Route path="/products/:productId" element={<ProductDetails />} />
               <Route path="/cart" element={<CartModal />} />
+              <Route path="/orders" element={<UserOrders />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </div>

@@ -17,6 +17,10 @@ const Header = () => {
     setShowCartModal((prevState) => !prevState);
   };
 
+  const goToOrders = () => {
+    navigate("/orders");
+  };
+
   return (
     <div className="w-full bg-gray-800 text-white p-4 flex justify-between items-center">
       <h1 className="text-xl font-bold">PillPal</h1>
@@ -31,6 +35,12 @@ const Header = () => {
             </button>
             {showCartModal && <CartModal closeModal={toggleCartModal} />}{" "}
             {/* Pass closeModal */}
+            <button
+              className="bg-green-500 p-2 rounded text-white"
+              onClick={goToOrders}
+            >
+              Orders
+            </button>
           </>
         )}
         <button
