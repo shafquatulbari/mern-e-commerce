@@ -7,6 +7,7 @@ import api from "../services/api";
 const HomePage = () => {
   const { user } = useContext(AuthContext);
   const [lowStockProducts, setLowStockProducts] = useState([]);
+  const [userOrders, setUserOrders] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate(); // Hook to navigate
 
@@ -31,9 +32,24 @@ const HomePage = () => {
     }
   };
 
+  // Fetch user orders (only for users)
+  const fetchUserOrders = async () => {
+    try {
+      const response = await api.get("/orders");
+      setUserOrders(response.data);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    }
+  };
+
+  // Use effect to fetch data based on user type
   useEffect(() => {
-    if (user && user.isAdmin) {
-      checkLowStock();
+    if (user) {
+      if (user.isAdmin) {
+        checkLowStock();
+      } else {
+        fetchUserOrders();
+      }
     }
   }, [user]);
 
@@ -77,6 +93,34 @@ const HomePage = () => {
                 </li>
               ))}
             </ul>
+          </div>
+        )}
+
+        {/* User order alert */}
+        {user && !user.isAdmin && userOrders.length > 0 && (
+          <div className="bg-green-100 text-green-700 p-4 mb-6 rounded">
+            <strong>Order Updates:</strong>
+            <ul className="list-disc pl-6 mt-2">
+              {userOrders
+                .filter((order) => order.status === "Delivered")
+                .map((order) => (
+                  <li key={order._id}>
+                    Your order with ID {order._id} has been delivered.
+                  </li>
+                ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Admin button to view all user orders */}
+        {user && user.isAdmin && (
+          <div className="mb-6">
+            <button
+              className="bg-purple-500 text-white p-4 rounded"
+              onClick={() => navigate("/admin/orders")}
+            >
+              Manage User Orders
+            </button>
           </div>
         )}
 
