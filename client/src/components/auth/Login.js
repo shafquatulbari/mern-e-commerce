@@ -2,9 +2,9 @@ import React, { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../../services/api";
 import { AuthContext } from "../../context/AuthContext";
-import img1 from "../../assets/1.webp";
-import img2 from "../../assets/2.webp";
-import img3 from "../../assets/3.webp";
+
+import img2 from "../image/2.webp";
+import pha from "../image/pha.webp";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -30,18 +30,18 @@ const Login = () => {
 
   return (
     <>
-      <section className="bg-gray-50 dark:bg-gray-900">
+      <section
+        className="bg-cover h-screen bg-center w-full bg-gray-50 dark:bg-gray-900"
+        style={{
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url(${img2})`,
+        }}
+      >
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
           <a
             href="/"
             className="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white"
           >
-            <img
-              className="w-8 h-8 mr-2"
-              src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg"
-              alt="logo"
-            />
-            Flowbite
+            <img className="w-fll h-14 mr-2" src={pha} alt="logo" />
           </a>
           <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
@@ -110,7 +110,7 @@ const Login = () => {
                 <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                   Don’t have an account yet?{" "}
                   <Link
-                    href="/"
+                    to="/register"
                     className="font-medium text-blue-500  hover:underline dark:text-primary-500"
                   >
                     Sign up

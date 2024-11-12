@@ -9,7 +9,7 @@ import { loadStripe } from "@stripe/stripe-js";
 // Load your Stripe public key
 const stripePromise = await loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 //check if the stripe promise is loaded
-console.log(stripePromise);
+//console.log(stripePromise);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
