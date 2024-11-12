@@ -30,14 +30,14 @@ const CartModal = ({ closeModal }) => {
         >
           &times;
         </button>
-        <h2 className="text-xl font-bold mb-4">Your Cart</h2>
+        <h2 className="text-xl font-bold mb-4 text-black">Your Cart</h2>
         {cartItems.length > 0 ? (
           <>
             <ul>
               {cartItems.map((item) => (
                 <li
                   key={item.product._id}
-                  className="flex justify-between mb-2"
+                  className="flex justify-between mb-2 text-black"
                 >
                   <div>
                     {item.product.name} (x{item.quantity})
@@ -59,7 +59,7 @@ const CartModal = ({ closeModal }) => {
                 </li>
               ))}
             </ul>
-            <div className="mt-4">
+            <div className="mt-4 text-black">
               <strong>Total Cost: ${totalAmount.toFixed(2)}</strong>
             </div>
             <div className="mt-4">
@@ -73,7 +73,7 @@ const CartModal = ({ closeModal }) => {
                     address: e.target.value,
                   })
                 }
-                className="w-full p-2 border rounded mb-2"
+                className="w-full p-2 border rounded mb-2 text-black"
               />
               <input
                 type="text"
@@ -85,7 +85,7 @@ const CartModal = ({ closeModal }) => {
                     city: e.target.value,
                   })
                 }
-                className="w-full p-2 border rounded mb-2"
+                className="w-full p-2 border rounded mb-2 text-black"
               />
               <input
                 type="text"
@@ -97,7 +97,7 @@ const CartModal = ({ closeModal }) => {
                     postalCode: e.target.value,
                   })
                 }
-                className="w-full p-2 border rounded mb-2"
+                className="w-full p-2 border rounded mb-2 text-black"
               />
               <input
                 type="text"
@@ -109,7 +109,7 @@ const CartModal = ({ closeModal }) => {
                     country: e.target.value,
                   })
                 }
-                className="w-full p-2 border rounded mb-2"
+                className="w-full p-2 border rounded mb-2 text-black"
               />
             </div>
             <button
@@ -120,7 +120,7 @@ const CartModal = ({ closeModal }) => {
             </button>
           </>
         ) : (
-          <p>Your cart is empty.</p>
+          <p className="text-black">Your cart is empty.</p>
         )}
       </div>
     </div>

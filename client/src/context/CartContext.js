@@ -27,6 +27,7 @@ export const CartProvider = ({ children }) => {
       (sum, item) => sum + item.product.price * item.quantity,
       0
     );
+    console.log(total + "total");
     setTotalAmount(total);
   };
 

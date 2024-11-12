@@ -166,26 +166,35 @@ const addReview = asyncHandler(async (req, res) => {
 
 // Delete a review from a product
 const deleteReview = asyncHandler(async (req, res) => {
-  const { productId, reviewIndex } = req.params; // Assuming reviewIndex is passed in URL
+  const { productId, reviewIndex } = req.params;
   const product = await Product.findById(productId);
 
   if (product) {
-    if (product.reviews[reviewIndex]) {
-      // Remove the review at the specified index
-      product.reviews.splice(reviewIndex, 1);
-
-      // Update average rating and review count
-      product.ratingsCount = product.reviews.length;
-      product.averageRating =
-        product.reviews.reduce((acc, review) => acc + review.rating, 0) /
-        (product.reviews.length || 1); // Avoid division by zero
-
-      await product.save();
-      res.json(product);
-    } else {
+    const review = product.reviews[reviewIndex];
+    if (!review) {
       res.status(404);
       throw new Error("Review not found");
     }
+
+    // Check if the user is the review author or an admin
+    const requestingUser = req.user;
+    if (
+      review.name !== requestingUser.username && // Review author's name check
+      !requestingUser.isAdmin // Admin check
+    ) {
+      res.status(403);
+      throw new Error("You are not authorized to delete this review");
+    }
+
+    // Remove the review and update product details
+    product.reviews.splice(reviewIndex, 1);
+    product.ratingsCount = product.reviews.length;
+    product.averageRating =
+      product.reviews.reduce((acc, review) => acc + review.rating, 0) /
+      (product.reviews.length || 1); // Avoid division by zero
+
+    await product.save();
+    res.json(product);
   } else {
     res.status(404);
     throw new Error("Product not found");
