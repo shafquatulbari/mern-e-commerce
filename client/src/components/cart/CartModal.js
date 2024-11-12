@@ -2,7 +2,8 @@ import React, { useContext, useState } from "react";
 import { CartContext } from "../../context/CartContext";
 
 const CartModal = ({ closeModal }) => {
-  const { cartItems, addItem, checkout, totalAmount } = useContext(CartContext);
+  const { cartItems, addItem, removeItem, checkout, totalAmount } =
+    useContext(CartContext);
   const [shippingAddress, setShippingAddress] = useState({
     address: "",
     city: "",
@@ -12,10 +13,9 @@ const CartModal = ({ closeModal }) => {
 
   const handleCheckout = async () => {
     try {
-      const response = await checkout(shippingAddress);
+      await checkout(shippingAddress);
       alert("Order placed successfully!");
-      console.log("Order details:", response);
-      closeModal(); // Close the modal after successful checkout
+      closeModal();
     } catch (error) {
       console.error("Error during checkout:", error);
     }
@@ -24,7 +24,6 @@ const CartModal = ({ closeModal }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
       <div className="bg-white p-4 rounded shadow-lg w-96 relative">
-        {/* Close button */}
         <button
           className="absolute top-2 right-2 text-gray-600 hover:text-black"
           onClick={closeModal}
@@ -32,30 +31,37 @@ const CartModal = ({ closeModal }) => {
           &times;
         </button>
         <h2 className="text-xl font-bold mb-4">Your Cart</h2>
-        {cartItems && cartItems.length > 0 ? (
+        {cartItems.length > 0 ? (
           <>
             <ul>
               {cartItems.map((item) => (
-                <li key={item.id} className="flex justify-between mb-2">
+                <li
+                  key={item.product._id}
+                  className="flex justify-between mb-2"
+                >
                   <div>
-                    {item.name} (x{item.quantity})
+                    {item.product.name} (x{item.quantity})
                   </div>
                   <div>
                     <button
                       className="bg-green-500 p-1 rounded text-white mr-2"
-                      onClick={() => addItem(item.id)}
+                      onClick={() => addItem(item.product._id)}
                     >
                       +
                     </button>
-                    {/* Implement remove and delete logic if needed */}
+                    <button
+                      className="bg-red-500 p-1 rounded text-white"
+                      onClick={() => removeItem(item.product._id)}
+                    >
+                      -
+                    </button>
                   </div>
                 </li>
               ))}
             </ul>
             <div className="mt-4">
-              <strong>Total Cost: ${totalAmount}</strong>
+              <strong>Total Cost: ${totalAmount.toFixed(2)}</strong>
             </div>
-            {/* Shipping Address Form */}
             <div className="mt-4">
               <input
                 type="text"

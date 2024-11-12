@@ -1,6 +1,5 @@
-// context/CartContext.js
-import React, { createContext, useState } from "react";
-import api from "../services/api"; // Import your API service
+import React, { createContext, useState, useEffect } from "react";
+import api from "../services/api";
 
 export const CartContext = createContext();
 
@@ -8,36 +7,48 @@ export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
 
+  // Fetch the cart from the backend when the component mounts
+  useEffect(() => {
+    const fetchCart = async () => {
+      try {
+        const response = await api.get("/cart");
+        setCartItems(response.data);
+        calculateTotal(response.data);
+      } catch (error) {
+        console.error("Error fetching cart:", error);
+      }
+    };
+    fetchCart();
+  }, []);
+
+  // Calculate the total amount
+  const calculateTotal = (cart) => {
+    const total = cart.reduce(
+      (sum, item) => sum + item.product.price * item.quantity,
+      0
+    );
+    setTotalAmount(total);
+  };
+
   // Function to add an item to the cart
   const addItem = async (productId, quantity = 1) => {
     try {
-      const response = await api.post("/cart/add-to-cart", {
-        productId,
-        quantity,
-      });
-      const { product, quantity: addedQuantity } = response.data;
-
-      // Update cartItems state
-      setCartItems((prevItems) => {
-        const existingItem = prevItems.find((item) => item.id === productId);
-        if (existingItem) {
-          return prevItems.map((item) =>
-            item.id === productId
-              ? { ...item, quantity: item.quantity + addedQuantity }
-              : item
-          );
-        } else {
-          return [
-            ...prevItems,
-            { id: productId, name: product.name, quantity: addedQuantity },
-          ];
-        }
-      });
-
-      // Update total amount (assuming product price is available in product object)
-      setTotalAmount((prevTotal) => prevTotal + product.price * addedQuantity);
+      const response = await api.post("/cart", { productId, quantity });
+      setCartItems(response.data);
+      calculateTotal(response.data);
     } catch (error) {
       console.error("Error adding item to cart:", error);
+    }
+  };
+
+  // Function to remove an item from the cart
+  const removeItem = async (productId) => {
+    try {
+      const response = await api.delete(`/cart/${productId}`);
+      setCartItems(response.data);
+      calculateTotal(response.data);
+    } catch (error) {
+      console.error("Error removing item from cart:", error);
     }
   };
 
@@ -65,9 +76,10 @@ export const CartProvider = ({ children }) => {
   };
 
   return (
-    <CartContext.Provider value={{ cartItems, addItem, checkout, totalAmount }}>
+    <CartContext.Provider
+      value={{ cartItems, addItem, removeItem, checkout, totalAmount }}
+    >
       {children}
     </CartContext.Provider>
   );
 };
-
