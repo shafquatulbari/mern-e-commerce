@@ -27,7 +27,6 @@ export const CartProvider = ({ children }) => {
       (sum, item) => sum + item.product.price * item.quantity,
       0
     );
-    console.log(total + "total");
     setTotalAmount(total);
   };
 
@@ -51,6 +50,26 @@ export const CartProvider = ({ children }) => {
     }
   };
 
+  // Function to update the quantity of an item in the cart
+  const updateItemQuantity = async (productId, quantity) => {
+    try {
+      // Prevent negative quantity from being set
+      if (quantity <= 0) {
+        removeItem(productId, true);
+        return;
+      }
+
+      // Make the API call to update the quantity
+      const response = await api.put(`/cart/${productId}`, { quantity });
+
+      // Update cart items and calculate total
+      setCartItems(response.data);
+      calculateTotal(response.data);
+    } catch (error) {
+      console.error("Error updating item quantity:", error);
+    }
+  };
+
   // Function to remove an item from the cart
   const removeItem = async (productId, removeCompletely = false) => {
     try {
@@ -61,7 +80,7 @@ export const CartProvider = ({ children }) => {
         // Logic for decreasing quantity
         const item = cartItems.find((item) => item.product._id === productId);
         if (item && item.quantity > 1) {
-          await addItem(productId, -1); // Decrease quantity by 1
+          await updateItemQuantity(productId, item.quantity - 1); // Decrease quantity by 1
         } else {
           const response = await api.delete(`/cart/${productId}`);
           setCartItems(response.data);
@@ -98,7 +117,14 @@ export const CartProvider = ({ children }) => {
 
   return (
     <CartContext.Provider
-      value={{ cartItems, addItem, removeItem, checkout, totalAmount }}
+      value={{
+        cartItems,
+        addItem,
+        updateItemQuantity,
+        removeItem,
+        checkout,
+        totalAmount,
+      }}
     >
       {children}
     </CartContext.Provider>

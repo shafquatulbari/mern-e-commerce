@@ -16,13 +16,15 @@ import CartModal from "./components/cart/CartModal";
 import ProductDetails from "./components/products/ProductDetails";
 import UserOrders from "./components/orders/UserOrders";
 import AdminOrderPage from "./pages/AdminOrderPage";
+import img2 from "../src/components/image/2.webp";
+import Footer from "./components/footer/Footer";
 
 function App() {
   return (
     <AuthProvider>
       <CartProvider>
         <Router>
-          <div className="container mx-auto">
+          <div className=" w-full ">
             <Routes>
               <Route path="/" element={<Login />} />
               <Route path="/register" element={<Register />} />
@@ -44,6 +46,7 @@ function App() {
               <Route path="/admin/orders" element={<AdminOrderPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
+            <Footer />
           </div>
         </Router>
       </CartProvider>

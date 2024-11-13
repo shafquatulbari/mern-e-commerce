@@ -10,7 +10,7 @@ const getManufacturers = asyncHandler(async (req, res) => {
 
 // Create a new manufacturer
 const createManufacturer = asyncHandler(async (req, res) => {
-  const { name, description } = req.body;
+  const { name, description, image } = req.body;
   const manufacturerExists = await Manufacturer.findOne({ name });
 
   if (manufacturerExists) {
@@ -21,6 +21,7 @@ const createManufacturer = asyncHandler(async (req, res) => {
   const manufacturer = new Manufacturer({
     name,
     description,
+    image,
   });
   const createdManufacturer = await manufacturer.save();
   res.status(201).json(createdManufacturer);
@@ -29,12 +30,13 @@ const createManufacturer = asyncHandler(async (req, res) => {
 // Update manufacturer
 const updateManufacturer = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { name, description } = req.body;
+  const { name, description, image } = req.body;
   const manufacturer = await Manufacturer.findById(id);
 
   if (manufacturer) {
     manufacturer.name = name || manufacturer.name;
     manufacturer.description = description || manufacturer.description;
+    manufacturer.image = image || manufacturer.image;
 
     const updatedManufacturer = await manufacturer.save();
     res.json(updatedManufacturer);
@@ -79,5 +81,3 @@ module.exports = {
   deleteManufacturer,
   getProductsByManufacturer,
 };
-
-

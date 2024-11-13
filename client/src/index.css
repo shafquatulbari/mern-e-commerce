@@ -17,5 +17,29 @@ code {
 }
 
 .bg-cover {
-  background-image: url ("../src/components/image/1.webp");
+  background-image: url ("../src/components/image/2.webp");
+}
+.slider-bg1 {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: linear-gradient(
+      rgba(24, 24, 24, 0.5),
+      rgba(139, 139, 139, 0.5)
+    ),
+    url("../src/components/image/1.webp");
+}
+.slider-bg2 {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url("../src/components/image/2.webp");
+}
+.slider-bg3 {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url("../src/components/image/3.webp");
 }
