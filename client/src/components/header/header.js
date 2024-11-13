@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaShoppingCart, FaSignOutAlt, FaBoxOpen } from "react-icons/fa";
 import { AuthContext } from "../../context/AuthContext";
 import CartModal from "../cart/CartModal";
 
@@ -28,26 +29,25 @@ const Header = () => {
         {user && !user.isAdmin && (
           <>
             <button
-              className="bg-blue-500 p-2 rounded text-white"
+              className="bg-blue-500 p-2 rounded text-white flex items-center"
               onClick={toggleCartModal}
             >
-              Cart
+              <FaShoppingCart className="mr-2" /> Cart
             </button>
-            {showCartModal && <CartModal closeModal={toggleCartModal} />}{" "}
-            {/* Pass closeModal */}
+            {showCartModal && <CartModal closeModal={toggleCartModal} />}
             <button
-              className="bg-green-500 p-2 rounded text-white"
+              className="bg-green-500 p-2 rounded text-white flex items-center"
               onClick={goToOrders}
             >
-              Orders
+              <FaBoxOpen className="mr-2" /> Orders
             </button>
           </>
         )}
         <button
-          className="bg-red-500 p-2 rounded text-white"
+          className="bg-red-500 p-2 rounded text-white flex items-center"
           onClick={handleLogout}
         >
-          Logout
+          <FaSignOutAlt className="mr-2" /> Logout
         </button>
       </div>
     </div>
