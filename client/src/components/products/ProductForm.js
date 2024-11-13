@@ -9,14 +9,13 @@ const ProductForm = ({ product = null, onSave }) => {
   const [quantityChange, setQuantityChange] = useState(0);
   const [quantityOperation, setQuantityOperation] = useState("Add");
 
-  // Fix: Ensure that manufacturer state is initialized correctly
   const [manufacturer, setManufacturer] = useState(
     product && product.manufacturer ? product.manufacturer : ""
   );
-
   const [description, setDescription] = useState(
     product ? product.description : ""
   );
+  const [images, setImages] = useState(product ? product.images || [] : [""]);
   const [manufacturers, setManufacturers] = useState([]);
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState("");
@@ -36,6 +35,16 @@ const ProductForm = ({ product = null, onSave }) => {
     };
     fetchManufacturers();
   }, []);
+
+  const handleImageChange = (index, value) => {
+    const newImages = [...images];
+    newImages[index] = value;
+    setImages(newImages);
+  };
+
+  const addImageField = () => {
+    setImages([...images, ""]);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -67,6 +76,7 @@ const ProductForm = ({ product = null, onSave }) => {
       stock_level: adjustedStockLevel,
       description,
       manufacturer,
+      images,
     };
 
     try {
@@ -178,6 +188,25 @@ const ProductForm = ({ product = null, onSave }) => {
         onChange={(e) => setDescription(e.target.value)}
         className="w-full mb-4 p-2 border rounded"
       />
+
+      {images.map((image, index) => (
+        <input
+          key={index}
+          type="text"
+          placeholder="Image URL"
+          value={image}
+          onChange={(e) => handleImageChange(index, e.target.value)}
+          className="w-full mb-4 p-2 border rounded"
+        />
+      ))}
+      <button
+        type="button"
+        onClick={addImageField}
+        className="mb-4 p-2 border rounded bg-gray-200"
+      >
+        Add Another Image URL
+      </button>
+
       <button
         className="w-full bg-blue-500 text-white p-2 rounded"
         type="submit"

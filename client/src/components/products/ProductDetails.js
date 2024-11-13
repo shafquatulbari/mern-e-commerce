@@ -6,6 +6,7 @@ import { CartContext } from "../../context/CartContext";
 import BackButton from "../common/BackButton";
 import Header from "../header/header";
 import moment from "moment";
+import { FaStar, FaMinus, FaPlus, FaShoppingCart } from "react-icons/fa"; // Importing icons
 
 const ProductDetails = () => {
   const { productId } = useParams(); // Get the product ID from the URL
@@ -66,47 +67,53 @@ const ProductDetails = () => {
     }
   };
 
-  if (!product) return <p>Loading...</p>;
+  if (!product) return <p className="text-center mt-10">Loading...</p>;
 
   return (
     <>
       <Header />
-      <div className="p-6">
+      <div className="p-6 max-w-4xl mx-auto">
         <BackButton />
         <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
         <img
-          src={product.images?.[0] || "https://via.placeholder.com/150"}
+          src={product.images?.[0] || "https://via.placeholder.com/300"}
           alt={product.name}
-          className="mb-4"
+          className="w-80 h-60 object-cover rounded-lg mb-4"
         />
-        <p className="text-xl mb-2">Price: ${product.price}</p>
-        <p className="mb-2">Stock: {product.stock_level}</p>
-        <p className="mb-4">{product.description}</p>
-        <p className="mb-4">
-          Category: {product.category ? product.category.name : "No Category"}
+        <p className="text-2xl font-semibold mb-2 text-green-600">
+          Price: ${product.price}
         </p>
-        <p className="mb-4">
-          Manufacturer:{" "}
+        <p className="text-sm mb-2 text-gray-600">
+          Stock: {product.stock_level}
+        </p>
+        <p className="mb-4 text-gray-700">{product.description}</p>
+        <p className="mb-4 text-gray-500">
+          <strong>Category:</strong>{" "}
+          {product.category ? product.category.name : "No Category"}
+        </p>
+        <p className="mb-4 text-gray-500">
+          <strong>Manufacturer:</strong>{" "}
           {product.manufacturer ? product.manufacturer.name : "Unknown"}
         </p>
-        <p className="mb-4">
-          Average Rating: {product.averageRating} (Based on{" "}
-          {product.ratingsCount} reviews)
+        <p className="mb-4 text-yellow-500 flex items-center">
+          <strong>Average Rating:</strong> {product.averageRating}{" "}
+          <FaStar className="ml-1" /> (Based on {product.ratingsCount} reviews)
         </p>
         <h2 className="text-2xl font-bold mb-4">Reviews</h2>
         {product.reviews && product.reviews.length > 0 ? (
           product.reviews.map((review, index) => (
-            <div key={index} className="border p-4 rounded mb-2">
-              <p className="font-bold">{review.name}</p>
-              <p>Rating: {review.rating}/5</p>
+            <div key={index} className="border p-4 rounded mb-2 bg-gray-50">
+              <p className="font-bold text-blue-600">{review.name}</p>
+              <p className="text-yellow-500 flex items-center">
+                Rating: {review.rating}/5 <FaStar className="ml-1" />
+              </p>
               <p>{review.comment}</p>
               <p className="text-sm text-gray-500">
                 {moment(review.timestamp).format("MMMM Do, YYYY")}
               </p>
-              {/* Show delete button for the review author or admin */}
               {(user?.username === review.name || user?.isAdmin) && (
                 <button
-                  className="text-red-500 mt-2"
+                  className="text-red-500 mt-2 underline"
                   onClick={() => deleteReview(index)}
                 >
                   Delete Review
@@ -115,13 +122,13 @@ const ProductDetails = () => {
             </div>
           ))
         ) : (
-          <p>No reviews yet.</p>
+          <p className="text-gray-600">No reviews yet.</p>
         )}
         {!user?.isAdmin && (
           <form onSubmit={submitReview} className="mb-6">
-            <p2 className="text-2xl font-bold mt-6 mb-4">Leave a Review</p2>
+            <h2 className="text-2xl font-bold mt-6 mb-4">Leave a Review</h2>
             <div className="mb-4">
-              <label className="block mb-2">Rating</label>
+              <label className="block mb-2 text-gray-600">Rating</label>
               <select
                 value={rating}
                 onChange={(e) => setRating(Number(e.target.value))}
@@ -136,7 +143,7 @@ const ProductDetails = () => {
               </select>
             </div>
             <div className="mb-4">
-              <label className="block mb-2">Comment</label>
+              <label className="block mb-2 text-gray-600">Comment</label>
               <textarea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
@@ -146,7 +153,7 @@ const ProductDetails = () => {
             </div>
             <button
               type="submit"
-              className="bg-blue-500 text-white p-2 rounded"
+              className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
             >
               Submit Review
             </button>
@@ -155,26 +162,26 @@ const ProductDetails = () => {
         {!user?.isAdmin && (
           <div className="flex items-center mb-4">
             <button
-              className="bg-gray-300 px-2 py-1 rounded"
+              className="bg-gray-300 px-2 py-1 rounded hover:bg-gray-400"
               onClick={() => setQuantity(Math.max(1, quantity - 1))}
             >
-              -
+              <FaMinus />
             </button>
-            <span className="mx-2">{quantity}</span>
+            <span className="mx-4 font-semibold">{quantity}</span>
             <button
-              className="bg-gray-300 px-2 py-1 rounded"
+              className="bg-gray-300 px-2 py-1 rounded hover:bg-gray-400"
               onClick={() => setQuantity(quantity + 1)}
             >
-              +
+              <FaPlus />
             </button>
           </div>
         )}
         {!user?.isAdmin && (
           <button
-            className="bg-green-500 text-white p-2 rounded mb-4"
+            className="bg-green-500 text-white p-2 rounded flex items-center hover:bg-green-600"
             onClick={handleAddToCart}
           >
-            Add to Cart
+            <FaShoppingCart className="mr-2" /> Add to Cart
           </button>
         )}
       </div>
