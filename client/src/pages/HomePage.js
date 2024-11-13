@@ -10,9 +10,12 @@ import Slider from "react-slick"; // Ensure `react-slick` is correctly installed
 import icon1 from "../components/images/icons/delivery-van.svg";
 import icon2 from "../components/images/icons/money-back.svg";
 import icon3 from "../components/images/icons/service-hours.svg";
-import img1 from "../components/image/1.webp";
-import img2 from "../components/image/2.webp";
-import img3 from "../components/image/3.webp";
+import img1 from "../components/images/Allergy.webp";
+import img2 from "../components/images/Antibiotics.webp";
+import img3 from "../components/images/Diabetes.webp";
+import img4 from "../components/images/Gas.webp";
+import img5 from "../components/images/Heart.webp";
+import img6 from "../components/images/Pain.webp";
 
 const HomePage = () => {
   const { user } = useContext(AuthContext);
@@ -79,7 +82,7 @@ const HomePage = () => {
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    autoplay: false,
+    autoplay: true,
     autoplaySpeed: 3000,
   };
 
@@ -172,7 +175,7 @@ const HomePage = () => {
 
           {/* Pharmacy/Medicine Sliders */}
           <Slider {...sliderSettings}>
-            <div className=" bg-cover slider-bg1 bg-no-repeat bg-center py-36">
+            <div className=" bg-cover slider-bg1 bg-no-repeat bg-center py-36 rounded">
               <div className="container px-5 py-4">
                 <h1 className="text-6xl text-white font-medium mb-4 capitalize drop-shadow-lg">
                   best collection for <br /> Famous Pharmacy
@@ -194,7 +197,7 @@ const HomePage = () => {
                 </button>
               </div>
             </div>
-            <div className="bg-cover slider-bg2 bg-no-repeat bg-center py-36">
+            <div className="bg-cover slider-bg2 bg-no-repeat bg-center py-36 rounded">
               <div className="container px-5 py-4">
                 <h1 className="text-6xl text-white font-medium mb-4 capitalize drop-shadow-lg">
                   best collection for <br /> Trusted Pharmacy
@@ -216,7 +219,7 @@ const HomePage = () => {
                 </button>
               </div>
             </div>
-            <div className="bg-cover slider-bg3 bg-no-repeat bg-center py-36">
+            <div className="bg-cover slider-bg3 bg-no-repeat bg-center py-36 rounded">
               <div className="container px-5 py-4">
                 <h1 className="text-6xl text-white font-medium mb-4 capitalize drop-shadow-lg">
                   best collection for <br /> Famous Pharmacy
@@ -306,6 +309,91 @@ const HomePage = () => {
             </div>
           ))}
         </Slider>
+        <div class="container py-16">
+          <h2 class="text-2xl font-medium text-gray-800 uppercase mb-6">
+            shop by category
+          </h2>
+          <div class="grid grid-cols-3 gap-3">
+            <div class="relative rounded-sm overflow-hidden group">
+              <img
+                src={img1}
+                alt="category 1"
+                class="w-full h-full object-cover"
+              />
+              <a
+                href="/"
+                class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-xl text-white font-roboto font-medium group-hover:bg-opacity-60 transition"
+              >
+                Antihistamines (Allergy Medications)
+              </a>
+            </div>
+            <div class="relative rounded-sm overflow-hidden group">
+              <img
+                src={img2}
+                alt="category 1"
+                class="w-full h-full object-cover"
+              />
+              <a
+                href="/"
+                class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-xl text-white font-roboto font-medium group-hover:bg-opacity-60 transition"
+              >
+                Mattrass
+              </a>
+            </div>
+            <div class="relative rounded-sm overflow-hidden group">
+              <img
+                src="assets/images/category/category-3.jpg"
+                alt="category 1"
+                class="w-full"
+              />
+              <a
+                href="/"
+                class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-xl text-white font-roboto font-medium group-hover:bg-opacity-60 transition"
+              >
+                Outdoor
+              </a>
+            </div>
+            <div class="relative rounded-sm overflow-hidden group">
+              <img
+                src="assets/images/category/category-4.jpg"
+                alt="category 1"
+                class="w-full"
+              />
+              <a
+                href="/"
+                class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-xl text-white font-roboto font-medium group-hover:bg-opacity-60 transition"
+              >
+                Sofa
+              </a>
+            </div>
+            <div class="relative rounded-sm overflow-hidden group">
+              <img
+                src="assets/images/category/category-5.jpg"
+                alt="category 1"
+                class="w-full"
+              />
+              <a
+                href="/"
+                class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-xl text-white font-roboto font-medium group-hover:bg-opacity-60 transition"
+              >
+                Living Room
+              </a>
+            </div>
+            <div class="relative rounded-sm overflow-hidden group">
+              <img
+                src="assets/images/category/category-6.jpg"
+                alt="category 1"
+                class="w-full"
+              />
+              <a
+                href="/"
+                class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-xl text-white font-roboto font-medium group-hover:bg-opacity-60 transition"
+              >
+                Kitchen
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );
