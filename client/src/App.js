@@ -16,13 +16,19 @@ import CartModal from "./components/cart/CartModal";
 import ProductDetails from "./components/products/ProductDetails";
 import UserOrders from "./components/orders/UserOrders";
 import AdminOrderPage from "./pages/AdminOrderPage";
+import img2 from "../src/components/image/2.webp";
 
 function App() {
   return (
     <AuthProvider>
       <CartProvider>
         <Router>
-          <div className="container mx-auto">
+          <div
+            className=" w-full "
+            style={{
+              backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url(${img2})`,
+            }}
+          >
             <Routes>
               <Route path="/" element={<Login />} />
               <Route path="/register" element={<Register />} />
