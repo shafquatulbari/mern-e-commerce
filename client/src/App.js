@@ -23,12 +23,7 @@ function App() {
     <AuthProvider>
       <CartProvider>
         <Router>
-          <div
-            className=" w-full "
-            style={{
-              backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url(${img2})`,
-            }}
-          >
+          <div className=" w-full ">
             <Routes>
               <Route path="/" element={<Login />} />
               <Route path="/register" element={<Register />} />

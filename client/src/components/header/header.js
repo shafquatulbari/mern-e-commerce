@@ -23,7 +23,7 @@ const Header = () => {
   };
 
   return (
-    <div className="w-full bg-gray-800 text-white p-4 flex justify-between items-center">
+    <div className=" relative w-full bg-gray-800 text-white p-4 flex justify-between items-center">
       <h1 className="text-xl font-bold">PillPal</h1>
       <div className="flex items-center space-x-4">
         {user && !user.isAdmin && (
@@ -34,7 +34,9 @@ const Header = () => {
             >
               <FaShoppingCart className="mr-2" /> Cart
             </button>
-            {showCartModal && <CartModal closeModal={toggleCartModal} />}
+            <div className="absolute z-20">
+              {showCartModal && <CartModal closeModal={toggleCartModal} />}
+            </div>
             <button
               className="bg-green-500 p-2 rounded text-white flex items-center"
               onClick={goToOrders}

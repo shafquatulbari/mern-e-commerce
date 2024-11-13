@@ -7,6 +7,12 @@ import { FaSearch, FaBox, FaTags, FaIndustry } from "react-icons/fa"; // Import 
 import "slick-carousel/slick/slick.css"; // Correct styles for react-slick
 import "slick-carousel/slick/slick-theme.css"; // Additional styles for react-slick
 import Slider from "react-slick"; // Ensure `react-slick` is correctly installed
+import icon1 from "../components/images/icons/delivery-van.svg";
+import icon2 from "../components/images/icons/money-back.svg";
+import icon3 from "../components/images/icons/service-hours.svg";
+import img1 from "../components/image/1.webp";
+import img2 from "../components/image/2.webp";
+import img3 from "../components/image/3.webp";
 
 const HomePage = () => {
   const { user } = useContext(AuthContext);
@@ -73,7 +79,7 @@ const HomePage = () => {
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    autoplay: true,
+    autoplay: false,
     autoplaySpeed: 3000,
   };
 
@@ -90,7 +96,7 @@ const HomePage = () => {
   return (
     <>
       <Header />
-      <div className="container mx-auto p-6">
+      <div className="container relative mx-auto p-6">
         <div className="mb-8">
           {/* Search Bar */}
           <div className="flex items-center mb-4">
@@ -166,18 +172,115 @@ const HomePage = () => {
 
           {/* Pharmacy/Medicine Sliders */}
           <Slider {...sliderSettings}>
-            <div className="h-64 bg-blue-200 flex items-center justify-center">
-              <h2 className="text-3xl font-bold">Quality Medicines</h2>
+            <div className=" bg-cover slider-bg1 bg-no-repeat bg-center py-36">
+              <div className="container px-5 py-4">
+                <h1 className="text-6xl text-white font-medium mb-4 capitalize drop-shadow-lg">
+                  best collection for <br /> Famous Pharmacy
+                </h1>
+                <p className="text-2 text-white">
+                  Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+                  Aperiam <br />
+                  accusantium perspiciatis, sapiente magni eos dolorum ex quos
+                  dolores odio
+                </p>
+                <button className="mt-12 ">
+                  <a
+                    href="/"
+                    className=" bg-sky-500 hover:bg-sky-700 border border-white text-white px-8 py-3 font-medium 
+                    rounded-md hover:bg-transparent drop-shadow-lg"
+                  >
+                    Shop Now
+                  </a>
+                </button>
+              </div>
             </div>
-            <div className="h-64 bg-green-200 flex items-center justify-center">
-              <h2 className="text-3xl font-bold">Trusted Pharmacy</h2>
+            <div className="bg-cover slider-bg2 bg-no-repeat bg-center py-36">
+              <div className="container px-5 py-4">
+                <h1 className="text-6xl text-white font-medium mb-4 capitalize drop-shadow-lg">
+                  best collection for <br /> Trusted Pharmacy
+                </h1>
+                <p className="text-2 text-white">
+                  Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+                  Aperiam <br />
+                  accusantium perspiciatis, sapiente magni eos dolorum ex quos
+                  dolores odio
+                </p>
+                <button className="mt-12 ">
+                  <a
+                    href="/"
+                    className=" bg-sky-500 hover:bg-sky-700 border border-white text-white px-8 py-3 font-medium 
+                    rounded-md hover:bg-transparent drop-shadow-lg"
+                  >
+                    Shop Now
+                  </a>
+                </button>
+              </div>
             </div>
-            <div className="h-64 bg-yellow-200 flex items-center justify-center">
-              <h2 className="text-3xl font-bold">Affordable Prices</h2>
+            <div className="bg-cover slider-bg3 bg-no-repeat bg-center py-36">
+              <div className="container px-5 py-4">
+                <h1 className="text-6xl text-white font-medium mb-4 capitalize drop-shadow-lg">
+                  best collection for <br /> Famous Pharmacy
+                </h1>
+                <p className="text-2 text-white">
+                  Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+                  Aperiam <br />
+                  accusantium perspiciatis, sapiente magni eos dolorum ex quos
+                  dolores odio
+                </p>
+                <button className="mt-12 ">
+                  <a
+                    href="/"
+                    className=" bg-sky-500 hover:bg-sky-700 border border-white text-white px-8 py-3 font-medium 
+                    rounded-md hover:bg-transparent drop-shadow-lg"
+                  >
+                    Shop Now
+                  </a>
+                </button>
+              </div>
             </div>
           </Slider>
         </div>
-
+        {/* <!-- features --> */}
+        <div className="container py-16">
+          <div className="w-10/12 grid grid-cols-1 md:grid-cols-3 gap-6 mx-auto justify-center">
+            <div className="border border-primary rounded-sm px-3 py-6 flex justify-center items-center gap-5">
+              <img
+                src={icon1}
+                alt="Delivery"
+                className="w-12 h-12 object-contain"
+              />
+              <div>
+                <h4 className="font-medium capitalize text-lg">
+                  Free Shipping
+                </h4>
+                <p className="text-gray-500 text-sm">Order over $200</p>
+              </div>
+            </div>
+            <div className="border border-primary rounded-sm px-3 py-6 flex justify-center items-center gap-5">
+              <img
+                src={icon2}
+                alt="Delivery"
+                className="w-12 h-12 object-contain"
+              />
+              <div>
+                <h4 className="font-medium capitalize text-lg">Money Rturns</h4>
+                <p className="text-gray-500 text-sm">30 days money returs</p>
+              </div>
+            </div>
+            <div className="border border-primary rounded-sm px-3 py-6 flex justify-center items-center gap-5">
+              <img
+                src={icon3}
+                alt="Delivery"
+                className="w-12 h-12 object-contain"
+              />
+              <div>
+                <h4 className="font-medium capitalize text-lg">24/7 Support</h4>
+                <p className="text-gray-500 text-sm">Customer support</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* <!-- ./features --> */}
         {/* Product Carousel */}
         <h2 className="text-2xl font-bold mb-4">Top Products</h2>
         <Slider {...productCarouselSettings}>
