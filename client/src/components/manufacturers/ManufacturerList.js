@@ -8,6 +8,7 @@ const ManufacturerList = () => {
   const [manufacturers, setManufacturers] = useState([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [image, setImage] = useState(""); // State for image URL
   const [error, setError] = useState("");
   const [editingManufacturer, setEditingManufacturer] = useState(null);
   const [showForm, setShowForm] = useState(false);
@@ -28,6 +29,9 @@ const ManufacturerList = () => {
 
   const handleAddManufacturer = () => {
     setEditingManufacturer(null);
+    setName("");
+    setDescription("");
+    setImage(""); // Reset image field
     setShowForm(true);
   };
 
@@ -35,6 +39,7 @@ const ManufacturerList = () => {
     setEditingManufacturer(manufacturer);
     setName(manufacturer.name);
     setDescription(manufacturer.description);
+    setImage(manufacturer.image); // Set image URL for editing
     setShowForm(true);
   };
 
@@ -59,6 +64,7 @@ const ManufacturerList = () => {
           {
             name,
             description,
+            image, // Include image URL
           }
         );
         const updatedManufacturers = manufacturers.map((man) =>
@@ -70,11 +76,13 @@ const ManufacturerList = () => {
         const response = await api.post("manufacturers/", {
           name,
           description,
+          image, // Include image URL
         });
         setManufacturers([...manufacturers, response.data]);
       }
       setName("");
       setDescription("");
+      setImage(""); // Reset image field
       setEditingManufacturer(null);
       setShowForm(false);
     } catch (err) {
@@ -112,6 +120,13 @@ const ManufacturerList = () => {
                 onChange={(e) => setDescription(e.target.value)}
                 className="w-full mb-4 p-2 border rounded"
               />
+              <input
+                type="text"
+                placeholder="Image URL"
+                value={image}
+                onChange={(e) => setImage(e.target.value)}
+                className="w-full mb-4 p-2 border rounded"
+              />
               <button
                 className="w-full bg-blue-500 text-white p-2 rounded"
                 type="submit"
@@ -134,6 +149,13 @@ const ManufacturerList = () => {
               </h3>
             </Link>
             <p>{manufacturer.description}</p>
+            {manufacturer.image && (
+              <img
+                src={manufacturer.image}
+                alt={manufacturer.name}
+                className="w-60 h-full object-cover rounded mt-2"
+              />
+            )}
             {user && user.isAdmin && (
               <>
                 <button

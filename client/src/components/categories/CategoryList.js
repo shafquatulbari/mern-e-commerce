@@ -8,6 +8,7 @@ const CategoryList = () => {
   const [categories, setCategories] = useState([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [image, setImage] = useState(""); // State for image URL
   const [error, setError] = useState("");
   const [editingCategory, setEditingCategory] = useState(null);
   const [showForm, setShowForm] = useState(false);
@@ -28,6 +29,9 @@ const CategoryList = () => {
 
   const handleAddCategory = () => {
     setEditingCategory(null);
+    setName("");
+    setDescription("");
+    setImage(""); // Reset image field
     setShowForm(true);
   };
 
@@ -35,6 +39,7 @@ const CategoryList = () => {
     setEditingCategory(category);
     setName(category.name);
     setDescription(category.description);
+    setImage(category.image); // Set image URL for editing
     setShowForm(true);
   };
 
@@ -55,6 +60,7 @@ const CategoryList = () => {
         const response = await api.put(`categories/${editingCategory._id}/`, {
           name,
           description,
+          image, // Include image URL
         });
         const updatedCategories = categories.map((cat) =>
           cat._id === editingCategory._id ? response.data : cat
@@ -65,11 +71,13 @@ const CategoryList = () => {
         const response = await api.post("categories/", {
           name,
           description,
+          image, // Include image URL
         });
         setCategories([...categories, response.data]);
       }
       setName("");
       setDescription("");
+      setImage(""); // Reset image field
       setEditingCategory(null);
       setShowForm(false);
     } catch (err) {
@@ -81,8 +89,7 @@ const CategoryList = () => {
     <div className="p-6">
       <BackButton />
       <h1 className="text-3xl font-bold mb-6">Categories</h1>
-
-      {/* Admin-specific form */}
+      {/* Admins can add/edit categories */}
       {user && user.isAdmin && (
         <>
           <button
@@ -108,6 +115,13 @@ const CategoryList = () => {
                 onChange={(e) => setDescription(e.target.value)}
                 className="w-full mb-4 p-2 border rounded"
               />
+              <input
+                type="text"
+                placeholder="Image URL"
+                value={image}
+                onChange={(e) => setImage(e.target.value)}
+                className="w-full mb-4 p-2 border rounded"
+              />
               <button
                 className="w-full bg-blue-500 text-white p-2 rounded"
                 type="submit"
@@ -119,7 +133,6 @@ const CategoryList = () => {
         </>
       )}
 
-      {/* Display category list */}
       <div>
         {categories.map((category) => (
           <div key={category._id} className="border p-4 mb-2 rounded">
@@ -129,6 +142,13 @@ const CategoryList = () => {
               </h3>
             </Link>
             <p>{category.description}</p>
+            {category.image && (
+              <img
+                src={category.image}
+                alt={category.name}
+                className="w-60 h-full object-cover rounded mt-2"
+              />
+            )}
             {user && user.isAdmin && (
               <>
                 <button

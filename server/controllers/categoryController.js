@@ -10,7 +10,7 @@ const getCategories = asyncHandler(async (req, res) => {
 
 // Create a new category
 const createCategory = asyncHandler(async (req, res) => {
-  const { name, description } = req.body;
+  const { name, description, image } = req.body;
   const categoryExists = await Category.findOne({ name });
 
   if (categoryExists) {
@@ -21,6 +21,7 @@ const createCategory = asyncHandler(async (req, res) => {
   const category = new Category({
     name,
     description,
+    image,
   });
   const createdCategory = await category.save();
   res.status(201).json(createdCategory);
@@ -29,12 +30,13 @@ const createCategory = asyncHandler(async (req, res) => {
 // Update category
 const updateCategory = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { name, description } = req.body;
+  const { name, description, image } = req.body;
   const category = await Category.findById(id);
 
   if (category) {
     category.name = name || category.name;
     category.description = description || category.description;
+    category.image = image || category.image;
 
     const updatedCategory = await category.save();
     res.json(updatedCategory);

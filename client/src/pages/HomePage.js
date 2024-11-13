@@ -10,12 +10,6 @@ import Slider from "react-slick"; // Ensure `react-slick` is correctly installed
 import icon1 from "../components/images/icons/delivery-van.svg";
 import icon2 from "../components/images/icons/money-back.svg";
 import icon3 from "../components/images/icons/service-hours.svg";
-import img1 from "../components/images/Allergy.webp";
-import img2 from "../components/images/Antibiotics.webp";
-import img3 from "../components/images/Diabetes.webp";
-import img4 from "../components/images/Gas.webp";
-import img5 from "../components/images/Heart.webp";
-import img6 from "../components/images/Pain.webp";
 
 const HomePage = () => {
   const { user } = useContext(AuthContext);
@@ -173,6 +167,18 @@ const HomePage = () => {
             </div>
           )}
 
+          {/* Admin button to view all user orders */}
+          {user && user.isAdmin && (
+            <div className="mb-6">
+              <button
+                className="bg-purple-500 text-white p-4 rounded"
+                onClick={() => navigate("/admin/orders")}
+              >
+                Manage User Orders
+              </button>
+            </div>
+          )}
+
           {/* Pharmacy/Medicine Sliders */}
           <Slider {...sliderSettings}>
             <div className=" bg-cover slider-bg1 bg-no-repeat bg-center py-36 rounded">
@@ -266,8 +272,10 @@ const HomePage = () => {
                 className="w-12 h-12 object-contain"
               />
               <div>
-                <h4 className="font-medium capitalize text-lg">Money Rturns</h4>
-                <p className="text-gray-500 text-sm">30 days money returs</p>
+                <h4 className="font-medium capitalize text-lg">
+                  Money Returns
+                </h4>
+                <p className="text-gray-500 text-sm">30 days money return</p>
               </div>
             </div>
             <div className="border border-primary rounded-sm px-3 py-6 flex justify-center items-center gap-5">
@@ -309,7 +317,7 @@ const HomePage = () => {
             </div>
           ))}
         </Slider>
-        <div class="container py-16">
+        {/* <div class="container py-16">
           <h2 class="text-2xl font-medium text-gray-800 uppercase mb-6">
             shop by category
           </h2>
@@ -393,7 +401,7 @@ const HomePage = () => {
               </a>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </>
   );
