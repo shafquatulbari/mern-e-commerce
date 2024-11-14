@@ -40,7 +40,7 @@ const NewHeader = () => {
   };
 
   return (
-    <nav className="bg-white p-4 relative border-b-2 border-black">
+    <nav className="bg-white p-4 border-b-2 sticky top-0 z-10 border-black drop-shadow-xl">
       <div className="container mx-auto flex justify-between items-center">
         <Link to="/homepage" className="text-2xl font-bold">
           <img src={pha} alt="PharmaSphere" className=" max-h-12" />
@@ -100,6 +100,27 @@ const NewHeader = () => {
               All User Orders
             </NavLink>
           )}
+          {user && !user.isAdmin && (
+            <>
+              <button
+                onClick={toggleCartModal}
+                className="flex items-center text-gray-800"
+              >
+                <FaShoppingCart className="mr-2" /> Cart
+              </button>
+              {showCartModal && (
+                <div className="absolute mt-50  z-20">
+                  <CartModal closeModal={toggleCartModal} />
+                </div>
+              )}
+              <button
+                onClick={() => navigate("/orders")}
+                className="flex items-center text-gray-800"
+              >
+                <FaBoxOpen className="mr-2" /> Orders
+              </button>
+            </>
+          )}
         </div>
 
         {/* Search Bar */}
@@ -129,28 +150,6 @@ const NewHeader = () => {
             <button onClick={toggleSearch} className="text-gray-800">
               <FaSearch />
             </button>
-          )}
-
-          {user && !user.isAdmin && (
-            <>
-              <button
-                onClick={toggleCartModal}
-                className="flex items-center text-gray-800"
-              >
-                <FaShoppingCart className="mr-2" /> Cart
-              </button>
-              {showCartModal && (
-                <div className="absolute top-full right-0 mt-2">
-                  <CartModal closeModal={toggleCartModal} />
-                </div>
-              )}
-              <button
-                onClick={() => navigate("/orders")}
-                className="flex items-center text-gray-800"
-              >
-                <FaBoxOpen className="mr-2" /> Orders
-              </button>
-            </>
           )}
 
           <button
@@ -222,6 +221,27 @@ const NewHeader = () => {
             >
               All User Orders
             </NavLink>
+          )}
+          {user && !user.isAdmin && (
+            <>
+              <button
+                onClick={toggleCartModal}
+                className="flex items-center text-gray-800"
+              >
+                <FaShoppingCart className="mr-2" /> Cart
+              </button>
+              {showCartModal && (
+                <div className="absolute top-full right-0 mt-2">
+                  <CartModal closeModal={toggleCartModal} />
+                </div>
+              )}
+              <button
+                onClick={() => navigate("/orders")}
+                className="flex items-center text-gray-800"
+              >
+                <FaBoxOpen className="mr-2" /> Orders
+              </button>
+            </>
           )}
         </div>
       )}
