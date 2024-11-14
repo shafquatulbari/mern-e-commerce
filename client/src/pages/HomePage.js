@@ -261,11 +261,11 @@ const HomePage = () => {
             {topProducts.map((product) => (
               <div key={product._id} className="p-4">
                 <Link to={`/products/${product._id}`}>
-                  <div className="border rounded-lg overflow-hidden shadow hover:shadow-lg transition-shadow">
+                  <div className="border rounded-lg overflow-hidden shadow transition-transform duration-300 hover:shadow-lg hover:scale-105">
                     <img
                       src={product.images[0]}
                       alt={product.name}
-                      className="w-full h-40 object-cover"
+                      className="w-full h-40 object-cover transition-transform duration-300"
                     />
                     <div className="p-2">
                       <h3 className="font-bold text-lg">{product.name}</h3>
@@ -292,11 +292,13 @@ const HomePage = () => {
                   key={category._id}
                   className="relative rounded-sm overflow-hidden group"
                 >
+                  {/* Image with hover scale effect */}
                   <img
                     src={category.image}
                     alt={category.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
+                  {/* Overlay with text, centered */}
                   <Link
                     to={`/categories/${category._id}/products`}
                     className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-xl text-white font-roboto font-medium group-hover:bg-opacity-60 transition"

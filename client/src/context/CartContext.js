@@ -18,8 +18,11 @@ export const CartProvider = ({ children }) => {
         console.error("Error fetching cart:", error);
       }
     };
-    fetchCart();
-  }, []);
+
+    fetchCart(); // Fetch cart on component mount
+
+    // Re-fetch cart items when cartItems change
+  }, [cartItems]);
 
   // Calculate the total amount
   const calculateTotal = (cart) => {
@@ -31,42 +34,13 @@ export const CartProvider = ({ children }) => {
   };
 
   // Function to add an item to the cart
-  const addItem = async (productId, quantity = 1) => {
+  const addItem = async (productId) => {
     try {
-      // Prevent negative quantity from being added
-      if (quantity <= 0) {
-        console.warn("Quantity must be greater than zero.");
-        return;
-      }
-
-      // Make the API call to add the item to the cart
-      const response = await api.post("/cart", { productId, quantity });
-
-      // Update cart items and calculate total
+      const response = await api.post("/cart", { productId, quantity: 1 });
       setCartItems(response.data);
-      calculateTotal(response.data);
+      calculateTotal(response.data); // Ensure the total is updated
     } catch (error) {
       console.error("Error adding item to cart:", error);
-    }
-  };
-
-  // Function to update the quantity of an item in the cart
-  const updateItemQuantity = async (productId, quantity) => {
-    try {
-      // Prevent negative quantity from being set
-      if (quantity <= 0) {
-        removeItem(productId, true);
-        return;
-      }
-
-      // Make the API call to update the quantity
-      const response = await api.put(`/cart/${productId}`, { quantity });
-
-      // Update cart items and calculate total
-      setCartItems(response.data);
-      calculateTotal(response.data);
-    } catch (error) {
-      console.error("Error updating item quantity:", error);
     }
   };
 
@@ -77,16 +51,18 @@ export const CartProvider = ({ children }) => {
         const response = await api.delete(`/cart/${productId}`);
         setCartItems(response.data);
       } else {
-        // Logic for decreasing quantity
         const item = cartItems.find((item) => item.product._id === productId);
         if (item && item.quantity > 1) {
-          await updateItemQuantity(productId, item.quantity - 1); // Decrease quantity by 1
+          const response = await api.put(`/cart/${productId}`, {
+            quantity: item.quantity - 1,
+          });
+          setCartItems(response.data);
         } else {
           const response = await api.delete(`/cart/${productId}`);
           setCartItems(response.data);
         }
       }
-      calculateTotal(cartItems);
+      calculateTotal(cartItems); // Make sure to update the total after changes
     } catch (error) {
       console.error("Error removing item from cart:", error);
     }
@@ -120,7 +96,6 @@ export const CartProvider = ({ children }) => {
       value={{
         cartItems,
         addItem,
-        updateItemQuantity,
         removeItem,
         checkout,
         totalAmount,
