@@ -4,7 +4,6 @@ import api from "../../services/api";
 import ProductForm from "../products/ProductForm";
 import { AuthContext } from "../../context/AuthContext";
 import { CartContext } from "../../context/CartContext";
-import Header from "../header/header";
 import BackButton from "../common/BackButton";
 import moment from "moment";
 import { FaPlus, FaMinus, FaShoppingCart } from "react-icons/fa";
@@ -49,7 +48,6 @@ const ManufacturerProducts = () => {
 
   return (
     <>
-      <Header />
       <div className="p-6 max-w-7xl mx-auto">
         <BackButton />
         <h1 className="text-3xl font-bold mb-6">

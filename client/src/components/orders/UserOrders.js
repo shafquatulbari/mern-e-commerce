@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
-import Header from "../header/header"; // Adjust path as needed
 import BackButton from "../common/BackButton"; // Adjust path as needed
 
 const UserOrders = () => {
@@ -44,7 +43,6 @@ const UserOrders = () => {
 
   return (
     <div>
-      <Header />
       <div className="p-4">
         <BackButton />
         <h2 className="text-2xl font-bold mb-4">Your Orders</h2>

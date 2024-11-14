@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../services/api";
 import BackButton from "../components/common/BackButton";
-import Header from "../components/header/header";
 
 const AdminOrderPage = () => {
   const [orders, setOrders] = useState([]);
@@ -44,8 +43,7 @@ const AdminOrderPage = () => {
 
   return (
     <>
-      <Header />
-       <div className="p-4">
+      <div className="p-4">
         <BackButton />
         <h2 className="text-2xl font-bold mb-4">All User Orders</h2>
         {orders.length === 0 ? (
