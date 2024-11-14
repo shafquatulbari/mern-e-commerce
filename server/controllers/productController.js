@@ -109,8 +109,15 @@ const addProduct = asyncHandler(async (req, res) => {
 // Update product
 const updateProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { name, category, manufacturer, price, description, stock_level, images } =
-    req.body;
+  const {
+    name,
+    category,
+    manufacturer,
+    price,
+    description,
+    stock_level,
+    images,
+  } = req.body;
   const product = await Product.findById(id);
 
   if (product) {

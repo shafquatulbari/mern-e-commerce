@@ -113,7 +113,7 @@ const checkout = asyncHandler(async (req, res) => {
 const getCart = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id).populate(
     "cart.product",
-    "name price"
+    "name price images"
   );
 
   if (!user) {
