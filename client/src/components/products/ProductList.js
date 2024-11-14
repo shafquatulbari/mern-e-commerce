@@ -20,7 +20,7 @@ const ProductList = () => {
   const [editingProduct, setEditingProduct] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const { user } = useContext(AuthContext);
-  const { addItem, updateItemQuantity } = useContext(CartContext);
+  const { addItem } = useContext(CartContext);
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const searchQuery = searchParams.get("search");

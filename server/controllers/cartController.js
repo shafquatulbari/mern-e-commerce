@@ -38,7 +38,14 @@ const addToCart = asyncHandler(async (req, res) => {
   }
 
   await user.save();
-  res.json(user.cart);
+
+  // Populate cart items with product details and send back the updated cart
+  const updatedCart = await User.findById(req.user._id).populate(
+    "cart.product",
+    "name price images"
+  );
+
+  res.json(updatedCart.cart);
 });
 
 // Remove item from cart
@@ -54,6 +61,58 @@ const removeFromCart = asyncHandler(async (req, res) => {
   user.cart = user.cart.filter((item) => !item.product.equals(productId));
   await user.save();
   res.json(user.cart);
+});
+
+// Update the quantity of an item in the cart
+const updateItemQuantity = asyncHandler(async (req, res) => {
+  const { productId } = req.params;
+  const { quantity } = req.body;
+
+  // Check if the quantity is valid
+  if (quantity <= 0) {
+    res.status(400);
+    throw new Error("Quantity must be greater than zero.");
+  }
+
+  // Check if the productId is a valid ObjectId
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    res.status(400);
+    throw new Error("Invalid Product ID");
+  }
+
+  // Find the user and the product
+  const user = await User.findById(req.user._id);
+  const product = await Product.findById(productId);
+
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  if (!product) {
+    res.status(404);
+    throw new Error("Product not found");
+  }
+
+  // Find the item in the user's cart
+  const cartItem = user.cart.find((item) => item.product.equals(productId));
+
+  if (!cartItem) {
+    res.status(404);
+    throw new Error("Item not found in cart");
+  }
+
+  // Update the quantity
+  cartItem.quantity = quantity;
+  await user.save();
+
+  // Populate the cart items with product details and send the updated cart
+  const updatedCart = await User.findById(req.user._id).populate(
+    "cart.product",
+    "name price images"
+  );
+
+  res.json(updatedCart.cart);
 });
 
 // Checkout and Create Order
@@ -195,4 +254,5 @@ module.exports = {
   removeFromCart,
   getCart,
   getAllOrders,
+  updateItemQuantity,
 };
