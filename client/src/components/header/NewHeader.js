@@ -6,6 +6,7 @@ import {
   FaBoxOpen,
   FaUserCircle,
   FaSearch,
+  FaTasks,
 } from "react-icons/fa";
 import { RxHamburgerMenu } from "react-icons/rx";
 import CartModal from "../cart/CartModal";
@@ -51,7 +52,9 @@ const NewHeader = () => {
           <NavLink
             to="/homepage"
             className={({ isActive }) =>
-              `hover:text-gray-500 ${isActive ? "underline" : ""}`
+              `hover:text-gray-500 ${
+                isActive ? "underline underline-offset-8" : ""
+              }`
             }
           >
             Home
@@ -59,7 +62,9 @@ const NewHeader = () => {
           <NavLink
             to="/products"
             className={({ isActive }) =>
-              `hover:text-gray-500 ${isActive ? "underline" : ""}`
+              `hover:text-gray-500 ${
+                isActive ? "underline underline-offset-8" : ""
+              }`
             }
           >
             All Products
@@ -67,7 +72,9 @@ const NewHeader = () => {
           <NavLink
             to="/categories"
             className={({ isActive }) =>
-              `hover:text-gray-500 ${isActive ? "underline" : ""}`
+              `hover:text-gray-500 ${
+                isActive ? "underline underline-offset-8" : ""
+              }`
             }
           >
             Categories
@@ -75,11 +82,25 @@ const NewHeader = () => {
           <NavLink
             to="/manufacturers"
             className={({ isActive }) =>
-              `hover:text-gray-500 ${isActive ? "underline" : ""}`
+              `hover:text-gray-500 ${
+                isActive ? "underline underline-offset-8" : ""
+              }`
             }
           >
             All Manufacturers
           </NavLink>
+          {user && user.isAdmin && (
+            <NavLink
+              to="/admin/orders"
+              className={({ isActive }) =>
+                `hover:text-gray-500 ${
+                  isActive ? "underline underline-offset-8" : ""
+                }`
+              }
+            >
+              All User Orders
+            </NavLink>
+          )}
         </div>
 
         {/* Search Bar */}
@@ -132,15 +153,19 @@ const NewHeader = () => {
               </button>
             </>
           )}
-          <button onClick={toggleDropdown} className="text-gray-800">
-            <FaUserCircle className="text-3xl" />{" "}
-            {user ? <span>{user.username}</span> : <span>GUEST</span>}
+
+          <button
+            onClick={toggleDropdown}
+            className="flex items-center text-gray-800"
+          >
+            <FaUserCircle className="text-3xl mr-2" />{" "}
+            {user ? user.username : "GUEST"}
           </button>
           {isDropdownOpen && (
             <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-md shadow-lg z-20">
               <button
                 onClick={handleLogout}
-                className="w-full text-left p-2 text-red-500"
+                className="w-full flex items-center p-2 text-red-500"
               >
                 <FaSignOutAlt className="mr-1" /> Logout
               </button>
@@ -187,6 +212,18 @@ const NewHeader = () => {
           >
             All Manufacturers
           </NavLink>
+          {user && user.isAdmin && (
+            <NavLink
+              to="/admin/orders"
+              className={({ isActive }) =>
+                `hover:text-gray-500 ${
+                  isActive ? "underline underline-offset-8" : ""
+                }`
+              }
+            >
+              All User Orders
+            </NavLink>
+          )}
         </div>
       )}
     </nav>
