@@ -4,7 +4,6 @@ import api from "../../services/api";
 import { AuthContext } from "../../context/AuthContext";
 import { CartContext } from "../../context/CartContext";
 import BackButton from "../common/BackButton";
-import Header from "../header/header";
 import moment from "moment";
 import { FaStar, FaMinus, FaPlus, FaShoppingCart } from "react-icons/fa"; // Importing icons
 
@@ -71,7 +70,6 @@ const ProductDetails = () => {
 
   return (
     <>
-      <Header />
       <div className="p-6 max-w-4xl mx-auto">
         <BackButton />
         <h1 className="text-3xl font-bold mb-4">{product.name}</h1>

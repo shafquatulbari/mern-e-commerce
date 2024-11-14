@@ -1,6 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Header from "../components/header/header";
 import { AuthContext } from "../context/AuthContext";
 import api from "../services/api";
 import { FaSearch, FaBox, FaTags, FaIndustry, FaTasks } from "react-icons/fa";
@@ -105,7 +104,6 @@ const HomePage = () => {
 
   return (
     <>
-      <Header />
       <div className="container relative mx-auto p-6">
         <div className="mb-8">
           {/* Search Bar */}

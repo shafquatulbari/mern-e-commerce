@@ -2,8 +2,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../services/api";
 import BackButton from "../components/common/BackButton";
-import Header from "../components/header/header";
-import { FaTruck, FaCheckCircle } from "react-icons/fa"; // Icons for status
 
 const AdminOrderPage = () => {
   const [orders, setOrders] = useState([]);
