@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaShippingFast, FaDollarSign, FaTimesCircle } from "react-icons/fa"; // Importing icons from react-icons
 import api from "../../services/api";
 import Header from "../header/header"; // Adjust path as needed
 import BackButton from "../common/BackButton"; // Adjust path as needed
@@ -28,7 +29,6 @@ const UserOrders = () => {
   const handleCancelOrder = async (orderId) => {
     try {
       await api.delete(`/orders/${orderId}`);
-      // Update the order list after cancellation
       setOrders((prevOrders) =>
         prevOrders.filter((order) => order._id !== orderId)
       );
@@ -39,8 +39,9 @@ const UserOrders = () => {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+  if (loading) return <div className="text-center py-4">Loading...</div>;
+  if (error)
+    return <div className="text-red-500 text-center py-4">{error}</div>;
 
   return (
     <div>
@@ -49,43 +50,72 @@ const UserOrders = () => {
         <BackButton />
         <h2 className="text-2xl font-bold mb-4">Your Orders</h2>
         {orders.length === 0 ? (
-          <p>You have no orders.</p>
+          <p className="text-gray-600 text-center">You have no orders.</p>
         ) : (
           orders.map((order) => (
             <div
               key={order._id}
-              className="border p-4 mb-4 rounded shadow-md bg-white"
+              className="border rounded-lg p-4 mb-4 shadow-md bg-gray-50 hover:bg-gray-100 transition-colors"
             >
-              <h3 className="text-lg font-semibold mb-2">
+              <h3 className="text-lg font-semibold mb-2 text-gray-800">
                 Order ID: {order._id}
               </h3>
-              <p>Status: {order.status}</p>
-              <p>Total Amount: ${order.totalAmount}</p>
+              <p className="text-gray-600 mb-2 flex items-center">
+                <FaShippingFast className="mr-2 text-blue-500" />
+                <span className="font-bold">Status:</span> {order.status}
+              </p>
+              <p className="text-gray-600 mb-2 flex items-center">
+                <FaDollarSign className="mr-2 text-green-500" />
+                <span className="font-bold">Total Amount:</span> $
+                {order.totalAmount.toFixed(2)}
+              </p>
               <div className="mt-2">
-                <h4 className="font-semibold">Items:</h4>
-                <ul>
+                <h4 className="font-semibold text-gray-800">Items:</h4>
+                <ul className="list-disc pl-6 text-gray-600">
                   {order.items.map((item) => (
-                    <li key={item.product._id}>
-                      {item.product.name} (x{item.quantity})
+                    <li
+                      key={item.product._id}
+                      className="flex items-center mb-2"
+                    >
+                      {item.product.images && item.product.images[0] ? (
+                        <img
+                          src={item.product.images[0]}
+                          alt={item.product.name}
+                          className="w-16 h-16 object-cover rounded mr-2"
+                        />
+                      ) : (
+                        <div className="w-16 h-16 bg-gray-300 rounded mr-2 flex items-center justify-center">
+                          <span className="text-sm text-gray-500">
+                            No Image
+                          </span>
+                        </div>
+                      )}
+                      <div>
+                        <p className="text-gray-800">
+                          {item.product ? item.product.name : "Unknown Product"}{" "}
+                          (x{item.quantity})
+                        </p>
+                      </div>
                     </li>
                   ))}
                 </ul>
               </div>
               <div className="mt-2">
-                <h4 className="font-semibold">Shipping Address:</h4>
-                <p>
+                <h4 className="font-semibold text-gray-800">
+                  Shipping Address:
+                </h4>
+                <p className="text-gray-600">
                   {order.shippingAddress.address}, {order.shippingAddress.city},{" "}
                   {order.shippingAddress.postalCode},{" "}
                   {order.shippingAddress.country}
                 </p>
               </div>
-              {/* Cancel Order Button */}
               {order.status === "On-Delivery" && (
                 <button
                   onClick={() => handleCancelOrder(order._id)}
-                  className="bg-red-500 text-white px-4 py-2 rounded mt-4"
+                  className="bg-red-500 text-white px-4 py-2 rounded mt-4 flex items-center hover:bg-red-600 transition"
                 >
-                  Cancel Order
+                  <FaTimesCircle className="mr-2" /> Cancel Order
                 </button>
               )}
             </div>

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import api from "../services/api";
 import BackButton from "../components/common/BackButton";
 import Header from "../components/header/header";
+import { FaTruck, FaCheckCircle } from "react-icons/fa"; // Icons for status
 
 const AdminOrderPage = () => {
   const [orders, setOrders] = useState([]);
@@ -45,7 +46,7 @@ const AdminOrderPage = () => {
   return (
     <>
       <Header />
-       <div className="p-4">
+      <div className="p-4">
         <BackButton />
         <h2 className="text-2xl font-bold mb-4">All User Orders</h2>
         {orders.length === 0 ? (
@@ -54,33 +55,67 @@ const AdminOrderPage = () => {
           orders.map((order) => (
             <div
               key={order._id}
-              className="border p-4 mb-4 rounded shadow-md bg-white"
+              className="border rounded-lg p-4 mb-4 shadow-lg bg-gray-50 hover:bg-gray-100 transition-colors"
             >
-              <h3 className="text-lg font-semibold mb-2">
+              <h3 className="text-lg font-semibold mb-2 text-gray-800">
                 Order ID: {order._id}
               </h3>
-              <p>Status: {order.status}</p>
-              <p>Total Amount: ${order.totalAmount}</p>
+              <p className="text-gray-600 mb-2">
+                <span className="font-bold">User:</span> {order.user.username}
+              </p>
+              <p className="text-gray-600 mb-2">
+                <span className="font-bold">Status:</span>{" "}
+                {order.status === "Delivered" ? (
+                  <FaCheckCircle className="inline text-green-500" />
+                ) : (
+                  <FaTruck className="inline text-yellow-500" />
+                )}{" "}
+                {order.status}
+              </p>
+              <p className="text-gray-600 mb-2">
+                <span className="font-bold">Total Amount:</span> $
+                {order.totalAmount.toFixed(2)}
+              </p>
               <div className="mt-2">
-                <h4 className="font-semibold">Items:</h4>
-                <ul>
+                <h4 className="font-semibold text-gray-800">Items:</h4>
+                <ul className="list-disc pl-6 text-gray-600">
                   {order.items.map((item) => (
-                    <li key={item.product._id}>
-                      {item.product.name} (x{item.quantity})
+                    <li key={item.product._id} className="flex items-center">
+                      {item.product.images && item.product.images[0] ? (
+                        <img
+                          src={item.product.images[0]}
+                          alt={item.product.name}
+                          className="w-16 h-16 object-cover rounded mr-2"
+                        />
+                      ) : (
+                        <div className="w-16 h-16 bg-gray-300 rounded mr-2 flex items-center justify-center">
+                          <span className="text-sm text-gray-500">
+                            No Image
+                          </span>
+                        </div>
+                      )}
+                      <div>
+                        <p>
+                          {item.product ? item.product.name : "Unknown Product"}{" "}
+                          (x{item.quantity})
+                        </p>
+                      </div>
                     </li>
                   ))}
                 </ul>
               </div>
               <div className="mt-2">
-                <h4 className="font-semibold">Shipping Address:</h4>
-                <p>
+                <h4 className="font-semibold text-gray-800">
+                  Shipping Address:
+                </h4>
+                <p className="text-gray-600">
                   {order.shippingAddress.address}, {order.shippingAddress.city},{" "}
                   {order.shippingAddress.postalCode},{" "}
                   {order.shippingAddress.country}
                 </p>
               </div>
               <div className="mt-2">
-                <label htmlFor="status" className="font-semibold">
+                <label htmlFor="status" className="font-semibold text-gray-800">
                   Update Status:
                 </label>
                 <select
@@ -89,7 +124,7 @@ const AdminOrderPage = () => {
                   onChange={(e) =>
                     handleUpdateStatus(order._id, e.target.value)
                   }
-                  className="ml-2 p-2 border rounded"
+                  className="ml-2 p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="On-Delivery">On-Delivery</option>
                   <option value="Delivered">Delivered</option>

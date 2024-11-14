@@ -178,7 +178,11 @@ const getAllOrders = asyncHandler(async (req, res) => {
   }
 
   // Fetch all orders and populate the product details
-  const orders = await Order.find().populate("items.product", "name price");
+  // Populate the user and items.product to access the username and product details
+  const orders = await Order.find()
+    .populate("user", "username") // Populates the user and selects the username
+    .populate("items.product", "name price images"); // Populates the product and selects name, price, and images
+
   res.json(orders);
 });
 
