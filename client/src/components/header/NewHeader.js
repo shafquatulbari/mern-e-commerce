@@ -6,7 +6,6 @@ import {
   FaBoxOpen,
   FaUserCircle,
   FaSearch,
-  FaTasks,
 } from "react-icons/fa";
 import { RxHamburgerMenu } from "react-icons/rx";
 import CartModal from "../cart/CartModal";
@@ -44,7 +43,7 @@ const NewHeader = () => {
     <nav className="bg-white p-4 relative border-b-2 border-black">
       <div className="container mx-auto flex justify-between items-center">
         <Link to="/homepage" className="text-2xl font-bold">
-          <img src={pha} alt="PharmaSphere" className="w-full max-h-10" />
+          <img src={pha} alt="PharmaSphere" className=" max-h-12" />
         </Link>
 
         {/* Desktop Navigation Links */}

@@ -75,12 +75,6 @@ const HomePage = () => {
     }
   }, [user]);
 
-  const handleSearch = () => {
-    if (searchQuery.trim()) {
-      navigate(`/products?search=${encodeURIComponent(searchQuery)}`);
-    }
-  };
-
   // Slider settings for React Slick
   const sliderSettings = {
     dots: true,
@@ -106,47 +100,6 @@ const HomePage = () => {
     <>
       <div className="container relative mx-auto p-6">
         <div className="mb-8">
-          {/* Search Bar */}
-          <div className="flex items-center mb-4">
-            <input
-              type="text"
-              placeholder="Search for a product..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="p-2 border rounded-l flex-grow"
-            />
-            <button
-              onClick={handleSearch}
-              className="bg-blue-500 text-white p-2 rounded-r"
-            >
-              <FaSearch />
-            </button>
-          </div>
-
-          {/* Navigation Buttons with Icons */}
-          <div className="flex justify-center mt-8 space-x-4">
-            <Link
-              to="/products"
-              className="bg-blue-500 text-white px-4 py-2 rounded flex items-center space-x-2"
-            >
-              <FaBox />
-              <span>View Products</span>
-            </Link>
-            <Link
-              to="/categories"
-              className="bg-green-500 text-white px-4 py-2 rounded flex items-center space-x-2"
-            >
-              <FaTags />
-              <span>View Categories</span>
-            </Link>
-            <Link
-              to="/manufacturers"
-              className="bg-yellow-500 text-white px-4 py-2 rounded flex items-center space-x-2"
-            >
-              <FaIndustry />
-              <span>View Manufacturers</span>
-            </Link>
-          </div>
 
           {/* Admin-specific content */}
           {user && user.isAdmin ? (
@@ -165,13 +118,6 @@ const HomePage = () => {
                   </ul>
                 </div>
               )}
-              <button
-                className="bg-purple-500 text-white p-4 rounded mt-4 flex items-center space-x-2 hover:bg-purple-600"
-                onClick={() => navigate("/admin/orders")}
-              >
-                <FaTasks />
-                <span>Manage User Orders</span>
-              </button>
             </>
           ) : (
             <>
