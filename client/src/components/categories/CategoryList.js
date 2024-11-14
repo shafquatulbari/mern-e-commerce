@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import api from "../../services/api";
 import { AuthContext } from "../../context/AuthContext";
 import BackButton from "../common/BackButton";
+import Tilt from "react-parallax-tilt"; // Import React Tilt
+import { FaEdit, FaTrashAlt } from "react-icons/fa"; // Import React Icons
 
 const CategoryList = () => {
   const [categories, setCategories] = useState([]);
@@ -17,7 +19,7 @@ const CategoryList = () => {
   const fetchCategories = async () => {
     try {
       const response = await api.get("categories/");
-      setCategories(response.data);
+      setCategories(response.data || []); // Ensure the response is an array
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
@@ -133,40 +135,51 @@ const CategoryList = () => {
         </>
       )}
 
-      <div>
-        {categories.map((category) => (
-          <div key={category._id} className="border p-4 mb-2 rounded">
-            <Link to={`/categories/${category._id}/products`}>
-              <h3 className="text-xl text-blue-500 hover:underline cursor-pointer">
-                {category.name}
-              </h3>
-            </Link>
-            <p>{category.description}</p>
-            {category.image && (
-              <img
-                src={category.image}
-                alt={category.name}
-                className="w-60 h-full object-cover rounded mt-2"
-              />
-            )}
-            {user && user.isAdmin && (
-              <>
-                <button
-                  className="bg-yellow-500 text-white p-2 rounded mt-2 mr-2"
-                  onClick={() => handleEditCategory(category)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="bg-red-500 text-white p-2 rounded mt-2"
-                  onClick={() => handleDeleteCategory(category._id)}
-                >
-                  Delete
-                </button>
-              </>
-            )}
-          </div>
-        ))}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {categories
+          .filter((category) => category && category._id) // Filter out invalid items
+          .map((category) => (
+            <Tilt
+              key={category._id}
+              tiltMaxAngleX={10}
+              tiltMaxAngleY={10}
+              glareEnable={true}
+              glareMaxOpacity={0.5}
+              className="border p-4 rounded-lg shadow-lg hover:shadow-2xl transition-shadow"
+            >
+              <Link to={`/categories/${category._id}/products`}>
+                <h3 className="text-xl text-blue-500 hover:underline cursor-pointer">
+                  {category.name}
+                </h3>
+              </Link>
+              <p>{category.description}</p>
+              {category.image && (
+                <img
+                  src={category.image}
+                  alt={category.name}
+                  className="w-60 h-40 object-cover rounded mt-2"
+                />
+              )}
+              {user && user.isAdmin && (
+                <div className="flex space-x-2 mt-2">
+                  <button
+                    className="flex items-center bg-yellow-500 text-white p-2 rounded"
+                    onClick={() => handleEditCategory(category)}
+                  >
+                    <FaEdit className="mr-2" />
+                    Edit
+                  </button>
+                  <button
+                    className="flex items-center bg-red-500 text-white p-2 rounded"
+                    onClick={() => handleDeleteCategory(category._id)}
+                  >
+                    <FaTrashAlt className="mr-2" />
+                    Delete
+                  </button>
+                </div>
+              )}
+            </Tilt>
+          ))}
       </div>
     </div>
   );

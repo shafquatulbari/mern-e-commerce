@@ -18,7 +18,7 @@ import UserOrders from "./components/orders/UserOrders";
 import AdminOrderPage from "./pages/AdminOrderPage";
 import img2 from "../src/components/image/2.webp";
 import Footer from "./components/footer/Footer";
-import NewHeader from "./components/header/NewHeader";
+//import NewHeader from "./components/header/NewHeader";
 
 function App() {
   return (
@@ -26,7 +26,7 @@ function App() {
       <CartProvider>
         <Router>
           <div className=" w-full ">
-            <NewHeader />
+            {/*<NewHeader />*/}
             <Routes>
               <Route path="/" element={<Login />} />
               <Route path="/register" element={<Register />} />
