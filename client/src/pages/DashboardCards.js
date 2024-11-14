@@ -55,7 +55,7 @@ const DashboardCards = () => {
           <h3 className="text-gray-600 text-sm font-semibold">Total Viewers</h3>
           <CountUp
             end={totalViewers}
-            duration={2}
+            duration={1}
             separator=","
             className="text-2xl font-bold text-gray-800"
           />
@@ -71,7 +71,7 @@ const DashboardCards = () => {
           </h3>
           <CountUp
             end={totalProductsInStock}
-            duration={2}
+            duration={1}
             separator=","
             className="text-2xl font-bold text-gray-800"
           />
@@ -87,7 +87,7 @@ const DashboardCards = () => {
           </h3>
           <CountUp
             end={totalCategories}
-            duration={2}
+            duration={1}
             separator=","
             className="text-2xl font-bold text-gray-800"
           />
@@ -103,7 +103,7 @@ const DashboardCards = () => {
           </h3>
           <CountUp
             end={totalManufacturers}
-            duration={2}
+            duration={1}
             separator=","
             className="text-2xl font-bold text-gray-800"
           />

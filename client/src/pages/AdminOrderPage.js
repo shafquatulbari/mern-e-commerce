@@ -53,56 +53,62 @@ const AdminOrderPage = () => {
           orders.map((order) => (
             <div
               key={order._id}
-              className="border rounded-lg p-4 mb-4 shadow-lg bg-gray-50 hover:bg-gray-100 transition-colors"
+              className="border rounded-lg p-4 mb-4 shadow-lg bg-gray-50 hover:bg-gray-100 transition-colors flex flex-col md:flex-row items-start md:items-center justify-between space-y-4 md:space-y-0 md:space-x-6"
             >
-              <h3 className="text-lg font-semibold mb-2 text-gray-800">
-                Order ID: {order._id}
-              </h3>
-              <p className="text-gray-600 mb-2">
-                <span className="font-bold">User:</span> {order.user.username}
-              </p>
-              <p className="text-gray-600 mb-2">
-                <span className="font-bold">Status:</span>{" "}
-                {order.status === "Delivered" ? (
-                  <FaCheckCircle className="inline text-green-500" />
-                ) : (
-                  <FaTruck className="inline text-yellow-500" />
-                )}{" "}
-                {order.status}
-              </p>
-              <p className="text-gray-600 mb-2">
-                <span className="font-bold">Total Amount:</span> $
-                {order.totalAmount.toFixed(2)}
-              </p>
-              <div className="mt-2">
+              <div className="flex-1 min-w-0">
+                <h3 className="text-lg font-semibold text-gray-800">
+                  Order ID: {order._id}
+                </h3>
+                <p className="text-gray-600">
+                  <span className="font-bold">User:</span> {order.user.username}
+                </p>
+                <p className="text-gray-600">
+                  <span className="font-bold">Status:</span>{" "}
+                  {order.status === "Delivered" ? (
+                    <FaCheckCircle className="inline text-green-500" />
+                  ) : (
+                    <FaTruck className="inline text-yellow-500" />
+                  )}{" "}
+                  {order.status}
+                </p>
+                <p className="text-gray-600">
+                  <span className="font-bold">Total Amount:</span> $
+                  {order.totalAmount.toFixed(2)}
+                </p>
+              </div>
+
+              <div className="flex-1 min-w-0">
                 <h4 className="font-semibold text-gray-800">Items:</h4>
-                <ul className="list-disc pl-6 text-gray-600">
+                <ul className="flex flex-wrap space-x-2 text-gray-600">
                   {order.items.map((item) => (
-                    <li key={item.product._id} className="flex items-center">
+                    <li
+                      key={item.product._id}
+                      className="flex items-center mb-2"
+                    >
                       {item.product.images && item.product.images[0] ? (
                         <img
                           src={item.product.images[0]}
                           alt={item.product.name}
-                          className="w-16 h-16 object-cover rounded mr-2"
+                          className="w-10 h-10 object-cover rounded mr-2"
                         />
                       ) : (
-                        <div className="w-16 h-16 bg-gray-300 rounded mr-2 flex items-center justify-center">
+                        <div className="w-10 h-10 bg-gray-300 rounded mr-2 flex items-center justify-center">
                           <span className="text-sm text-gray-500">
                             No Image
                           </span>
                         </div>
                       )}
-                      <div>
-                        <p>
-                          {item.product ? item.product.name : "Unknown Product"}{" "}
-                          (x{item.quantity})
-                        </p>
-                      </div>
+                      <span>
+                        {item.product ? item.product.name : "Unknown Product"}{" "}
+                        (x
+                        {item.quantity})
+                      </span>
                     </li>
                   ))}
                 </ul>
               </div>
-              <div className="mt-2">
+
+              <div className="flex-1 min-w-0">
                 <h4 className="font-semibold text-gray-800">
                   Shipping Address:
                 </h4>
@@ -112,7 +118,8 @@ const AdminOrderPage = () => {
                   {order.shippingAddress.country}
                 </p>
               </div>
-              <div className="mt-2">
+
+              <div className="flex-1 min-w-0">
                 <label htmlFor="status" className="font-semibold text-gray-800">
                   Update Status:
                 </label>

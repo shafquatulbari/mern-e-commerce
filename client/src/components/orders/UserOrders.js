@@ -58,53 +58,59 @@ const UserOrders = () => {
           orders.map((order) => (
             <div
               key={order._id}
-              className="border rounded-lg p-4 mb-4 shadow-md bg-gray-50 hover:bg-gray-100 transition-colors"
+              className="border rounded-lg p-4 mb-4 shadow-md bg-gray-50 hover:bg-gray-100 transition-colors flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6"
             >
-              <h3 className="text-lg font-semibold mb-2 text-gray-800">
-                Order ID: {order._id}
-              </h3>
-              <p className="text-gray-600 mb-2 flex items-center">
-                {order.status === "Delivered" ? (
-                  <FaCheckCircle className="mr-2 text-green-500" />
-                ) : (
-                  <FaTruck className="mr-2 text-yellow-500" />
-                )}
-                <span className="font-bold">Status:</span> {order.status}
-              </p>
-              <p className="text-gray-600 mb-2 flex items-center">
-                <FaDollarSign className="mr-2 text-green-500" />
-                <span className="font-bold">Total Amount:</span> $
-                {order.totalAmount.toFixed(2)}
-              </p>
-              <div className="mt-2">
+              <div className="flex-1 min-w-0">
+                <h3 className="text-lg font-semibold text-gray-800">
+                  Order ID: {order._id}
+                </h3>
+                <p className="text-gray-600 flex items-center">
+                  {order.status === "Delivered" ? (
+                    <FaCheckCircle className="mr-2 text-green-500" />
+                  ) : (
+                    <FaTruck className="mr-2 text-yellow-500" />
+                  )}
+                  <span className="font-bold">Status:</span> {order.status}
+                </p>
+                <p className="text-gray-600 flex items-center">
+                  <FaDollarSign className="mr-2 text-green-500" />
+                  <span className="font-bold">Total Amount:</span> &nbsp; $
+                  {order.totalAmount.toFixed(2)}
+                </p>
+              </div>
+
+              <div className="flex-1 min-w-0">
                 <h4 className="font-semibold text-gray-800">Items:</h4>
-                <ul className="list-disc pl-6 text-gray-600">
+                <ul className="flex flex-wrap text-gray-600">
                   {order.items.map((item) => (
-                    <li key={item.product._id} className="flex items-center">
+                    <li
+                      key={item.product._id}
+                      className="flex items-center mb-2"
+                    >
                       {item.product?.images?.[0] ? (
                         <img
                           src={item.product.images[0]}
                           alt={item.product.name}
-                          className="w-16 h-16 object-cover rounded mr-2"
+                          className="w-10 h-10 object-cover rounded mr-2"
                         />
                       ) : (
-                        <div className="w-16 h-16 bg-gray-300 rounded mr-2 flex items-center justify-center">
+                        <div className="w-10 h-10 bg-gray-300 rounded mr-2 flex items-center justify-center">
                           <span className="text-sm text-gray-500">
                             No Image
                           </span>
                         </div>
                       )}
-                      <div>
-                        <p className="text-gray-800">
-                          {item.product ? item.product.name : "Unknown Product"}{" "}
-                          (x{item.quantity})
-                        </p>
-                      </div>
+                      <span className="text-gray-800">
+                        {item.product ? item.product.name : "Unknown Product"}{" "}
+                        (x
+                        {item.quantity})
+                      </span>
                     </li>
                   ))}
                 </ul>
               </div>
-              <div className="mt-2">
+
+              <div className="flex-1 min-w-0">
                 <h4 className="font-semibold text-gray-800">
                   Shipping Address:
                 </h4>
@@ -114,10 +120,11 @@ const UserOrders = () => {
                   {order.shippingAddress.country}
                 </p>
               </div>
+
               {order.status === "On-Delivery" && (
                 <button
                   onClick={() => handleCancelOrder(order._id)}
-                  className="bg-red-500 text-white px-4 py-2 rounded mt-4 flex items-center hover:bg-red-600 transition"
+                  className="bg-red-500 text-white px-4 py-2 rounded flex items-center hover:bg-red-600 transition"
                 >
                   <FaTimesCircle className="mr-2" /> Cancel Order
                 </button>
