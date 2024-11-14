@@ -9,6 +9,7 @@ import Slider from "react-slick";
 import icon1 from "../components/images/icons/delivery-van.svg";
 import icon2 from "../components/images/icons/money-back.svg";
 import icon3 from "../components/images/icons/service-hours.svg";
+import DashboardCards from "./DashboardCards";
 
 const HomePage = () => {
   const { user } = useContext(AuthContext);
@@ -150,6 +151,7 @@ const HomePage = () => {
           {/* Admin-specific content */}
           {user && user.isAdmin ? (
             <>
+              <DashboardCards />
               {lowStockProducts.length > 0 && (
                 <div className="bg-yellow-100 text-yellow-700 p-4 rounded mb-4">
                   <strong>Warning:</strong> The following products have low

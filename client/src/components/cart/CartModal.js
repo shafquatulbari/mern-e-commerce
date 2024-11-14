@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { CartContext } from "../../context/CartContext";
 import PaymentForm from "../payment/PaymentForm";
-import { FaPlus, FaMinus, FaTrash } from "react-icons/fa"; // Importing icons for better UI
+import { FaPlus, FaMinus, FaTrash } from "react-icons/fa";
 
 const CartModal = ({ closeModal }) => {
   const { cartItems, addItem, removeItem, totalAmount } =
@@ -31,20 +31,36 @@ const CartModal = ({ closeModal }) => {
                   key={item.product._id}
                   className="flex items-center justify-between"
                 >
-                  <img
-                    src={item.product.image || "https://via.placeholder.com/50"}
-                    alt={item.product.name}
-                    className="w-16 h-16 object-cover rounded-md"
-                  />
+                  {/* Check for images and display a fallback if none are available */}
+                  {item.product &&
+                  item.product.images &&
+                  item.product.images.length > 0 ? (
+                    <img
+                      src={item.product.images[0]}
+                      alt={item.product.name}
+                      className="w-16 h-16 object-cover rounded-md"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 bg-gray-300 rounded-md flex items-center justify-center">
+                      <span className="text-sm text-gray-500">No Image</span>
+                    </div>
+                  )}
                   <div className="flex-1 ml-4">
                     <p className="font-semibold text-black">
-                      {item.product.name}
+                      {item.product ? item.product.name : "Unknown Product"}
                     </p>
                     <p className="text-gray-500 text-sm">
-                      Unit Price: ${item.product.price.toFixed(2)}
+                      Unit Price: $
+                      {item.product ? item.product.price.toFixed(2) : "0.00"}
                     </p>
                     <p className="text-gray-500 text-sm">
-                      Total: ${(item.product.price * item.quantity).toFixed(2)}
+                      Total: $
+                      {item.product
+                        ? (item.product.price * item.quantity).toFixed(2)
+                        : "0.00"}
+                    </p>
+                    <p className="text-gray-500 text-sm">
+                      Quantity: {item.quantity}
                     </p>
                   </div>
                   <div className="flex items-center space-x-2">

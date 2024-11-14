@@ -74,10 +74,22 @@ const getProductsByManufacturer = asyncHandler(async (req, res) => {
   }
 });
 
+//Get manufacturer by ID
+const getManufacturerById = asyncHandler(async (req, res) => {
+  const manufacturer = await Manufacturer.findById(req.params.id);
+  if (manufacturer) {
+    res.json(manufacturer);
+  } else {
+    res.status(404);
+    throw new Error("Manufacturer not found");
+  }
+});
+
 module.exports = {
   getManufacturers,
   createManufacturer,
   updateManufacturer,
   deleteManufacturer,
   getProductsByManufacturer,
+  getManufacturerById,
 };
