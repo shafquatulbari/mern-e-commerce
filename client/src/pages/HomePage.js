@@ -100,7 +100,6 @@ const HomePage = () => {
     <>
       <div className="container relative mx-auto p-6">
         <div className="mb-8">
-
           {/* Admin-specific content */}
           {user && user.isAdmin ? (
             <>
@@ -142,66 +141,65 @@ const HomePage = () => {
                 <div className=" bg-cover slider-bg1 bg-no-repeat bg-center py-36">
                   <div className="container px-5 py-4">
                     <h1 className="text-6xl text-white font-medium mb-4 capitalize drop-shadow-lg">
-                      best collection for <br /> Famous Pharmacy
+                      Best Collection for <br /> Famous Pharmacy
                     </h1>
                     <p className="text-2 text-white">
-                      Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                      Aperiam <br />
-                      accusantium perspiciatis, sapiente magni eos dolorum ex
-                      quos dolores odio
+                      Discover a curated selection of high-quality
+                      pharmaceutical products trusted by thousands. Experience
+                      excellence in healthcare with our extensive range designed
+                      for your well-being.
                     </p>
                     <button className="mt-12 ">
-                      <a
-                        href="/"
+                      <Link
+                        to="/products"
                         className=" bg-sky-500 hover:bg-sky-700 border border-white text-white px-8 py-3 font-medium 
                     rounded-md hover:bg-transparent drop-shadow-lg"
                       >
                         Shop Now
-                      </a>
+                      </Link>
                     </button>
                   </div>
                 </div>
                 <div className="bg-cover slider-bg2 bg-no-repeat bg-center py-36">
                   <div className="container px-5 py-4">
                     <h1 className="text-6xl text-white font-medium mb-4 capitalize drop-shadow-lg">
-                      best collection for <br /> Trusted Pharmacy
+                      Best Collection for <br /> Trusted Pharmacy
                     </h1>
                     <p className="text-2 text-white">
-                      Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                      Aperiam <br />
-                      accusantium perspiciatis, sapiente magni eos dolorum ex
-                      quos dolores odio
+                      Your health is our priority. Explore our trusted pharmacy
+                      collection featuring premium medicines and healthcare
+                      essentials to support a healthy lifestyle.
                     </p>
                     <button className="mt-12 ">
-                      <a
-                        href="/"
+                      <Link
+                        to="/products"
                         className=" bg-sky-500 hover:bg-sky-700 border border-white text-white px-8 py-3 font-medium 
                     rounded-md hover:bg-transparent drop-shadow-lg"
                       >
                         Shop Now
-                      </a>
+                      </Link>
                     </button>
                   </div>
                 </div>
                 <div className="bg-cover slider-bg3 bg-no-repeat bg-center py-36">
                   <div className="container px-5 py-4">
                     <h1 className="text-6xl text-white font-medium mb-4 capitalize drop-shadow-lg">
-                      best collection for <br /> Famous Pharmacy
+                      Best Collection for <br /> Famous Pharmacy
                     </h1>
                     <p className="text-2 text-white">
-                      Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                      Aperiam <br />
-                      accusantium perspiciatis, sapiente magni eos dolorum ex
-                      quos dolores odio
+                      Shop the finest pharmaceutical brands and ensure your
+                      loved ones get the best care. Our famous pharmacy
+                      collection is here to meet all your healthcare needs.
                     </p>
+
                     <button className="mt-12 ">
-                      <a
-                        href="/"
+                      <Link
+                        to="/products"
                         className=" bg-sky-500 hover:bg-sky-700 border border-white text-white px-8 py-3 font-medium 
                     rounded-md hover:bg-transparent drop-shadow-lg"
                       >
                         Shop Now
-                      </a>
+                      </Link>
                     </button>
                   </div>
                 </div>
