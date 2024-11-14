@@ -16,12 +16,14 @@ const CategoryProducts = () => {
   const [editingProduct, setEditingProduct] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const { user } = useContext(AuthContext);
-  const { addItem, updateItemQuantity } = useContext(CartContext);
+  const { addItem } = useContext(CartContext);
 
   const fetchProductsByCategory = async () => {
     try {
       const response = await api.get(`categories/${categoryId}/products/`);
-      setProducts(response.data);
+      setProducts(
+        response.data.map((product) => ({ ...product, quantity: 1 })) // Set default quantity
+      );
       const categoryResponse = await api.get(`categories/${categoryId}/`);
       setCategoryName(categoryResponse.data.name);
     } catch (error) {
@@ -41,6 +43,16 @@ const CategoryProducts = () => {
   const handleFormSave = () => {
     fetchProductsByCategory();
     setShowForm(false);
+  };
+
+  const handleQuantityChange = (productId, newQuantity) => {
+    setProducts((prevProducts) =>
+      prevProducts.map((product) =>
+        product._id === productId
+          ? { ...product, quantity: newQuantity }
+          : product
+      )
+    );
   };
 
   return (
@@ -92,7 +104,7 @@ const CategoryProducts = () => {
                   <button
                     className="bg-gray-300 p-2 rounded hover:bg-gray-400"
                     onClick={() =>
-                      updateItemQuantity(
+                      handleQuantityChange(
                         product._id,
                         Math.max(1, product.quantity - 1)
                       )
@@ -100,16 +112,18 @@ const CategoryProducts = () => {
                   >
                     <FaMinus />
                   </button>
-                  <span className="px-4">{product.quantity || 1}</span>
+                  <span className="px-4">{product.quantity}</span>
                   <button
                     className="bg-gray-300 p-2 rounded hover:bg-gray-400"
-                    onClick={() => addItem(product._id, 1)}
+                    onClick={() =>
+                      handleQuantityChange(product._id, product.quantity + 1)
+                    }
                   >
                     <FaPlus />
                   </button>
                   <button
                     className="bg-blue-500 text-white p-2 rounded ml-2 hover:bg-blue-600 flex items-center"
-                    onClick={() => addItem(product._id, 1)}
+                    onClick={() => addItem(product._id, product.quantity)}
                   >
                     <FaShoppingCart className="mr-2" /> Add to Cart
                   </button>
