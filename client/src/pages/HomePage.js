@@ -100,7 +100,6 @@ const HomePage = () => {
     <>
       <div className="container relative mx-auto p-6">
         <div className="mb-8">
-
           {/* Admin-specific content */}
           {user && user.isAdmin ? (
             <>
@@ -142,66 +141,65 @@ const HomePage = () => {
                 <div className=" bg-cover slider-bg1 bg-no-repeat bg-center py-36">
                   <div className="container px-5 py-4">
                     <h1 className="text-6xl text-white font-medium mb-4 capitalize drop-shadow-lg">
-                      best collection for <br /> Famous Pharmacy
+                      Best Collection for <br /> Famous Pharmacy
                     </h1>
                     <p className="text-2 text-white">
-                      Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                      Aperiam <br />
-                      accusantium perspiciatis, sapiente magni eos dolorum ex
-                      quos dolores odio
+                      Discover a curated selection of high-quality
+                      pharmaceutical products trusted by thousands. Experience
+                      excellence in healthcare with our extensive range designed
+                      for your well-being.
                     </p>
                     <button className="mt-12 ">
-                      <a
-                        href="/"
+                      <Link
+                        to="/products"
                         className=" bg-sky-500 hover:bg-sky-700 border border-white text-white px-8 py-3 font-medium 
                     rounded-md hover:bg-transparent drop-shadow-lg"
                       >
                         Shop Now
-                      </a>
+                      </Link>
                     </button>
                   </div>
                 </div>
                 <div className="bg-cover slider-bg2 bg-no-repeat bg-center py-36">
                   <div className="container px-5 py-4">
                     <h1 className="text-6xl text-white font-medium mb-4 capitalize drop-shadow-lg">
-                      best collection for <br /> Trusted Pharmacy
+                      Best Collection for <br /> Trusted Pharmacy
                     </h1>
                     <p className="text-2 text-white">
-                      Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                      Aperiam <br />
-                      accusantium perspiciatis, sapiente magni eos dolorum ex
-                      quos dolores odio
+                      Your health is our priority. Explore our trusted pharmacy
+                      collection featuring premium medicines and healthcare
+                      essentials to support a healthy lifestyle.
                     </p>
                     <button className="mt-12 ">
-                      <a
-                        href="/"
+                      <Link
+                        to="/products"
                         className=" bg-sky-500 hover:bg-sky-700 border border-white text-white px-8 py-3 font-medium 
                     rounded-md hover:bg-transparent drop-shadow-lg"
                       >
                         Shop Now
-                      </a>
+                      </Link>
                     </button>
                   </div>
                 </div>
                 <div className="bg-cover slider-bg3 bg-no-repeat bg-center py-36">
                   <div className="container px-5 py-4">
                     <h1 className="text-6xl text-white font-medium mb-4 capitalize drop-shadow-lg">
-                      best collection for <br /> Famous Pharmacy
+                      Best Collection for <br /> Famous Pharmacy
                     </h1>
                     <p className="text-2 text-white">
-                      Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                      Aperiam <br />
-                      accusantium perspiciatis, sapiente magni eos dolorum ex
-                      quos dolores odio
+                      Shop the finest pharmaceutical brands and ensure your
+                      loved ones get the best care. Our famous pharmacy
+                      collection is here to meet all your healthcare needs.
                     </p>
+
                     <button className="mt-12 ">
-                      <a
-                        href="/"
+                      <Link
+                        to="/products"
                         className=" bg-sky-500 hover:bg-sky-700 border border-white text-white px-8 py-3 font-medium 
                     rounded-md hover:bg-transparent drop-shadow-lg"
                       >
                         Shop Now
-                      </a>
+                      </Link>
                     </button>
                   </div>
                 </div>
@@ -263,11 +261,11 @@ const HomePage = () => {
             {topProducts.map((product) => (
               <div key={product._id} className="p-4">
                 <Link to={`/products/${product._id}`}>
-                  <div className="border rounded-lg overflow-hidden shadow hover:shadow-lg transition-shadow">
+                  <div className="border rounded-lg overflow-hidden shadow transition-transform duration-300 hover:shadow-lg hover:scale-105">
                     <img
                       src={product.images[0]}
                       alt={product.name}
-                      className="w-full h-40 object-cover"
+                      className="w-full h-40 object-cover transition-transform duration-300"
                     />
                     <div className="p-2">
                       <h3 className="font-bold text-lg">{product.name}</h3>
@@ -294,11 +292,13 @@ const HomePage = () => {
                   key={category._id}
                   className="relative rounded-sm overflow-hidden group"
                 >
+                  {/* Image with hover scale effect */}
                   <img
                     src={category.image}
                     alt={category.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
+                  {/* Overlay with text, centered */}
                   <Link
                     to={`/categories/${category._id}/products`}
                     className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-xl text-white font-roboto font-medium group-hover:bg-opacity-60 transition"

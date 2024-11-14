@@ -51,14 +51,17 @@ const CartModal = ({ closeModal }) => {
                     </p>
                     <p className="text-gray-500 text-sm">
                       Unit Price: $
-                      {item.product ? item.product.price.toFixed(2) : "0.00"}
+                      {item.product && !isNaN(item.product.price)
+                        ? item.product.price.toFixed(2)
+                        : "Loading..."}
                     </p>
                     <p className="text-gray-500 text-sm">
                       Total: $
-                      {item.product
+                      {item.product && !isNaN(item.product.price)
                         ? (item.product.price * item.quantity).toFixed(2)
-                        : "0.00"}
+                        : "Loading..."}
                     </p>
+
                     <p className="text-gray-500 text-sm">
                       Quantity: {item.quantity}
                     </p>

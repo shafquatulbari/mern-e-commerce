@@ -145,21 +145,23 @@ const CategoryList = () => {
               tiltMaxAngleY={10}
               glareEnable={true}
               glareMaxOpacity={0.5}
-              className="border p-4 rounded-lg shadow-lg hover:shadow-2xl transition-shadow"
+              className="border rounded-lg shadow-lg hover:shadow-2xl transition-shadow overflow-hidden"
             >
               <Link to={`/categories/${category._id}/products`}>
-                <h3 className="text-xl text-blue-500 hover:underline cursor-pointer">
-                  {category.name}
-                </h3>
+                {category.image && (
+                  <img
+                    src={category.image}
+                    alt={category.name}
+                    className="w-full h-48 object-cover"
+                  />
+                )}
+                <div className="p-4">
+                  <h3 className="text-xl text-blue-500 hover:underline cursor-pointer">
+                    {category.name}
+                  </h3>
+                  <p>{category.description}</p>
+                </div>
               </Link>
-              <p>{category.description}</p>
-              {category.image && (
-                <img
-                  src={category.image}
-                  alt={category.name}
-                  className="w-60 h-40 object-cover rounded mt-2"
-                />
-              )}
               {user && user.isAdmin && (
                 <div className="flex space-x-2 mt-2">
                   <button
