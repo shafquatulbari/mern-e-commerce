@@ -113,7 +113,7 @@ const checkout = asyncHandler(async (req, res) => {
 const getCart = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id).populate(
     "cart.product",
-    "name price"
+    "name price images"
   );
 
   if (!user) {
@@ -129,7 +129,7 @@ const getOrders = asyncHandler(async (req, res) => {
   const user = req.user._id;
   const orders = await Order.find({ user }).populate(
     "items.product",
-    "name price"
+    "name images price"
   );
   res.json(orders);
 });
@@ -178,7 +178,11 @@ const getAllOrders = asyncHandler(async (req, res) => {
   }
 
   // Fetch all orders and populate the product details
-  const orders = await Order.find().populate("items.product", "name price");
+  // Populate the user and items.product to access the username and product details
+  const orders = await Order.find()
+    .populate("user", "username") // Populates the user and selects the username
+    .populate("items.product", "name price images"); // Populates the product and selects name, price, and images
+
   res.json(orders);
 });
 

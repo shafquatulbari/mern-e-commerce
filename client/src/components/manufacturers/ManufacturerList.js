@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import api from "../../services/api";
 import { AuthContext } from "../../context/AuthContext";
 import BackButton from "../common/BackButton";
+import Tilt from "react-parallax-tilt"; // Import React Tilt
+import { FaEdit, FaTrashAlt } from "react-icons/fa"; // Import React Icons
 
 const ManufacturerList = () => {
   const [manufacturers, setManufacturers] = useState([]);
@@ -17,7 +19,7 @@ const ManufacturerList = () => {
   const fetchManufacturers = async () => {
     try {
       const response = await api.get("manufacturers/");
-      setManufacturers(response.data);
+      setManufacturers(response.data || []); // Ensure array is not null
     } catch (error) {
       console.error("Error fetching manufacturers:", error);
     }
@@ -140,40 +142,51 @@ const ManufacturerList = () => {
         </>
       )}
 
-      <div>
-        {manufacturers.map((manufacturer) => (
-          <div key={manufacturer._id} className="border p-4 mb-2 rounded">
-            <Link to={`/manufacturers/${manufacturer._id}/products`}>
-              <h3 className="text-xl text-blue-500 hover:underline cursor-pointer">
-                {manufacturer.name}
-              </h3>
-            </Link>
-            <p>{manufacturer.description}</p>
-            {manufacturer.image && (
-              <img
-                src={manufacturer.image}
-                alt={manufacturer.name}
-                className="w-60 h-full object-cover rounded mt-2"
-              />
-            )}
-            {user && user.isAdmin && (
-              <>
-                <button
-                  className="bg-yellow-500 text-white p-2 rounded mt-2 mr-2"
-                  onClick={() => handleEditManufacturer(manufacturer)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="bg-red-500 text-white p-2 rounded mt-2"
-                  onClick={() => handleDeleteManufacturer(manufacturer._id)}
-                >
-                  Delete
-                </button>
-              </>
-            )}
-          </div>
-        ))}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {manufacturers
+          .filter((manufacturer) => manufacturer && manufacturer._id) // Filter out invalid items
+          .map((manufacturer) => (
+            <Tilt
+              key={manufacturer._id}
+              tiltMaxAngleX={10}
+              tiltMaxAngleY={10}
+              glareEnable={true}
+              glareMaxOpacity={0.5}
+              className="border p-4 rounded-lg shadow-lg hover:shadow-2xl transition-shadow"
+            >
+              <Link to={`/manufacturers/${manufacturer._id}/products`}>
+                <h3 className="text-xl text-blue-500 hover:underline cursor-pointer">
+                  {manufacturer.name}
+                </h3>
+              </Link>
+              <p>{manufacturer.description}</p>
+              {manufacturer.image && (
+                <img
+                  src={manufacturer.image}
+                  alt={manufacturer.name}
+                  className="w-60 h-40 object-cover rounded mt-2"
+                />
+              )}
+              {user && user.isAdmin && (
+                <div className="flex space-x-2 mt-2">
+                  <button
+                    className="flex items-center bg-yellow-500 text-white p-2 rounded"
+                    onClick={() => handleEditManufacturer(manufacturer)}
+                  >
+                    <FaEdit className="mr-2" />
+                    Edit
+                  </button>
+                  <button
+                    className="flex items-center bg-red-500 text-white p-2 rounded"
+                    onClick={() => handleDeleteManufacturer(manufacturer._id)}
+                  >
+                    <FaTrashAlt className="mr-2" />
+                    Delete
+                  </button>
+                </div>
+              )}
+            </Tilt>
+          ))}
       </div>
     </div>
   );

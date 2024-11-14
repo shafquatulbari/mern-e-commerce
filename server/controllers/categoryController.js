@@ -76,10 +76,22 @@ const getProductsByCategory = asyncHandler(async (req, res) => {
   }
 });
 
+//Get category by ID
+const getCategoryById = asyncHandler(async (req, res) => {
+  const category = await Category.findById(req.params.id);
+  if (category) {
+    res.json(category);
+  } else {
+    res.status(404);
+    throw new Error("Category not found");
+  }
+});
+
 module.exports = {
   getCategories,
   createCategory,
   updateCategory,
   deleteCategory,
   getProductsByCategory,
+  getCategoryById,
 };

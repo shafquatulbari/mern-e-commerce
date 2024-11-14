@@ -38,7 +38,12 @@ const ProductList = () => {
         );
       }
 
-      setProducts(filteredProducts);
+      setProducts(
+        filteredProducts.map((product) => ({
+          ...product,
+          quantity: 1, // Add a default quantity of 1 for each product
+        }))
+      );
     } catch (error) {
       console.error("Error fetching products:", error);
     }
@@ -73,11 +78,17 @@ const ProductList = () => {
   };
 
   const handleAddToCart = (product) => {
-    addItem(product._id, 1); // Adds the product to the cart with a default quantity of 1
+    addItem(product._id, product.quantity); // Adds the product to the cart with the specified quantity
   };
 
-  const handleQuantityChange = (productId, quantity) => {
-    updateItemQuantity(productId, quantity); // Updates item quantity in the cart
+  const handleQuantityChange = (productId, newQuantity) => {
+    setProducts((prevProducts) =>
+      prevProducts.map((product) =>
+        product._id === productId
+          ? { ...product, quantity: newQuantity }
+          : product
+      )
+    );
   };
 
   return (
@@ -167,7 +178,7 @@ const ProductList = () => {
                     <FaMinus />
                   </button>
                   <span className="px-4 py-1 bg-gray-100 border-t border-b border-gray-300">
-                    {product.quantity || 1}
+                    {product.quantity}
                   </span>
                   <button
                     className="bg-gray-300 px-3 py-1 rounded-r hover:bg-gray-400"
