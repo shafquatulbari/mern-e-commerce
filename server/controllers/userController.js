@@ -54,4 +54,10 @@ const getUserInfo = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { registerUser, loginUser, getUserInfo };
+// Get all users
+const getUsers = asyncHandler(async (req, res) => {
+  const users = await User.find({});
+  res.json(users);
+});
+
+module.exports = { registerUser, loginUser, getUserInfo, getUsers };
