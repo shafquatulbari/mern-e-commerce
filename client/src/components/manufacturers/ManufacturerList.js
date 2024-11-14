@@ -158,15 +158,16 @@ const ManufacturerList = () => {
                 <h3 className="text-xl text-blue-500 hover:underline cursor-pointer">
                   {manufacturer.name}
                 </h3>
+                <p>{manufacturer.description}</p>
+                {manufacturer.image && (
+                  <img
+                    src={manufacturer.image}
+                    alt={manufacturer.name}
+                    className="w-60 h-40 object-cover rounded mt-2"
+                  />
+                )}
               </Link>
-              <p>{manufacturer.description}</p>
-              {manufacturer.image && (
-                <img
-                  src={manufacturer.image}
-                  alt={manufacturer.name}
-                  className="w-60 h-40 object-cover rounded mt-2"
-                />
-              )}
+
               {user && user.isAdmin && (
                 <div className="flex space-x-2 mt-2">
                   <button
