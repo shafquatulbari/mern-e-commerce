@@ -129,7 +129,7 @@ const getOrders = asyncHandler(async (req, res) => {
   const user = req.user._id;
   const orders = await Order.find({ user }).populate(
     "items.product",
-    "name price"
+    "name images price"
   );
   res.json(orders);
 });

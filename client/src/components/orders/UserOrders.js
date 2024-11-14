@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaShippingFast, FaDollarSign, FaTimesCircle } from "react-icons/fa"; // Importing icons from react-icons
+import {
+  FaTruck,
+  FaCheckCircle,
+  FaDollarSign,
+  FaTimesCircle,
+} from "react-icons/fa"; // Importing icons from react-icons
 import api from "../../services/api";
 import Header from "../header/header"; // Adjust path as needed
 import BackButton from "../common/BackButton"; // Adjust path as needed
@@ -61,7 +66,11 @@ const UserOrders = () => {
                 Order ID: {order._id}
               </h3>
               <p className="text-gray-600 mb-2 flex items-center">
-                <FaShippingFast className="mr-2 text-blue-500" />
+                {order.status === "Delivered" ? (
+                  <FaCheckCircle className="mr-2 text-green-500" />
+                ) : (
+                  <FaTruck className="mr-2 text-yellow-500" />
+                )}
                 <span className="font-bold">Status:</span> {order.status}
               </p>
               <p className="text-gray-600 mb-2 flex items-center">
@@ -73,11 +82,8 @@ const UserOrders = () => {
                 <h4 className="font-semibold text-gray-800">Items:</h4>
                 <ul className="list-disc pl-6 text-gray-600">
                   {order.items.map((item) => (
-                    <li
-                      key={item.product._id}
-                      className="flex items-center mb-2"
-                    >
-                      {item.product.images && item.product.images[0] ? (
+                    <li key={item.product._id} className="flex items-center">
+                      {item.product?.images?.[0] ? (
                         <img
                           src={item.product.images[0]}
                           alt={item.product.name}
