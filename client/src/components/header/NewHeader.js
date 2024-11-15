@@ -14,12 +14,12 @@ import pha from "../image/pha.webp";
 
 const NewHeader = () => {
   const { user, logout } = useContext(AuthContext);
-  //console.log(user.username);
   const navigate = useNavigate();
+
   const [showCartModal, setShowCartModal] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false); // Toggle search bar visibility
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleLogout = () => {
@@ -27,10 +27,10 @@ const NewHeader = () => {
     navigate("/");
   };
 
-  const toggleCartModal = () => setShowCartModal((prevState) => !prevState);
-  const toggleDropdown = () => setIsDropdownOpen((prevState) => !prevState);
-  const toggleMenu = () => setIsMenuOpen((prevState) => !prevState);
-  const toggleSearch = () => setIsSearchOpen((prevState) => !prevState); // Toggle search bar
+  const toggleCartModal = () => setShowCartModal((prev) => !prev);
+  const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
+  const toggleMenu = () => setIsMenuOpen((prev) => !prev);
+  const toggleSearch = () => setIsSearchOpen((prev) => !prev);
 
   const handleSearch = () => {
     toggleSearch();
@@ -43,51 +43,29 @@ const NewHeader = () => {
     <nav className="bg-white p-4 border-b-2 sticky top-0 z-10 border-black drop-shadow-xl">
       <div className="container mx-auto flex justify-between items-center">
         <Link to="/homepage" className="text-2xl font-bold">
-          <img src={pha} alt="PharmaSphere" className=" max-h-12" />
+          <img src={pha} alt="PharmaSphere" className="max-h-12" />
         </Link>
 
         {/* Desktop Navigation Links */}
         <div className="hidden md:flex space-x-8">
-          <NavLink
-            to="/homepage"
-            className={({ isActive }) =>
-              `hover:text-gray-500 ${
-                isActive ? "underline underline-offset-8" : ""
-              }`
-            }
-          >
-            Home
-          </NavLink>
-          <NavLink
-            to="/products"
-            className={({ isActive }) =>
-              `hover:text-gray-500 ${
-                isActive ? "underline underline-offset-8" : ""
-              }`
-            }
-          >
-            All Products
-          </NavLink>
-          <NavLink
-            to="/categories"
-            className={({ isActive }) =>
-              `hover:text-gray-500 ${
-                isActive ? "underline underline-offset-8" : ""
-              }`
-            }
-          >
-            Categories
-          </NavLink>
-          <NavLink
-            to="/manufacturers"
-            className={({ isActive }) =>
-              `hover:text-gray-500 ${
-                isActive ? "underline underline-offset-8" : ""
-              }`
-            }
-          >
-            All Manufacturers
-          </NavLink>
+          {[
+            { to: "/homepage", label: "Home" },
+            { to: "/products", label: "All Products" },
+            { to: "/categories", label: "Categories" },
+            { to: "/manufacturers", label: "All Manufacturers" },
+          ].map(({ to, label }) => (
+            <NavLink
+              key={to}
+              to={to}
+              className={({ isActive }) =>
+                `hover:text-gray-500 ${
+                  isActive ? "underline underline-offset-8" : ""
+                }`
+              }
+            >
+              {label}
+            </NavLink>
+          ))}
           {user && user.isAdmin && (
             <NavLink
               to="/admin/orders"
@@ -108,11 +86,6 @@ const NewHeader = () => {
               >
                 <FaShoppingCart className="mr-2" /> Cart
               </button>
-              {showCartModal && (
-                <div className="absolute mt-50  z-20">
-                  <CartModal closeModal={toggleCartModal} />
-                </div>
-              )}
               <button
                 onClick={() => navigate("/orders")}
                 className="flex items-center text-gray-800"
@@ -125,9 +98,7 @@ const NewHeader = () => {
 
         {/* Search Bar */}
         {isSearchOpen && (
-          <div
-            className={`flex items-center mb-4 md:mb-0 bg-gray-100 border border-gray-300 rounded-lg overflow-hidden`}
-          >
+          <div className="flex items-center mb-4 md:mb-0 bg-gray-100 border border-gray-300 rounded-lg overflow-hidden">
             <input
               type="text"
               placeholder="Search for a product..."
@@ -137,7 +108,7 @@ const NewHeader = () => {
             />
             <button
               onClick={handleSearch}
-              className=" text-white px-4 py-2 flex items-center justify-center hover:bg-gray-700"
+              className="text-white px-4 py-2 flex items-center justify-center hover:bg-gray-700"
             >
               <FaSearch />
             </button>
@@ -151,12 +122,11 @@ const NewHeader = () => {
               <FaSearch />
             </button>
           )}
-
           <button
             onClick={toggleDropdown}
             className="flex items-center text-gray-800"
           >
-            <FaUserCircle className="text-3xl mr-2" />{" "}
+            <FaUserCircle className="text-3xl mr-2" />
             {user ? user.username : "GUEST"}
           </button>
           {isDropdownOpen && (
@@ -182,37 +152,25 @@ const NewHeader = () => {
       {/* Mobile Links */}
       {isMenuOpen && (
         <div className="md:hidden flex flex-col space-y-4 mt-4 px-4">
-          <NavLink
-            to="/"
-            onClick={() => setIsMenuOpen(false)}
-            className="hover:text-gray-500"
-          >
-            Home
-          </NavLink>
-          <NavLink
-            to="/products"
-            onClick={() => setIsMenuOpen(false)}
-            className="hover:text-gray-500"
-          >
-            All Products
-          </NavLink>
-          <NavLink
-            to="/categories"
-            onClick={() => setIsMenuOpen(false)}
-            className="hover:text-gray-500"
-          >
-            Categories
-          </NavLink>
-          <NavLink
-            to="/manufacturers"
-            onClick={() => setIsMenuOpen(false)}
-            className="hover:text-gray-500"
-          >
-            All Manufacturers
-          </NavLink>
+          {[
+            { to: "/", label: "Home" },
+            { to: "/products", label: "All Products" },
+            { to: "/categories", label: "Categories" },
+            { to: "/manufacturers", label: "All Manufacturers" },
+          ].map(({ to, label }) => (
+            <NavLink
+              key={to}
+              to={to}
+              onClick={() => setIsMenuOpen(false)}
+              className="hover:text-gray-500"
+            >
+              {label}
+            </NavLink>
+          ))}
           {user && user.isAdmin && (
             <NavLink
               to="/admin/orders"
+              onClick={() => setIsMenuOpen(false)}
               className={({ isActive }) =>
                 `hover:text-gray-500 ${
                   isActive ? "underline underline-offset-8" : ""
@@ -230,11 +188,6 @@ const NewHeader = () => {
               >
                 <FaShoppingCart className="mr-2" /> Cart
               </button>
-              {showCartModal && (
-                <div className="absolute top-full right-0 mt-2">
-                  <CartModal closeModal={toggleCartModal} />
-                </div>
-              )}
               <button
                 onClick={() => navigate("/orders")}
                 className="flex items-center text-gray-800"
@@ -243,6 +196,13 @@ const NewHeader = () => {
               </button>
             </>
           )}
+        </div>
+      )}
+
+      {/* Cart Modal */}
+      {showCartModal && (
+        <div className="fixed inset-0 flex justify-center items-center z-30 bg-black bg-opacity-50">
+          <CartModal closeModal={toggleCartModal} />
         </div>
       )}
     </nav>

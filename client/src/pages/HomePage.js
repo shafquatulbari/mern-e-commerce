@@ -1,8 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import api from "../services/api";
-import { FaSearch, FaBox, FaTags, FaIndustry, FaTasks } from "react-icons/fa";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
@@ -15,10 +14,8 @@ const HomePage = () => {
   const { user } = useContext(AuthContext);
   const [lowStockProducts, setLowStockProducts] = useState([]);
   const [userOrders, setUserOrders] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
   const [topProducts, setTopProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const navigate = useNavigate();
 
   // Fetch top 8 products for the carousel
   const fetchTopProducts = async () => {
