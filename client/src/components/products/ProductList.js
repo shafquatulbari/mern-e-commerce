@@ -112,7 +112,7 @@ const ProductList = () => {
           {products.map((product) => (
             <div
               key={product._id}
-              className="border p-4 rounded-lg shadow-md bg-white"
+              className="border p-4 rounded-lg shadow-md bg-white transition-all transform hover:scale-105 hover:shadow-2xl hover:border-blue-500"
             >
               <Link to={`/products/${product._id}`}>
                 <h3 className="text-xl font-bold mb-2 text-blue-600 hover:underline">
@@ -121,7 +121,7 @@ const ProductList = () => {
                 <img
                   src={product.images[0] || "https://via.placeholder.com/300"}
                   alt={product.name}
-                  className="w-80 h-60 object-cover mb-2 rounded-md"
+                  className="w-80 h-60 object-cover mb-2 rounded-md hover:opacity-90 transition-opacity duration-300"
                 />
               </Link>
               <p className="text-lg text-green-600 font-semibold mb-1">

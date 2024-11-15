@@ -72,7 +72,7 @@ const ManufacturerProducts = () => {
           {products.map((product) => (
             <div
               key={product._id}
-              className="border p-4 rounded-lg shadow-md bg-white"
+              className="border p-4 rounded-lg shadow-md bg-white transition-transform transform hover:scale-105 hover:shadow-xl"
             >
               <Link to={`/products/${product._id}`}>
                 <h3 className="text-xl font-bold mb-2 text-blue-600 hover:underline">

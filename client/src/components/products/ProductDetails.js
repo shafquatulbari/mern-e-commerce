@@ -5,22 +5,21 @@ import { AuthContext } from "../../context/AuthContext";
 import { CartContext } from "../../context/CartContext";
 import BackButton from "../common/BackButton";
 import moment from "moment";
-import { FaStar, FaMinus, FaPlus, FaShoppingCart } from "react-icons/fa"; // Importing icons
+import { FaStar, FaMinus, FaPlus, FaShoppingCart } from "react-icons/fa";
 
 const ProductDetails = () => {
-  const { productId } = useParams(); // Get the product ID from the URL
+  const { productId } = useParams();
   const [product, setProduct] = useState(null);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
-  const [quantity, setQuantity] = useState(1); // Default quantity
+  const [quantity, setQuantity] = useState(1);
 
   const { user } = useContext(AuthContext);
   const { addItem } = useContext(CartContext);
 
-  // Fetch product details
   useEffect(() => {
     const fetchProduct = async () => {
-      if (!productId) return; // Ensure productId is defined
+      if (!productId) return;
       try {
         const response = await api.get(`products/${productId}/`);
         setProduct(response.data);
@@ -28,11 +27,9 @@ const ProductDetails = () => {
         console.error("Error fetching product details:", error);
       }
     };
-
     fetchProduct();
   }, [productId]);
 
-  // Handle review submission
   const submitReview = async (e) => {
     e.preventDefault();
     try {
@@ -41,7 +38,7 @@ const ProductDetails = () => {
         rating,
         comment,
       });
-      setProduct(response.data); // Update the product with the new review
+      setProduct(response.data);
       setRating(0);
       setComment("");
     } catch (error) {
@@ -52,7 +49,6 @@ const ProductDetails = () => {
   const deleteReview = async (reviewIndex) => {
     try {
       await api.delete(`/products/${productId}/reviews/${reviewIndex}`);
-      // Refresh product details to update reviews
       const response = await api.get(`products/${productId}/`);
       setProduct(response.data);
     } catch (error) {
@@ -62,7 +58,7 @@ const ProductDetails = () => {
 
   const handleAddToCart = () => {
     if (product) {
-      addItem(product._id, quantity); // Use the correct _id property
+      addItem(product._id, quantity);
     }
   };
 
@@ -70,118 +66,134 @@ const ProductDetails = () => {
 
   return (
     <>
-      <div className="p-6 max-w-4xl mx-auto">
+      <div className="p-8 max-w-6xl mx-auto bg-white shadow rounded-lg">
         <BackButton />
-        <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
-        <img
-          src={product.images?.[0] || "https://via.placeholder.com/300"}
-          alt={product.name}
-          className="w-80 h-60 object-cover rounded-lg mb-4"
-        />
-        <p className="text-2xl font-semibold mb-2 text-green-600">
-          Price: ${product.price}
-        </p>
-        <p className="text-sm mb-2 text-gray-600">
-          Stock: {product.stock_level}
-        </p>
-        <p className="mb-4 text-gray-700">{product.description}</p>
-        <p className="mb-4 text-gray-500">
-          <strong>Category:</strong>{" "}
-          {product.category ? product.category.name : "No Category"}
-        </p>
-        <p className="mb-4 text-gray-500">
-          <strong>Manufacturer:</strong>{" "}
-          {product.manufacturer ? product.manufacturer.name : "Unknown"}
-        </p>
-        <p className="mb-4 text-yellow-500 flex items-center">
-          <strong>Average Rating:</strong> {product.averageRating}{" "}
-          <FaStar className="ml-1" /> (Based on {product.ratingsCount} reviews)
-        </p>
-        <h2 className="text-2xl font-bold mb-4">Reviews</h2>
-        {product.reviews && product.reviews.length > 0 ? (
-          product.reviews.map((review, index) => (
-            <div key={index} className="border p-4 rounded mb-2 bg-gray-50">
-              <p className="font-bold text-blue-600">{review.name}</p>
-              <p className="text-yellow-500 flex items-center">
-                Rating: {review.rating}/5 <FaStar className="ml-1" />
-              </p>
-              <p>{review.comment}</p>
-              <p className="text-sm text-gray-500">
-                {moment(review.timestamp).format("MMMM Do, YYYY")}
-              </p>
-              {(user?.username === review.name || user?.isAdmin) && (
-                <button
-                  className="text-red-500 mt-2 underline"
-                  onClick={() => deleteReview(index)}
-                >
-                  Delete Review
-                </button>
-              )}
-            </div>
-          ))
-        ) : (
-          <p className="text-gray-600">No reviews yet.</p>
-        )}
-        {!user?.isAdmin && (
-          <form onSubmit={submitReview} className="mb-6">
-            <h2 className="text-2xl font-bold mt-6 mb-4">Leave a Review</h2>
-            <div className="mb-4">
-              <label className="block mb-2 text-gray-600">Rating</label>
-              <select
-                value={rating}
-                onChange={(e) => setRating(Number(e.target.value))}
-                className="p-2 border rounded w-full"
-              >
-                <option value="">Select Rating</option>
-                {[1, 2, 3, 4, 5].map((value) => (
-                  <option key={value} value={value}>
-                    {value}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="mb-4">
-              <label className="block mb-2 text-gray-600">Comment</label>
-              <textarea
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                className="p-2 border rounded w-full"
-                placeholder="Write your review here..."
-              ></textarea>
-            </div>
-            <button
-              type="submit"
-              className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-            >
-              Submit Review
-            </button>
-          </form>
-        )}
-        {!user?.isAdmin && (
-          <div className="flex items-center mb-4">
-            <button
-              className="bg-gray-300 px-2 py-1 rounded hover:bg-gray-400"
-              onClick={() => setQuantity(Math.max(1, quantity - 1))}
-            >
-              <FaMinus />
-            </button>
-            <span className="mx-4 font-semibold">{quantity}</span>
-            <button
-              className="bg-gray-300 px-2 py-1 rounded hover:bg-gray-400"
-              onClick={() => setQuantity(quantity + 1)}
-            >
-              <FaPlus />
-            </button>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="flex justify-center">
+            <img
+              src={product.images?.[0] || "https://via.placeholder.com/300"}
+              alt={product.name}
+              className="w-full max-w-md h-auto object-cover rounded-lg shadow"
+            />
           </div>
-        )}
-        {!user?.isAdmin && (
-          <button
-            className="bg-green-500 text-white p-2 rounded flex items-center hover:bg-green-600"
-            onClick={handleAddToCart}
-          >
-            <FaShoppingCart className="mr-2" /> Add to Cart
-          </button>
-        )}
+          <div className="space-y-4">
+            <h1 className="text-4xl font-bold">{product.name}</h1>
+            <p className="text-2xl font-semibold text-green-600">
+              ${product.price}
+            </p>
+            <p className="text-sm text-gray-600">
+              Stock: {product.stock_level}
+            </p>
+            <p className="text-gray-700">{product.description}</p>
+            <div className="text-gray-500 space-y-1">
+              <p>
+                <strong>Category:</strong>{" "}
+                {product.category ? product.category.name : "No Category"}
+              </p>
+              <p>
+                <strong>Manufacturer:</strong>{" "}
+                {product.manufacturer ? product.manufacturer.name : "Unknown"}
+              </p>
+              <p className="flex items-center text-yellow-500">
+                <strong>Average Rating:</strong>{" "}
+                <span className="ml-2">
+                  {product.averageRating} <FaStar className="inline ml-1" />{" "}
+                  (Based on {product.ratingsCount} reviews)
+                </span>
+              </p>
+            </div>
+            {!user?.isAdmin && (
+              <div className="flex items-center space-x-4">
+                <button
+                  className="bg-gray-300 px-3 py-1 rounded hover:bg-gray-400"
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                >
+                  <FaMinus />
+                </button>
+                <span className="font-semibold">{quantity}</span>
+                <button
+                  className="bg-gray-300 px-3 py-1 rounded hover:bg-gray-400"
+                  onClick={() => setQuantity(quantity + 1)}
+                >
+                  <FaPlus />
+                </button>
+                <button
+                  className="bg-green-500 text-white px-4 py-2 rounded flex items-center hover:bg-green-600"
+                  onClick={handleAddToCart}
+                >
+                  <FaShoppingCart className="mr-2" /> Add to Cart
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold">Reviews</h2>
+          <div className="space-y-4">
+            {product.reviews && product.reviews.length > 0 ? (
+              product.reviews.map((review, index) => (
+                <div
+                  key={index}
+                  className="border p-4 rounded bg-gray-50 shadow-sm"
+                >
+                  <p className="font-bold text-blue-600">{review.name}</p>
+                  <p className="text-yellow-500 flex items-center">
+                    Rating: {review.rating}/5 <FaStar className="ml-1" />
+                  </p>
+                  <p className="text-gray-700">{review.comment}</p>
+                  <p className="text-sm text-gray-500">
+                    {moment(review.timestamp).format("MMMM Do, YYYY")}
+                  </p>
+                  {(user?.username === review.name || user?.isAdmin) && (
+                    <button
+                      className="text-red-500 mt-2 underline"
+                      onClick={() => deleteReview(index)}
+                    >
+                      Delete Review
+                    </button>
+                  )}
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-600">No reviews yet.</p>
+            )}
+          </div>
+          {!user?.isAdmin && (
+            <form onSubmit={submitReview} className="mt-6 space-y-4">
+              <h2 className="text-2xl font-bold">Leave a Review</h2>
+              <div>
+                <label className="block mb-1 text-gray-600">Rating</label>
+                <select
+                  value={rating}
+                  onChange={(e) => setRating(Number(e.target.value))}
+                  className="p-2 border rounded w-full"
+                >
+                  <option value="">Select Rating</option>
+                  {[1, 2, 3, 4, 5].map((value) => (
+                    <option key={value} value={value}>
+                      {value}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block mb-1 text-gray-600">Comment</label>
+                <textarea
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  className="p-2 border rounded w-full"
+                  placeholder="Write your review here..."
+                ></textarea>
+              </div>
+              <button
+                type="submit"
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              >
+                Submit Review
+              </button>
+            </form>
+          )}
+        </div>
       </div>
     </>
   );
