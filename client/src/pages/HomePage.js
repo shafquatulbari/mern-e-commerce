@@ -118,20 +118,21 @@ const HomePage = () => {
           ) : (
             <>
               {/* User order alert for non-admin users */}
-              {userOrders.length > 0 && (
-                <div className="bg-green-100 text-green-700 p-4 rounded mb-4">
-                  <strong>Order Updates:</strong>
-                  <ul className="list-disc pl-6 mt-2">
-                    {userOrders
-                      .filter((order) => order.status === "Delivered")
-                      .map((order) => (
-                        <li key={order._id}>
-                          Your order with ID {order._id} has been delivered.
-                        </li>
-                      ))}
-                  </ul>
-                </div>
-              )}
+              {userOrders.length > 0 &&
+                userOrders.some((order) => order.status === "Delivered") && (
+                  <div className="bg-green-100 text-green-700 p-4 rounded mb-4">
+                    <strong>Order Updates:</strong>
+                    <ul className="list-disc pl-6 mt-2">
+                      {userOrders
+                        .filter((order) => order.status === "Delivered")
+                        .map((order) => (
+                          <li key={order._id}>
+                            Your order with ID {order._id} has been delivered.
+                          </li>
+                        ))}
+                    </ul>
+                  </div>
+                )}
 
               {/* Pharmacy/Medicine Sliders */}
               <Slider {...sliderSettings}>
