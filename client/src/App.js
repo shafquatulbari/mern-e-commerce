@@ -22,6 +22,7 @@ import UserOrders from "./components/orders/UserOrders";
 import AdminOrderPage from "./pages/AdminOrderPage";
 import Footer from "./components/footer/Footer";
 import NewHeader from "./components/header/NewHeader";
+import AdminChatPage from "./components/supportChat/AdminChatPage";
 
 function Layout() {
   const location = useLocation();
@@ -51,6 +52,7 @@ function Layout() {
         <Route path="/cart" element={<CartModal />} />
         <Route path="/orders" element={<UserOrders />} />
         <Route path="/admin/orders" element={<AdminOrderPage />} />
+        <Route path="/admin/chatbar" element={<AdminChatPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer />

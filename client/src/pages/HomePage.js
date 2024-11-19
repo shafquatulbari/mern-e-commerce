@@ -9,6 +9,7 @@ import icon1 from "../components/images/icons/delivery-van.svg";
 import icon2 from "../components/images/icons/money-back.svg";
 import icon3 from "../components/images/icons/service-hours.svg";
 import DashboardCards from "./DashboardCards";
+import SupportChat from "../components/supportChat/SupportChat";
 
 const HomePage = () => {
   const { user } = useContext(AuthContext);
@@ -308,6 +309,7 @@ const HomePage = () => {
             </div>
           </div>
         </div>
+        <SupportChat />
       </div>
     </>
   );

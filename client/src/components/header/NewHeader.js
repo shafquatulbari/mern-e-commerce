@@ -68,16 +68,28 @@ const NewHeader = () => {
               </NavLink>
             ))}
             {user && user.isAdmin && (
-              <NavLink
-                to="/admin/orders"
-                className={({ isActive }) =>
-                  `hover:text-gray-500 ${
-                    isActive ? "underline underline-offset-8" : ""
-                  }`
-                }
-              >
-                All User Orders
-              </NavLink>
+              <>
+                <NavLink
+                  to="/admin/orders"
+                  className={({ isActive }) =>
+                    `hover:text-gray-500 ${
+                      isActive ? "underline underline-offset-8" : ""
+                    }`
+                  }
+                >
+                  All User Orders
+                </NavLink>
+                <NavLink
+                  to="/admin/chatbar"
+                  className={({ isActive }) =>
+                    `hover:text-gray-500 ${
+                      isActive ? "underline underline-offset-8" : ""
+                    }`
+                  }
+                >
+                  Chat
+                </NavLink>
+              </>
             )}
             {user && !user.isAdmin && (
               <>
