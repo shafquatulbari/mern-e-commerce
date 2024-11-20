@@ -1,59 +1,71 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { io } from "socket.io-client";
+
+const socket = io("http://localhost:4000"); // Replace with your backend URL
 
 const AdminChatPage = () => {
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedChat, setSelectedChat] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [userDetails, setUserDetails] = useState(null);
   const [inputValue, setInputValue] = useState("");
+  const [chats, setChats] = useState([]);
 
-  // Sample Users
-  const users = [
-    { id: "1", name: "John Doe", email: "john@example.com" },
-    { id: "2", name: "Jane Smith", email: "jane@example.com" },
-    { id: "3", name: "Bob Brown", email: "bob@example.com" },
-  ];
+  useEffect(() => {
+    // Fetch all chats (Admin-specific logic)
+    fetch("http://localhost:4000/api/chats")
+      .then((response) => response.json())
+      .then((data) => setChats(data));
 
-  const selectUser = (user) => {
-    setSelectedUser(user.id);
-    setUserDetails(user);
-    setMessages([]);
+    socket.on("receiveMessage", (message) => {
+      if (message.chatId === selectedChat?._id) {
+        setMessages((prev) => [...prev, message]);
+      }
+    });
+
+    return () => {
+      socket.off("receiveMessage");
+    };
+  }, [selectedChat]);
+
+  const selectChat = (chat) => {
+    setSelectedChat(chat);
+    setMessages(chat.messages || []);
+    socket.emit("joinChat", { userId: "adminId", chatId: chat._id });
   };
 
   const handleSendMessage = () => {
-    if (inputValue.trim() === "") return;
+    if (inputValue.trim() === "" || !selectedChat) return;
 
-    // Add admin message to chat
-    setMessages((prev) => [...prev, { sender: "admin", text: inputValue }]);
+    const message = {
+      chatId: selectedChat._id,
+      senderId: "adminId", // Replace with dynamic admin ID
+      text: inputValue,
+    };
 
-    // Clear input field
+    // Emit the message to the server
+    socket.emit("sendMessage", message);
+
+    // Update local chat history
+    setMessages((prev) => [...prev, { senderId: "adminId", text: inputValue }]);
     setInputValue("");
-
-    // Simulate user response after a delay
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        { sender: "user", text: "Thanks for your response!" },
-      ]);
-    }, 1000);
   };
 
   return (
     <div className="flex h-screen">
       {/* Left Section: User List */}
       <div className="w-1/4 bg-gray-100 border-r p-4">
-        <h3 className="text-lg font-semibold mb-4">Users</h3>
+        <h3 className="text-lg font-semibold mb-4">Active Chats</h3>
         <ul className="space-y-2">
-          {users.map((user) => (
+          {chats.map((chat) => (
             <li
-              key={user.id}
-              onClick={() => selectUser(user)}
+              key={chat._id}
+              onClick={() => selectChat(chat)}
               className={`p-2 rounded-md cursor-pointer ${
-                selectedUser === user.id
+                selectedChat?._id === chat._id
                   ? "bg-blue-500 text-white"
                   : "hover:bg-gray-200"
               }`}
             >
-              {user.name}
+              {chat.users[0].username} {/* Display customer name */}
             </li>
           ))}
         </ul>
@@ -63,7 +75,7 @@ const AdminChatPage = () => {
       <div className="w-2/4 flex flex-col bg-white border-r">
         <div className="flex justify-between items-center p-4 border-b">
           <h3 className="text-lg font-semibold">
-            Chatting with {userDetails?.name || "Select a user"}
+            Chatting with {selectedChat?.users[0].username || "Select a chat"}
           </h3>
         </div>
         <div className="flex-grow overflow-y-auto p-4 space-y-4">
@@ -71,7 +83,7 @@ const AdminChatPage = () => {
             <div
               key={index}
               className={`max-w-lg p-2 rounded-md ${
-                message.sender === "admin"
+                message.senderId === "adminId"
                   ? "bg-blue-500 text-white self-end"
                   : "bg-gray-100 self-start"
               }`}
@@ -80,7 +92,7 @@ const AdminChatPage = () => {
             </div>
           ))}
         </div>
-        {selectedUser && (
+        {selectedChat && (
           <div className="p-4 border-t flex items-center">
             <input
               type="text"
@@ -99,20 +111,20 @@ const AdminChatPage = () => {
         )}
       </div>
 
-      {/* Right Section: User Info */}
+      {/* Right Section: Chat Info */}
       <div className="w-1/4 bg-gray-50 p-4">
-        <h3 className="text-lg font-semibold mb-4">User Information</h3>
-        {userDetails ? (
+        <h3 className="text-lg font-semibold mb-4">Chat Information</h3>
+        {selectedChat ? (
           <div>
             <p>
-              <strong>Name:</strong> {userDetails.name}
+              <strong>Customer:</strong> {selectedChat.users[0].username}
             </p>
             <p>
-              <strong>Email:</strong> {userDetails.email}
+              <strong>Email:</strong> {selectedChat.users[0].email}
             </p>
           </div>
         ) : (
-          <p>Select a user to see their details.</p>
+          <p>Select a chat to view details.</p>
         )}
       </div>
     </div>

@@ -1,9 +1,30 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { io } from "socket.io-client";
+
+const socket = io("http://localhost:4000"); // Replace with your backend URL
 
 const SupportChat = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
+
+  // Chat ID and Customer ID (replace with dynamic values from your app)
+  const chatId = "exampleChatId";
+  const customerId = "exampleCustomerId";
+
+  useEffect(() => {
+    // Join the chat room
+    socket.emit("joinChat", { userId: customerId, chatId });
+
+    // Listen for incoming messages
+    socket.on("receiveMessage", (message) => {
+      setMessages((prev) => [...prev, message]);
+    });
+
+    return () => {
+      socket.off("receiveMessage");
+    };
+  }, [chatId, customerId]);
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
@@ -12,22 +33,21 @@ const SupportChat = () => {
   const handleSendMessage = () => {
     if (inputValue.trim() === "") return;
 
-    // Add user message to the chat
-    setMessages((prev) => [...prev, { type: "user", text: inputValue }]);
+    const message = {
+      chatId,
+      senderId: customerId,
+      text: inputValue,
+    };
 
-    // Clear the input field
+    // Emit the message to the server
+    socket.emit("sendMessage", message);
+
+    // Update local chat history
+    setMessages((prev) => [
+      ...prev,
+      { senderId: customerId, text: inputValue },
+    ]);
     setInputValue("");
-
-    // Optionally, add a system response after a delay
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          type: "system",
-          text: "Thank you for reaching out! How can I assist you further?",
-        },
-      ]);
-    }, 1000);
   };
 
   return (
@@ -51,7 +71,7 @@ const SupportChat = () => {
                 <div
                   key={index}
                   className={`p-2 rounded-md max-w-max ${
-                    message.type === "user"
+                    message.senderId === customerId
                       ? "bg-blue-500 text-white place-items-end"
                       : "bg-gray-100 text-gray-800 place-items-start"
                   }`}
