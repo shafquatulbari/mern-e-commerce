@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FaEye, FaBox, FaTags, FaIndustry } from "react-icons/fa";
+import { FaEye, FaBox, FaTags, FaIndustry, FaDollarSign } from "react-icons/fa";
 import CountUp from "react-countup";
 import api from "../services/api";
 
@@ -8,6 +8,7 @@ const DashboardCards = () => {
   const [totalProductsInStock, setTotalProductsInStock] = useState(0);
   const [totalCategories, setTotalCategories] = useState(0);
   const [totalManufacturers, setTotalManufacturers] = useState(0);
+  const [totalSales, setTotalSales] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,8 +32,17 @@ const DashboardCards = () => {
         // Fetch total manufacturers
         const manufacturersResponse = await api.get("/manufacturers/");
         setTotalManufacturers(manufacturersResponse.data.length);
+
+        // Fetch total sales
+        // Fetch total sales amount
+        const salesResponse = await api.get("/orders/all");
+        const totalSalesAmount = salesResponse.data.reduce(
+          (sum, order) => sum + (order.totalAmount || 0),
+          0
+        );
+
+        setTotalSales(totalSalesAmount);
       } catch (error) {
-        // Log error details
         console.error("Error fetching dashboard data:", error);
         console.error("Error message:", error.message);
         if (error.response) {
@@ -47,7 +57,7 @@ const DashboardCards = () => {
   }, []);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
       {/* Total Viewers Card */}
       <div className="p-6 bg-white rounded shadow-md flex items-center">
         <FaEye className="text-blue-500 text-3xl mr-4" />
@@ -103,6 +113,21 @@ const DashboardCards = () => {
           </h3>
           <CountUp
             end={totalManufacturers}
+            duration={1}
+            separator=","
+            className="text-2xl font-bold text-gray-800"
+          />
+        </div>
+      </div>
+
+      {/* Total Sales Card */}
+      <div className="p-6 bg-white rounded shadow-md flex items-center">
+        <FaDollarSign className="text-orange-500 text-3xl mr-4" />
+        <div>
+          <h3 className="text-gray-600 text-sm font-semibold">Total Sales</h3>
+          <span className="text-2xl font-bold text-gray-800">$</span>{" "}
+          <CountUp
+            end={totalSales}
             duration={1}
             separator=","
             className="text-2xl font-bold text-gray-800"

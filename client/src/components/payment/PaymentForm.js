@@ -68,7 +68,7 @@ const PaymentForm = ({ closeModal, shippingAddress }) => {
         type="submit"
         disabled={!stripe || loading}
       >
-        {loading ? "Processing..." : "Pay Now"}
+        {loading ? "Processing..." : "Order Now"}
       </button>
     </form>
   );

@@ -6,12 +6,19 @@ import { FaPlus, FaMinus, FaTrash } from "react-icons/fa";
 const CartModal = ({ closeModal }) => {
   const { cartItems, addItem, removeItem, totalAmount } =
     useContext(CartContext);
+
   const [shippingAddress, setShippingAddress] = useState({
     address: "",
     city: "",
     postalCode: "",
     country: "",
   });
+
+  const [paymentMethod, setPaymentMethod] = useState("card");
+
+  const handlePaymentMethodChange = (method) => {
+    setPaymentMethod(method);
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -96,9 +103,33 @@ const CartModal = ({ closeModal }) => {
             )}
           </div>
           <div className="md:w-1/3 md:pl-4 pt-4 md:pt-0">
-            <h2 className="text-2xl font-bold mb-4 text-black">
-              Shipping Address
-            </h2>
+            <h3 className="text-lg font-bold mb-4 text-black">
+              Shipping Payment Method
+            </h3>
+            <div className="mb-4">
+              <label className="block mb-2 text-black">
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="cash"
+                  checked={paymentMethod === "cash"}
+                  onChange={() => handlePaymentMethodChange("cash")}
+                  className="mr-2"
+                />
+                Cash on Delivery
+              </label>
+              <label className="block text-black">
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="card"
+                  checked={paymentMethod === "card"}
+                  onChange={() => handlePaymentMethodChange("card")}
+                  className="mr-2"
+                />
+                Pay by Card
+              </label>
+            </div>
             <input
               type="text"
               placeholder="Address"
@@ -144,10 +175,21 @@ const CartModal = ({ closeModal }) => {
               }
               className="w-full p-2 border rounded mb-4 text-black"
             />
-            <PaymentForm
-              closeModal={closeModal}
-              shippingAddress={shippingAddress}
-            />
+
+            {paymentMethod === "card" && (
+              <PaymentForm
+                closeModal={closeModal}
+                shippingAddress={shippingAddress}
+              />
+            )}
+            {paymentMethod !== "card" && (
+              <button
+                className="bg-blue-500 w-full p-2 rounded text-white mt-4"
+                type="submit"
+              >
+                Order Now
+              </button>
+            )}
           </div>
         </div>
       </div>
