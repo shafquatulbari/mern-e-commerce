@@ -3,8 +3,7 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const cors = require("cors");
 const http = require("http");
-const socketIo = require("socket.io");
-const Chat = require("./models/Chat");
+const { Server } = require("socket.io");
 
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
@@ -22,7 +21,7 @@ connectDB();
 const app = express();
 const server = http.createServer(app);
 
-const io = socketIo(server, {
+const io = new Server(server, {
   cors: {
     origin: "http://localhost:3000",
   },
@@ -43,23 +42,18 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/stripe", stripeRoutes);
 app.use("/api/chats", chatRoutes);
 
-// Socket.IO connection
-
+// Socket.IO Logic
 io.on("connection", (socket) => {
-  console.log(`New client connected: ${socket.id}`);
+  console.log("A user connected:", socket.id);
 
-  socket.on("joinChat", ({ chatId }) => {
-    socket.join(chatId);
-    console.log(`Client ${socket.id} joined chat ${chatId}`);
-  });
-
-  socket.on("sendMessage", ({ chatId, message }) => {
-    console.log(`Message received in chat ${chatId}:`, message);
-    io.to(chatId).emit("receiveMessage", { chatId, ...message });
+  // Listen for messages from the client
+  socket.on("sendMessage", (data) => {
+    console.log("Message received:", data);
+    io.emit("receiveMessage", data); // Broadcast to all connected clients
   });
 
   socket.on("disconnect", () => {
-    console.log(`Client disconnected: ${socket.id}`);
+    console.log("A user disconnected:", socket.id);
   });
 });
 

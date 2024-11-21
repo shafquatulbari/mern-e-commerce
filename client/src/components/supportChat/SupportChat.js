@@ -1,63 +1,68 @@
-import React, { useEffect, useState, useContext } from "react";
-import { io } from "socket.io-client";
-import api from "../../services/api";
+import React, { useState, useEffect, useContext } from "react";
+import io from "socket.io-client";
 import { AuthContext } from "../../context/AuthContext";
+import api from "../../services/api";
 
-const socket = io("http://localhost:4000"); // Backend URL
+// Initialize Socket.IO
+const socket = io("http://localhost:4000"); // Replace with your backend URL
 
 const SupportChat = () => {
-  const { user } = useContext(AuthContext); // Get the logged-in user
+  const { user } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
-  const [chatId, setChatId] = useState(null); // Dynamic chat ID
 
-  useEffect(() => {
-    if (!user) return; // Wait for user to load
-
-    const initiateChat = async () => {
-      try {
-        const response = await api.post("/chats", { customerId: user.id });
-        setChatId(response.data._id);
-        setMessages(response.data.messages || []);
-        socket.emit("joinChat", { chatId: response.data._id }); // Join room here
-      } catch (error) {
-        console.error("Failed to initiate chat:", error);
-      }
-    };
-
-    initiateChat();
-
-    socket.on("receiveMessage", (message) => {
-      if (message.chatId === chatId) {
-        setMessages((prev) => [...prev, message]);
-      }
-    });
-
-    return () => {
-      socket.off("receiveMessage");
-    };
-  }, [user]);
-
-  const handleSendMessage = async () => {
-    if (!inputValue.trim() || !chatId) return;
-
-    const message = { senderId: user.id, text: inputValue };
-
+  // Fetch previous chat messages
+  const fetchChatMessages = async () => {
     try {
-      const response = await api.post(`/chats/${chatId}/message`, message);
-      if (response.status === 201) {
-        socket.emit("sendMessage", { chatId, ...message });
-        setMessages((prev) => [...prev, response.data.message]);
-        setInputValue("");
-      }
-    } catch (error) {
-      console.error("Failed to send message:", error);
+      const response = await api.get(`chats/${user.id}`);
+      setMessages(response.data);
+    } catch (err) {
+      console.error("Failed to fetch chat messages:", err);
     }
   };
 
+  // Send a message
+  const handleSendMessage = async () => {
+    if (!inputValue.trim()) return;
+
+    const messageData = {
+      receiver: "admin",
+      message: inputValue,
+      isAdmin: false,
+    };
+
+    try {
+      const response = await api.post("chats/", messageData);
+      setMessages((prev) => [...prev, response.data]);
+      socket.emit("sendMessage", { chatId: user.id, ...messageData });
+      setInputValue("");
+    } catch (err) {
+      console.error("Failed to send message:", err);
+    }
+  };
+
+  // Listen for real-time messages
+  useEffect(() => {
+    socket.on("receiveMessage", (data) => {
+      if (data.sender === user.id || data.receiver === "admin") {
+        setMessages((prev) => [...prev, data]);
+      }
+    });
+
+    return () => socket.off("receiveMessage");
+  }, [user.id]);
+
+  // Load previous messages when chat opens
+  useEffect(() => {
+    if (isOpen) {
+      fetchChatMessages();
+    }
+  }, [isOpen]);
+
   return (
     <div className="fixed bottom-4 right-4 flex flex-col items-end">
+      {/* Chat Window */}
       {isOpen && (
         <div className="w-80 h-96 bg-white rounded-lg shadow-lg p-4">
           <div className="flex justify-between items-center border-b pb-2 mb-4">
@@ -71,6 +76,7 @@ const SupportChat = () => {
           </div>
 
           <div className="flex flex-col h-full">
+            {/* Messages */}
             <div className="flex-grow overflow-y-auto space-y-2">
               {messages.map((message, index) => (
                 <div
@@ -81,11 +87,12 @@ const SupportChat = () => {
                       : "bg-gray-100 self-start"
                   }`}
                 >
-                  {message.text}
+                  {message.message}
                 </div>
               ))}
             </div>
 
+            {/* Input */}
             <div className="mt-4 flex items-center">
               <input
                 type="text"
@@ -104,6 +111,8 @@ const SupportChat = () => {
           </div>
         </div>
       )}
+
+      {/* Chat Toggle Button */}
       <button
         onClick={() => setIsOpen(true)}
         className="bg-blue-500 text-white p-4 mt-10 rounded-full shadow-lg hover:bg-blue-600"

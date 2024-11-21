@@ -1,89 +1,83 @@
-import React, { useEffect, useState, useContext } from "react";
-import { io } from "socket.io-client";
-import api from "../../services/api";
+import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
+import api from "../../services/api";
+import io from "socket.io-client";
 
-const socket = io("http://localhost:4000"); // Backend URL
+// Initialize Socket.IO
+const socket = io("http://localhost:4000"); // Use your backend's URL
 
 const AdminChatPage = () => {
-  const { user } = useContext(AuthContext); // Get admin details from AuthContext
-  const [chats, setChats] = useState([]); // All chats for the admin
-  const [selectedChat, setSelectedChat] = useState(null); // Current selected chat
-  const [messages, setMessages] = useState([]); // Messages for the selected chat
-  const [inputValue, setInputValue] = useState(""); // New message input
-  const [isLoading, setIsLoading] = useState(true); // Loading state
+  const { user } = useContext(AuthContext);
+  const [chats, setChats] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [selectedChat, setSelectedChat] = useState(null);
+  const [inputValue, setInputValue] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Fetch chats on mount
-  useEffect(() => {
-    fetchChats();
-
-    // Listen for new messages
-    socket.on("receiveMessage", (message) => {
-      if (message.chatId === selectedChat?._id) {
-        // Update messages for the selected chat
-        setMessages((prev) => [...prev, message]);
-      } else {
-        // Update chat list to reflect new messages
-        setChats((prevChats) =>
-          prevChats.map((chat) =>
-            chat._id === message.chatId
-              ? { ...chat, lastMessage: message.text }
-              : chat
-          )
-        );
-      }
-    });
-
-    return () => {
-      socket.off("receiveMessage");
-    };
-  }, [selectedChat]);
-
-  // Fetch all chats
+  // Fetch active chats
   const fetchChats = async () => {
     setIsLoading(true);
     try {
-      const response = await api.get("/chats");
+      const response = await api.get("chats/");
       setChats(response.data);
-    } catch (error) {
-      console.error("Failed to fetch chats:", error);
+    } catch (err) {
+      console.error("Failed to fetch chats:", err);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Fetch messages for the selected chat
-  const selectChat = async (chat) => {
+  // Fetch messages for a selected chat
+  const fetchMessages = async (chatId) => {
+    try {
+      const response = await api.get(`chats/${chatId}`);
+      setMessages(response.data);
+    } catch (err) {
+      console.error("Failed to fetch messages:", err);
+    }
+  };
+
+  // Select a chat
+  const selectChat = (chat) => {
     setSelectedChat(chat);
-    try {
-      const response = await api.get(`/chats/${chat._id}`);
-      setMessages(response.data.messages);
-      socket.emit("joinChat", { chatId: chat._id }); // Join the selected chat
-    } catch (error) {
-      console.error("Failed to fetch messages:", error);
-    }
+    fetchMessages(chat._id);
   };
 
-  // Send a new message
+  // Handle sending messages
   const handleSendMessage = async () => {
-    if (!inputValue.trim() || !selectedChat) return;
+    if (!inputValue.trim()) return;
 
-    const message = { senderId: user?.id || "adminId", text: inputValue }; // Dynamic admin ID
+    const messageData = {
+      receiver: "admin",
+      message: inputValue,
+      isAdmin: user?.isAdmin,
+    };
 
     try {
-      const response = await api.post(
-        `/chats/${selectedChat._id}/message`,
-        message
-      );
-      if (response.status === 201) {
-        socket.emit("sendMessage", { chatId: selectedChat._id, ...message });
-        setMessages((prev) => [...prev, response.data.message]);
-        setInputValue("");
-      }
-    } catch (error) {
-      console.error("Error sending message:", error);
+      const response = await api.post("chats/", messageData);
+      setMessages((prev) => [...prev, response.data]);
+      socket.emit("sendMessage", { chatId: selectedChat._id, ...messageData });
+      setInputValue("");
+    } catch (err) {
+      console.error("Failed to send message:", err);
     }
   };
+
+  // Real-time message handling
+  useEffect(() => {
+    socket.on("receiveMessage", (data) => {
+      if (selectedChat && data.chatId === selectedChat._id) {
+        setMessages((prev) => [...prev, data]);
+      }
+    });
+
+    return () => socket.off("receiveMessage");
+  }, [selectedChat]);
+
+  // Load chats on mount
+  useEffect(() => {
+    fetchChats();
+  }, []);
 
   return (
     <div className="flex h-screen">
@@ -131,12 +125,12 @@ const AdminChatPage = () => {
             <div
               key={index}
               className={`max-w-lg p-2 rounded-md ${
-                message.senderId === user?.id
+                message.sender === user?.id
                   ? "bg-blue-500 text-white self-end"
                   : "bg-gray-100 self-start"
               }`}
             >
-              {message.text}
+              {message.message}
             </div>
           ))}
         </div>
