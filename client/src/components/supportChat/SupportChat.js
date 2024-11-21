@@ -7,13 +7,15 @@ import api from "../../services/api";
 const socket = io("http://localhost:4000"); // Replace with your backend URL
 
 const SupportChat = () => {
-  const { user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext); // Get the user from context
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
 
   // Fetch previous chat messages
   const fetchChatMessages = async () => {
+    if (!user) return; // Exit early if user is not loaded
+
     try {
       const response = await api.get(`chats/${user.id}`);
       setMessages(response.data);
@@ -24,7 +26,7 @@ const SupportChat = () => {
 
   // Send a message
   const handleSendMessage = async () => {
-    if (!inputValue.trim()) return;
+    if (!inputValue.trim() || !user) return; // Exit early if no message or user not loaded
 
     const messageData = {
       receiver: "admin",
@@ -44,6 +46,8 @@ const SupportChat = () => {
 
   // Listen for real-time messages
   useEffect(() => {
+    if (!user) return; // Exit early if user is not loaded
+
     socket.on("receiveMessage", (data) => {
       if (data.sender === user.id || data.receiver === "admin") {
         setMessages((prev) => [...prev, data]);
@@ -51,14 +55,18 @@ const SupportChat = () => {
     });
 
     return () => socket.off("receiveMessage");
-  }, [user.id]);
+  }, [user]);
 
   // Load previous messages when chat opens
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && user) {
       fetchChatMessages();
     }
-  }, [isOpen]);
+  }, [isOpen, user]);
+
+  if (!user) {
+    return null; // Render nothing until user is loaded
+  }
 
   return (
     <div className="fixed bottom-4 right-4 flex flex-col items-end">

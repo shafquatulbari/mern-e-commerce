@@ -7,7 +7,7 @@ import io from "socket.io-client";
 const socket = io("http://localhost:4000"); // Use your backend's URL
 
 const AdminChatPage = () => {
-  const { user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext); // Get the user from context
   const [chats, setChats] = useState([]);
   const [messages, setMessages] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
@@ -19,6 +19,7 @@ const AdminChatPage = () => {
     setIsLoading(true);
     try {
       const response = await api.get("chats/");
+      console.log("Chats fetched:", response.data); // Debugging
       setChats(response.data);
     } catch (err) {
       console.error("Failed to fetch chats:", err);
@@ -45,12 +46,12 @@ const AdminChatPage = () => {
 
   // Handle sending messages
   const handleSendMessage = async () => {
-    if (!inputValue.trim()) return;
+    if (!inputValue.trim() || !user) return; // Exit if no message or user not loaded
 
     const messageData = {
-      receiver: "admin",
+      receiver: selectedChat?._id, // Send to the currently selected chat
       message: inputValue,
-      isAdmin: user?.isAdmin,
+      isAdmin: true,
     };
 
     try {
@@ -65,6 +66,8 @@ const AdminChatPage = () => {
 
   // Real-time message handling
   useEffect(() => {
+    if (!user) return; // Exit if user is not loaded
+
     socket.on("receiveMessage", (data) => {
       if (selectedChat && data.chatId === selectedChat._id) {
         setMessages((prev) => [...prev, data]);
@@ -72,12 +75,18 @@ const AdminChatPage = () => {
     });
 
     return () => socket.off("receiveMessage");
-  }, [selectedChat]);
+  }, [selectedChat, user]);
 
   // Load chats on mount
   useEffect(() => {
-    fetchChats();
-  }, []);
+    if (user) {
+      fetchChats();
+    }
+  }, [user]);
+
+  if (!user) {
+    return null; // Render nothing until user is loaded
+  }
 
   return (
     <div className="flex h-screen">
@@ -100,7 +109,8 @@ const AdminChatPage = () => {
                     : "hover:bg-gray-200"
                 }`}
               >
-                <p>{chat.users[0]?.username}</p>
+                <p>{chat.users?.[0]?.username || "Unknown User"}</p>{" "}
+                {/* Check if users exists */}
                 <p className="text-sm text-gray-500">
                   {chat.lastMessage || "No messages yet"}
                 </p>
@@ -161,10 +171,11 @@ const AdminChatPage = () => {
         {selectedChat ? (
           <div>
             <p>
-              <strong>Customer:</strong> {selectedChat.users[0]?.username}
+              <strong>Customer:</strong>{" "}
+              {selectedChat.users?.[0]?.username || "Unknown User"}
             </p>
             <p>
-              <strong>Email:</strong> {selectedChat.users[0]?.email}
+              <strong>Email:</strong> {selectedChat.users?.[0]?.email || "N/A"}
             </p>
           </div>
         ) : (

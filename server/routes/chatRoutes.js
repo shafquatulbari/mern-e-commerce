@@ -7,7 +7,9 @@ const router = express.Router();
 // Get all chats (admin access)
 router.get("/", protect, admin, async (req, res) => {
   try {
-    const chats = await ChatMessage.find().populate("sender", "username email");
+    const chats = await ChatMessage.find()
+      .populate("sender", "username email")
+      .populate("users", "username email");
     res.json(chats);
   } catch (error) {
     res.status(500).json({ message: error.message });
