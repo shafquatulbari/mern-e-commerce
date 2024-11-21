@@ -3,7 +3,8 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const cors = require("cors");
 const http = require("http");
-const { Server } = require("socket.io");
+const socketIo = require("socket.io");
+const Chat = require("./models/Chat");
 
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
@@ -20,10 +21,10 @@ connectDB();
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, {
+
+const io = socketIo(server, {
   cors: {
-    origin: "http://localhost:3000", // Adjust based on your frontend
-    methods: ["GET", "POST"],
+    origin: "http://localhost:3000",
   },
 });
 
@@ -42,30 +43,23 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/stripe", stripeRoutes);
 app.use("/api/chats", chatRoutes);
 
-// Socket.IO Logic
-const activeUsers = new Map(); // Track connected users
+// Socket.IO connection
 
 io.on("connection", (socket) => {
-  console.log("A user connected:", socket.id);
+  console.log(`New client connected: ${socket.id}`);
 
-  // Handle user joining
-  socket.on("joinChat", ({ userId, chatId }) => {
-    activeUsers.set(userId, socket.id);
+  socket.on("joinChat", ({ chatId }) => {
     socket.join(chatId);
-    console.log(`User ${userId} joined chat room: ${chatId}`);
+    console.log(`Client ${socket.id} joined chat ${chatId}`);
   });
 
-  // Handle sending messages
-  socket.on("sendMessage", ({ chatId, senderId, message }) => {
-    io.to(chatId).emit("receiveMessage", { senderId, message });
+  socket.on("sendMessage", ({ chatId, message }) => {
+    console.log(`Message received in chat ${chatId}:`, message);
+    io.to(chatId).emit("receiveMessage", { chatId, ...message });
   });
 
-  // Handle disconnection
   socket.on("disconnect", () => {
-    console.log("A user disconnected:", socket.id);
-    activeUsers.forEach((value, key) => {
-      if (value === socket.id) activeUsers.delete(key);
-    });
+    console.log(`Client disconnected: ${socket.id}`);
   });
 });
 

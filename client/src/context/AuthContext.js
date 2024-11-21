@@ -11,6 +11,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await api.get("user/user-info/");
       setUser({
+        id: response.data._id,
         username: response.data.username,
         isAdmin: response.data.isAdmin,
       });
