@@ -90,17 +90,20 @@ const SupportChat = () => {
 
           <div className="flex flex-col h-full">
             {/* Messages */}
-            <div className="flex-grow overflow-y-auto space-y-2">
+            <div className="flex-grow overflow-y-auto flex flex-col space-y-2">
               {messages.map((message, index) => (
                 <div
                   key={index}
                   className={`p-2 rounded-md max-w-max ${
-                    message.sender === userId
-                      ? "bg-blue-500 text-white self-end"
-                      : "bg-gray-100 self-start"
+                    message.isAdmin
+                      ? "bg-gray-100 text-black self-start text-left" // Admin messages
+                      : "bg-blue-500 text-white self-end text-right" // Customer messages
                   }`}
+                  style={{
+                    alignSelf: message.isAdmin ? "flex-start" : "flex-end", // Align admin left, customer right
+                  }}
                 >
-                  {message.message}
+                  {message.message || "No content"} {/* Message content */}
                 </div>
               ))}
             </div>

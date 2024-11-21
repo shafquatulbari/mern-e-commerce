@@ -166,19 +166,18 @@ const AdminChatPage = () => {
           </h3>
         </div>
 
-        <div className="flex-grow overflow-y-auto p-4 space-y-4">
+        <div className="flex-grow overflow-y-auto p-4 flex flex-col space-y-4">
           {messages.length > 0 ? (
             messages.map((message, index) => (
               <div
                 key={index}
                 className={`max-w-lg p-2 rounded-md ${
-                  message.sender === user?.id
-                    ? "bg-blue-500 text-white self-end"
-                    : "bg-gray-100 self-start"
+                  message.isAdmin
+                    ? "bg-blue-500 text-white self-end text-right" // Admin messages: blue, right-aligned
+                    : "bg-gray-100 self-start text-left" // Customer messages: gray, left-aligned
                 }`}
               >
-                {message.message || "No content"}{" "}
-                {/* Fallback for empty messages */}
+                <p>{message.message || "No content"}</p> {/* Message content */}
               </div>
             ))
           ) : (
@@ -188,7 +187,7 @@ const AdminChatPage = () => {
 
         {/* Input */}
         {selectedChat && (
-          <div className="p-4 border-t flex items-center">
+          <div className="p-4 sticky bottom-0 border-t flex items-center">
             <input
               type="text"
               value={inputValue}
