@@ -8,11 +8,32 @@ const router = express.Router();
 // Get all chats (admin access)
 router.get("/", protect, admin, async (req, res) => {
   try {
-    const chats = await ChatMessage.find()
-      .populate("sender", "username email")
-      .populate("users", "username email");
-    res.json(chats);
+    const chats = await ChatMessage.aggregate([
+      {
+        $group: {
+          _id: "$sender", // Group by sender (customer)
+          lastMessage: { $last: "$message" }, // Get the latest message
+          lastMessageAt: { $last: "$createdAt" }, // Timestamp of the latest message
+        },
+      },
+    ]);
+
+    // Populate the sender field with user details
+    const populatedChats = await ChatMessage.populate(chats, {
+      path: "_id", // Populate the `sender` field
+      select: "username email",
+      model: "User",
+    });
+
+    // Transform the response to include user details under a `sender` key
+    const chatsWithSender = populatedChats.map((chat) => ({
+      ...chat,
+      sender: chat._id, // Add sender info
+    }));
+
+    res.json(chatsWithSender);
   } catch (error) {
+    console.error("Error fetching all chats for admin:", error);
     res.status(500).json({ message: error.message });
   }
 });
@@ -28,10 +49,9 @@ router.get("/:customerId", protect, async (req, res) => {
   }
 
   try {
-    const chats = await ChatMessage.find({ sender: customerId }).populate(
-      "sender",
-      "username email"
-    );
+    const chats = await ChatMessage.find({ sender: customerId })
+      .populate("sender", "username email")
+      .sort({ createdAt: -1 });
     res.json(chats);
   } catch (error) {
     console.error("Error fetching chats for customer:", error);

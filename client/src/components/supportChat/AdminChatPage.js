@@ -22,7 +22,7 @@ const AdminChatPage = () => {
       if (response.data && Array.isArray(response.data)) {
         setChats(response.data);
       } else {
-        console.warn("Invalid chats response:", response.data); // Debugging
+        console.warn("Invalid chats response:", response.data);
         setChats([]);
       }
     } catch (err) {
@@ -34,16 +34,24 @@ const AdminChatPage = () => {
 
   // Fetch messages for a selected chat
   const fetchMessages = async (chatId) => {
+    console.log("Fetching messages for chatId:", chatId); // Debugging
+
     try {
       const response = await api.get(`chats/${chatId}`);
-      setMessages(response.data);
+      console.log("Fetched messages:", response.data); // Debugging
+      setMessages(response.data || []); // Fallback to an empty array if data is invalid
     } catch (err) {
       console.error("Failed to fetch messages:", err);
+      setMessages([]); // Fallback to an empty array on error
     }
   };
 
   // Select a chat
   const selectChat = (chat) => {
+    if (!chat || !chat.sender) {
+      console.warn("Invalid chat selected:", chat); // Debugging
+      return;
+    }
     setSelectedChat(chat);
     fetchMessages(chat._id);
   };
@@ -88,6 +96,25 @@ const AdminChatPage = () => {
     }
   }, [user]);
 
+  // Fetch selected chat details
+  useEffect(() => {
+    if (selectedChat) {
+      const fetchSelectedChatDetails = async () => {
+        try {
+          const response = await api.get(`chats/${selectedChat._id}`);
+          setSelectedChat((prevChat) => ({
+            ...prevChat,
+            users: response.data[0]?.sender || {}, // Add sender info from the response
+          }));
+        } catch (err) {
+          console.error("Failed to fetch selected chat details:", err);
+        }
+      };
+
+      fetchSelectedChatDetails();
+    }
+  }, [selectedChat]);
+
   if (!user) {
     return null; // Render nothing until user is loaded
   }
@@ -113,8 +140,7 @@ const AdminChatPage = () => {
                     : "hover:bg-gray-200"
                 }`}
               >
-                <p>{chat.users?.[0]?.username || "Unknown User"}</p>{" "}
-                {/* Check if users exists */}
+                <p>{chat._id.username || "Unknown User"}</p>
                 <p className="text-sm text-gray-500">
                   {chat.lastMessage || "No messages yet"}
                 </p>
@@ -128,8 +154,8 @@ const AdminChatPage = () => {
       <div className="w-2/4 flex flex-col bg-white border-r">
         <div className="flex justify-between items-center p-4 border-b">
           <h3 className="text-lg font-semibold">
-            {selectedChat
-              ? `Chatting with ${selectedChat.users[0]?.username}`
+            {selectedChat && selectedChat.sender?.username
+              ? `Chatting with ${selectedChat.sender.username}`
               : "Select a chat"}
           </h3>
         </div>
@@ -145,11 +171,12 @@ const AdminChatPage = () => {
                     : "bg-gray-100 self-start"
                 }`}
               >
-                {message.message}
+                {message.message || "No content"}{" "}
+                {/* Fallback for empty messages */}
               </div>
             ))
           ) : (
-            <p className="text-gray-500">No messages yet</p> // Show a fallback message
+            <p className="text-gray-500">No messages yet</p> // Fallback for empty messages array
           )}
         </div>
 
@@ -180,10 +207,10 @@ const AdminChatPage = () => {
           <div>
             <p>
               <strong>Customer:</strong>{" "}
-              {selectedChat.users?.[0]?.username || "Unknown User"}
+              {selectedChat.sender?.username || "Unknown User"}
             </p>
             <p>
-              <strong>Email:</strong> {selectedChat.users?.[0]?.email || "N/A"}
+              <strong>Email:</strong> {selectedChat.sender?.email || "N/A"}
             </p>
           </div>
         ) : (
