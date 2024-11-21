@@ -46,10 +46,8 @@ app.use("/api/chats", chatRoutes);
 io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);
 
-  // Listen for messages from the client
   socket.on("sendMessage", (data) => {
-    console.log("Message received:", data);
-    io.emit("receiveMessage", data); // Broadcast to all connected clients
+    io.emit("receiveMessage", data); // Broadcast to all connected admins and users
   });
 
   socket.on("disconnect", () => {

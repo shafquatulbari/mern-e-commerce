@@ -30,18 +30,19 @@ const SupportChat = () => {
 
   // Send a message
   const handleSendMessage = async () => {
-    if (!inputValue.trim() || !userId) return; // Exit early if no message or user ID not available
+    if (!inputValue.trim() || !userId) return;
 
     const messageData = {
-      receiver: "admin",
+      sender: userId, // Current user ID
+      receiver: "672492e7112262789946add2", // Admin user ID
       message: inputValue,
-      isAdmin: false,
+      isAdmin: false, // User is not an admin
     };
 
     try {
       const response = await api.post("chats/", messageData);
       setMessages((prev) => [...prev, response.data]);
-      socket.emit("sendMessage", { chatId: userId, ...messageData });
+      socket.emit("sendMessage", response.data); // Emit the new message
       setInputValue("");
     } catch (err) {
       console.error("Failed to send message:", err);

@@ -20,7 +20,18 @@ const AdminChatPage = () => {
     try {
       const response = await api.get("chats/");
       if (response.data && Array.isArray(response.data)) {
-        setChats(response.data);
+        setChats(
+          response.data.map((chat) => ({
+            id: chat.sender?._id || chat.receiver?._id, // Use sender or receiver ID
+            username:
+              chat.sender?.username ||
+              chat.receiver?.username ||
+              "Unknown User",
+            email: chat.sender?.email || chat.receiver?.email || "N/A",
+            lastMessage: chat.lastMessage || "No messages yet",
+            lastMessageAt: chat.lastMessageAt,
+          }))
+        );
       } else {
         console.warn("Invalid chats response:", response.data);
         setChats([]);
@@ -32,45 +43,40 @@ const AdminChatPage = () => {
     }
   };
 
-  // Fetch messages for a selected chat
+  // Fetch messages for a selected user
   const fetchMessages = async (chatId) => {
-    console.log("Fetching messages for chatId:", chatId); // Debugging
-
     try {
       const response = await api.get(`chats/${chatId}`);
-      console.log("Fetched messages:", response.data); // Debugging
-      setMessages(response.data || []); // Fallback to an empty array if data is invalid
+      setMessages(response.data || []);
     } catch (err) {
       console.error("Failed to fetch messages:", err);
-      setMessages([]); // Fallback to an empty array on error
     }
   };
 
   // Select a chat
   const selectChat = (chat) => {
-    if (!chat || !chat.sender) {
-      console.warn("Invalid chat selected:", chat); // Debugging
+    if (!chat || !chat.id) {
+      console.warn("Invalid chat selected:", chat);
       return;
     }
     setSelectedChat(chat);
-    fetchMessages(chat._id);
+    fetchMessages(chat.id); // Fetch messages for the selected chat
   };
 
-  // Handle sending messages
   const handleSendMessage = async () => {
-    if (!inputValue.trim() || !user) return; // Exit if no message or user not loaded
+    if (!inputValue.trim() || !user || !selectedChat) return; // Exit if no message, user, or chat is selected
 
     const messageData = {
-      receiver: selectedChat?._id, // Send to the currently selected chat
+      receiver: selectedChat.id, // Use the correct `id` for the receiver
       message: inputValue,
-      isAdmin: true,
+      isAdmin: true, // Admin sending the message
     };
 
     try {
-      const response = await api.post("chats/", messageData);
-      setMessages((prev) => [...prev, response.data]);
-      socket.emit("sendMessage", { chatId: selectedChat._id, ...messageData });
-      setInputValue("");
+      const response = await api.post("chats/", messageData); // Post the message to the backend
+      setMessages((prev) => [...prev, response.data]); // Add the new message to the chat history
+      socket.emit("sendMessage", { chatId: selectedChat.id, ...messageData }); // Emit the message via Socket.IO
+      setInputValue(""); // Clear the input field
     } catch (err) {
       console.error("Failed to send message:", err);
     }
@@ -132,15 +138,15 @@ const AdminChatPage = () => {
           <ul className="space-y-2">
             {chats.map((chat) => (
               <li
-                key={chat._id}
+                key={chat.id}
                 onClick={() => selectChat(chat)}
                 className={`p-2 rounded-md cursor-pointer ${
-                  selectedChat?._id === chat._id
+                  selectedChat?.id === chat.id
                     ? "bg-blue-500 text-white"
                     : "hover:bg-gray-200"
                 }`}
               >
-                <p>{chat._id.username || "Unknown User"}</p>
+                <p>{chat.username || "Unknown User"}</p>
                 <p className="text-sm text-gray-500">
                   {chat.lastMessage || "No messages yet"}
                 </p>
@@ -207,10 +213,10 @@ const AdminChatPage = () => {
           <div>
             <p>
               <strong>Customer:</strong>{" "}
-              {selectedChat.sender?.username || "Unknown User"}
+              {selectedChat.username || "Unknown User"}
             </p>
             <p>
-              <strong>Email:</strong> {selectedChat.sender?.email || "N/A"}
+              <strong>Email:</strong> {selectedChat.email || "N/A"}
             </p>
           </div>
         ) : (

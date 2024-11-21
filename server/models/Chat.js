@@ -4,13 +4,13 @@ const chatMessageSchema = new mongoose.Schema(
   {
     sender: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // Reference to User schema
+      ref: "User", // Reference to the User schema
       required: true,
     },
     receiver: {
-      type: String, // "admin" for admin messages, or the specific admin's ID if required
+      type: mongoose.Schema.Types.ObjectId, // Reference to admin or user
+      ref: "User", // Reference to the User schema
       required: true,
-      default: "admin",
     },
     message: { type: String, required: true },
     isAdmin: { type: Boolean, default: false }, // Whether the sender is an admin
