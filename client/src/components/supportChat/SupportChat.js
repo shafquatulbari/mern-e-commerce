@@ -1,23 +1,22 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
-import { AuthContext } from "../../context/AuthContext";
 import api from "../../services/api";
 
 // Initialize Socket.IO
 const socket = io("http://localhost:4000"); // Replace with your backend URL
 
 const SupportChat = () => {
-  const { user } = useContext(AuthContext); // Get the user from context
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
+  const userId = localStorage.getItem("user_id"); // Get user ID from localStorage
 
   // Fetch previous chat messages
   const fetchChatMessages = async () => {
-    if (!user) return;
+    if (!userId) return; // Exit early if user ID is not available
 
     try {
-      const response = await api.get(`chats/${user.id}`);
+      const response = await api.get(`chats/${userId}`);
       if (response.data && Array.isArray(response.data)) {
         setMessages(response.data);
       } else {
@@ -31,7 +30,7 @@ const SupportChat = () => {
 
   // Send a message
   const handleSendMessage = async () => {
-    if (!inputValue.trim() || !user) return; // Exit early if no message or user not loaded
+    if (!inputValue.trim() || !userId) return; // Exit early if no message or user ID not available
 
     const messageData = {
       receiver: "admin",
@@ -42,7 +41,7 @@ const SupportChat = () => {
     try {
       const response = await api.post("chats/", messageData);
       setMessages((prev) => [...prev, response.data]);
-      socket.emit("sendMessage", { chatId: user.id, ...messageData });
+      socket.emit("sendMessage", { chatId: userId, ...messageData });
       setInputValue("");
     } catch (err) {
       console.error("Failed to send message:", err);
@@ -51,26 +50,26 @@ const SupportChat = () => {
 
   // Listen for real-time messages
   useEffect(() => {
-    if (!user) return; // Exit early if user is not loaded
+    if (!userId) return; // Exit early if user ID is not available
 
     socket.on("receiveMessage", (data) => {
-      if (data.sender === user.id || data.receiver === "admin") {
+      if (data.sender === userId || data.receiver === "admin") {
         setMessages((prev) => [...prev, data]);
       }
     });
 
     return () => socket.off("receiveMessage");
-  }, [user]);
+  }, [userId]);
 
   // Load previous messages when chat opens
   useEffect(() => {
-    if (isOpen && user) {
+    if (isOpen && userId) {
       fetchChatMessages();
     }
-  }, [isOpen, user]);
+  }, [isOpen, userId]);
 
-  if (!user) {
-    return null; // Render nothing until user is loaded
+  if (!userId) {
+    return null; // Render nothing if user ID is not available
   }
 
   return (
@@ -95,7 +94,7 @@ const SupportChat = () => {
                 <div
                   key={index}
                   className={`p-2 rounded-md max-w-max ${
-                    message.sender === user.id
+                    message.sender === userId
                       ? "bg-blue-500 text-white self-end"
                       : "bg-gray-100 self-start"
                   }`}
