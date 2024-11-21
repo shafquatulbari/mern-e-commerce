@@ -147,7 +147,13 @@ const AdminChatPage = () => {
                 }`}
               >
                 <p>{chat.username || "Unknown User"}</p>
-                <p className="text-sm text-gray-500">
+                <p
+                  className={`text-sm ${
+                    selectedChat?.id === chat.id
+                      ? "bg-blue-500 text-gray-700"
+                      : "hover:bg-gray-200"
+                  }`}
+                >
                   {chat.lastMessage || "No messages yet"}
                 </p>
               </li>
@@ -171,13 +177,28 @@ const AdminChatPage = () => {
             messages.map((message, index) => (
               <div
                 key={index}
-                className={`max-w-lg p-2 rounded-md ${
-                  message.isAdmin
-                    ? "bg-blue-500 text-white self-end text-right" // Admin messages: blue, right-aligned
-                    : "bg-gray-100 self-start text-left" // Customer messages: gray, left-aligned
+                className={`flex flex-col ${
+                  message.isAdmin ? "items-end" : "items-start"
                 }`}
               >
-                <p>{message.message || "No content"}</p> {/* Message content */}
+                {/* Message Box */}
+                <div
+                  className={`max-w-lg p-2 rounded-md ${
+                    message.isAdmin
+                      ? "bg-blue-500 text-white text-right" // Admin messages: blue, right-aligned
+                      : "bg-gray-100 text-left" // Customer messages: gray, left-aligned
+                  }`}
+                >
+                  <p>{message.message || "No content"}</p>{" "}
+                  {/* Message content */}
+                </div>
+                {/* Timestamp */}
+                <p className="text-xs text-gray-500 mt-1">
+                  {new Date(message.timestamp).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </p>
               </div>
             ))
           ) : (
