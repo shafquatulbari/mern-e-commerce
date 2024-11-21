@@ -19,8 +19,12 @@ const AdminChatPage = () => {
     setIsLoading(true);
     try {
       const response = await api.get("chats/");
-      console.log("Chats fetched:", response.data); // Debugging
-      setChats(response.data);
+      if (response.data && Array.isArray(response.data)) {
+        setChats(response.data);
+      } else {
+        console.warn("Invalid chats response:", response.data); // Debugging
+        setChats([]);
+      }
     } catch (err) {
       console.error("Failed to fetch chats:", err);
     } finally {
@@ -131,18 +135,22 @@ const AdminChatPage = () => {
         </div>
 
         <div className="flex-grow overflow-y-auto p-4 space-y-4">
-          {messages.map((message, index) => (
-            <div
-              key={index}
-              className={`max-w-lg p-2 rounded-md ${
-                message.sender === user?.id
-                  ? "bg-blue-500 text-white self-end"
-                  : "bg-gray-100 self-start"
-              }`}
-            >
-              {message.message}
-            </div>
-          ))}
+          {messages.length > 0 ? (
+            messages.map((message, index) => (
+              <div
+                key={index}
+                className={`max-w-lg p-2 rounded-md ${
+                  message.sender === user?.id
+                    ? "bg-blue-500 text-white self-end"
+                    : "bg-gray-100 self-start"
+                }`}
+              >
+                {message.message}
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-500">No messages yet</p> // Show a fallback message
+          )}
         </div>
 
         {/* Input */}

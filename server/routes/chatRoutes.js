@@ -1,6 +1,7 @@
 const express = require("express");
 const ChatMessage = require("../models/Chat");
 const { protect, admin } = require("../middleware/authMiddleware");
+const mongoose = require("mongoose");
 
 const router = express.Router();
 
@@ -18,12 +19,22 @@ router.get("/", protect, admin, async (req, res) => {
 
 // Get chats for a specific customer
 router.get("/:customerId", protect, async (req, res) => {
+  const { customerId } = req.params;
+  console.log("customerId", customerId);
+
+  // Validate the ObjectId
+  if (!mongoose.Types.ObjectId.isValid(customerId)) {
+    return res.status(400).json({ message: "Invalid customer ID" });
+  }
+
   try {
-    const chats = await ChatMessage.find({
-      sender: req.params.customerId,
-    }).populate("sender", "username email");
+    const chats = await ChatMessage.find({ sender: customerId }).populate(
+      "sender",
+      "username email"
+    );
     res.json(chats);
   } catch (error) {
+    console.error("Error fetching chats for customer:", error);
     res.status(500).json({ message: error.message });
   }
 });

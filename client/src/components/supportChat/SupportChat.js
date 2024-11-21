@@ -14,11 +14,16 @@ const SupportChat = () => {
 
   // Fetch previous chat messages
   const fetchChatMessages = async () => {
-    if (!user) return; // Exit early if user is not loaded
+    if (!user) return;
 
     try {
       const response = await api.get(`chats/${user.id}`);
-      setMessages(response.data);
+      if (response.data && Array.isArray(response.data)) {
+        setMessages(response.data);
+      } else {
+        console.warn("Invalid response format:", response.data); // Debugging
+        setMessages([]); // Fallback
+      }
     } catch (err) {
       console.error("Failed to fetch chat messages:", err);
     }
