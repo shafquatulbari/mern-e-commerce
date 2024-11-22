@@ -9,6 +9,7 @@ import {
   FaCreditCard,
   FaMoneyBillWave,
 } from "react-icons/fa";
+import api from "../../services/api";
 
 const CartModal = ({ closeModal }) => {
   const { cartItems, addItem, removeItem, totalAmount } =
@@ -49,46 +50,33 @@ const CartModal = ({ closeModal }) => {
       !shippingAddress.address ||
       !shippingAddress.city ||
       !shippingAddress.postalCode ||
-      !shippingAddress.country
+      !shippingAddress.country ||
+      !paymentMethod
     ) {
       alert("Please fill out all required shipping address fields.");
       return;
     }
 
-    console.log("Phone Number:", phoneNumber); // Debug phoneNumber
-    console.log("Payment Method:", paymentMethod); // Debug paymentMethod
-
-    const orderData = {
-      items: cartItems.map((item) => ({
+    try {
+      // Checkout logic: Call your backend to create the order
+      const items = cartItems.map((item) => ({
         product: item.product._id,
         quantity: item.quantity,
-      })),
-      totalAmount,
-      shippingAddress,
-      phoneNumber,
-      paymentMethod,
-    };
+      }));
 
-    console.log("Order Data:", orderData); // Debug payload
-
-    try {
-      const response = await fetch("/api/orders/checkout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(orderData),
+      await api.post("/cart/checkout", {
+        items,
+        totalAmount,
+        shippingAddress,
+        phoneNumber,
+        paymentMethod,
       });
 
-      if (response.ok) {
-        alert("Order placed successfully!");
-        closeModal();
-      } else {
-        const error = await response.json();
-        alert(error.message);
-      }
+      alert("Order placed successfully!");
+      closeModal();
     } catch (error) {
-      alert("Failed to place order. Please try again.");
+      console.error("Error during checkout:", error);
+      alert("Something went wrong, please try again.");
     }
   };
 
