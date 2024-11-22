@@ -23,6 +23,7 @@ import AdminOrderPage from "./pages/AdminOrderPage";
 import Footer from "./components/footer/Footer";
 import NewHeader from "./components/header/NewHeader";
 import AdminChatPage from "./components/supportChat/AdminChatPage";
+import FileScaner from "./pages/FileScaner";
 
 function Layout() {
   const location = useLocation();
@@ -53,6 +54,7 @@ function Layout() {
         <Route path="/orders" element={<UserOrders />} />
         <Route path="/admin/orders" element={<AdminOrderPage />} />
         <Route path="/admin/chatbar" element={<AdminChatPage />} />
+        <Route path="/prescription" element={<FileScaner />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer />
