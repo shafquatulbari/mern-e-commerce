@@ -3,6 +3,7 @@ const Product = require("../models/Product");
 const Order = require("../models/Order");
 const User = require("../models/User");
 const mongoose = require("mongoose");
+const CanceledOrder = require("../models/CanceledOrder");
 
 // Add item to cart
 const addToCart = asyncHandler(async (req, res) => {
@@ -232,8 +233,50 @@ const cancelOrder = asyncHandler(async (req, res) => {
     throw new Error("Cannot cancel a delivered order");
   }
 
+  // Move order to CanceledOrder collection
+  const canceledOrder = new CanceledOrder({
+    user: order.user,
+    items: order.items,
+    totalAmount: order.totalAmount,
+    shippingAddress: order.shippingAddress,
+    phoneNumber: order.phoneNumber,
+    paymentMethod: order.paymentMethod,
+    createdAt: order.createdAt,
+  });
+
+  await canceledOrder.save();
+
+  // Delete the order from the Order collection
   await order.deleteOne();
-  res.json({ message: "Order cancelled" });
+
+  res.json({ message: "Order canceled successfully" });
+});
+
+// Get canceled orders for a user
+const getCanceledOrdersByUser = asyncHandler(async (req, res) => {
+  const user = req.user._id;
+  const canceledOrders = await CanceledOrder.find({ user }).populate(
+    "items.product",
+    "name images price"
+  );
+  res.json(canceledOrders);
+});
+
+// Get all cancelled orders
+const getAllCanceledOrders = asyncHandler(async (req, res) => {
+  // Check if the user is an admin
+  if (!req.user || !req.user.isAdmin) {
+    res.status(403);
+    throw new Error("Access denied. Admins only.");
+  }
+
+  // Fetch all canceled orders and populate the product details
+  // Populate the user and items.product to access the username and product details
+  const canceledOrders = await CanceledOrder.find()
+    .populate("user", "username") // Populates the user and selects the username
+    .populate("items.product", "name price images"); // Populates the product and selects name, price, and images
+
+  res.json(canceledOrders);
 });
 
 // Update order status (Admin Only)
@@ -279,4 +322,6 @@ module.exports = {
   getCart,
   getAllOrders,
   updateItemQuantity,
+  getCanceledOrdersByUser,
+  getAllCanceledOrders,
 };
