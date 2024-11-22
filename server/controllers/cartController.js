@@ -217,6 +217,9 @@ const checkout = asyncHandler(async (req, res) => {
 
   const createdOrder = await order.save();
 
+  // Populate items.product to get product details
+  await createdOrder.populate("items.product", "name price images");
+
   // Email receipt
   const emailSubject = "Your Order Receipt";
   const emailText = `Thank you for your order. Your order ID is ${createdOrder._id}.`;
@@ -227,14 +230,25 @@ const checkout = asyncHandler(async (req, res) => {
     <p><strong>Total Amount:</strong> $${totalAmount}</p>
     <p><strong>Items:</strong></p>
     <ul>
-      ${items
-        .map(
-          (item) => `
-        <li>${item.product.name} (x${item.quantity}) - $${item.product.price}</li>
-      `
-        )
-        .join("")}
-    </ul>
+    ${createdOrder.items
+      .map((item) => {
+        const productName = item.product?.name || "Unknown Product";
+        const productPrice = item.product?.price
+          ? `$${item.product.price}`
+          : "Price not available";
+        const productImage = item.product?.images?.[0]
+          ? `<img src="${item.product.images[0]}" alt="${productName}" style="width: 50px; height: 50px;" />`
+          : `<span>No Image Available</span>`;
+
+        return `
+          <li>
+            ${productImage}
+            ${productName} (x${item.quantity}) - ${productPrice}
+          </li>
+        `;
+      })
+      .join("")}
+  </ul>
     <p><strong>Shipping Address:</strong></p>
     <p>${shippingAddress.address}, ${shippingAddress.city}, ${
     shippingAddress.postalCode
