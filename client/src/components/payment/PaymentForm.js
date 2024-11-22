@@ -2,8 +2,14 @@ import React, { useState, useContext } from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { CartContext } from "../../context/CartContext";
 import api from "../../services/api";
+import { FaCheckCircle, FaSpinner } from "react-icons/fa";
 
-const PaymentForm = ({ closeModal, shippingAddress }) => {
+const PaymentForm = ({
+  closeModal,
+  shippingAddress,
+  phoneNumber,
+  paymentMethod,
+}) => {
   const stripe = useStripe();
   const elements = useElements();
   const { cartItems, totalAmount } = useContext(CartContext);
@@ -47,6 +53,8 @@ const PaymentForm = ({ closeModal, shippingAddress }) => {
           items,
           totalAmount,
           shippingAddress,
+          phoneNumber,
+          paymentMethod,
         });
 
         alert("Order placed successfully!");
@@ -64,11 +72,21 @@ const PaymentForm = ({ closeModal, shippingAddress }) => {
     <form onSubmit={handleSubmit}>
       <CardElement className="p-2 border rounded mb-4" />
       <button
-        className="bg-blue-500 w-full p-2 rounded text-white mt-4"
+        className="bg-blue-500 w-full p-3 rounded text-white flex items-center justify-center hover:bg-blue-600 transition duration-300 ease-in-out shadow-lg"
         type="submit"
         disabled={!stripe || loading}
       >
-        {loading ? "Processing..." : "Order Now"}
+        {loading ? (
+          <span className="flex items-center">
+            <FaSpinner className="mr-2 animate-spin" />
+            Processing...
+          </span>
+        ) : (
+          <span className="flex items-center">
+            <FaCheckCircle className="mr-2" />
+            Pay Now
+          </span>
+        )}
       </button>
     </form>
   );

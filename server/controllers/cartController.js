@@ -117,7 +117,8 @@ const updateItemQuantity = asyncHandler(async (req, res) => {
 
 // Checkout and Create Order
 const checkout = asyncHandler(async (req, res) => {
-  const { items, totalAmount, shippingAddress } = req.body; // Include shippingAddress in the request body
+  const { items, totalAmount, shippingAddress, phoneNumber, paymentMethod } =
+    req.body;
   const user = await User.findById(req.user._id);
 
   if (
@@ -125,10 +126,31 @@ const checkout = asyncHandler(async (req, res) => {
     !shippingAddress.address ||
     !shippingAddress.city ||
     !shippingAddress.postalCode ||
-    !shippingAddress.country
+    !shippingAddress.country ||
+    !phoneNumber ||
+    !paymentMethod
   ) {
+    console.log("Missing Field:", {
+      shippingAddress,
+      phoneNumber,
+      paymentMethod,
+    }); // Log missing fields
     res.status(400);
     throw new Error("All fields in the shipping address are required");
+  }
+
+  if (!["card", "cash"].includes(paymentMethod)) {
+    res.status(400);
+    throw new Error("Invalid payment method. Choose either 'card' or 'cash'.");
+  }
+
+  // Validate phone number (e.g., 10-15 digits, no special characters or letters)
+  const phoneRegex = /^[0-9]{10,15}$/;
+  if (!phoneRegex.test(phoneNumber)) {
+    res.status(400);
+    throw new Error(
+      "Invalid phone number. It must contain only digits and be between 10 to 15 characters long."
+    );
   }
 
   // Deduct stock levels for each product in the cart
@@ -157,6 +179,8 @@ const checkout = asyncHandler(async (req, res) => {
     items,
     totalAmount,
     shippingAddress,
+    phoneNumber,
+    paymentMethod,
   });
 
   const createdOrder = await order.save();

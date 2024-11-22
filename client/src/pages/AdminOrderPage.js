@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../services/api";
 import BackButton from "../components/common/BackButton";
-import { FaCheckCircle, FaTruck } from "react-icons/fa";
+import { FaCheckCircle, FaTruck, FaPhoneAlt, FaCreditCard, FaMoneyBillWave } from "react-icons/fa";
 
 const AdminOrderPage = () => {
   const [orders, setOrders] = useState([]);
@@ -116,6 +116,28 @@ const AdminOrderPage = () => {
                   {order.shippingAddress.address}, {order.shippingAddress.city},{" "}
                   {order.shippingAddress.postalCode},{" "}
                   {order.shippingAddress.country}
+                </p>
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <h4 className="font-semibold text-gray-800">Phone Number:</h4>
+                <p className="text-gray-600 flex items-center">
+                  <FaPhoneAlt className="mr-2 text-blue-500" />
+                  {order.phoneNumber}
+                </p>
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <h4 className="font-semibold text-gray-800">Payment Method:</h4>
+                <p className="text-gray-600 flex items-center">
+                  {order.paymentMethod === "card" ? (
+                    <FaCreditCard className="mr-2 text-green-500" />
+                  ) : (
+                    <FaMoneyBillWave className="mr-2 text-yellow-500" />
+                  )}
+                  {order.paymentMethod === "card"
+                    ? "Paid by Card"
+                    : "Cash on Delivery"}
                 </p>
               </div>
 

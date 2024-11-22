@@ -4,6 +4,9 @@ import {
   FaCheckCircle,
   FaDollarSign,
   FaTimesCircle,
+  FaPhoneAlt,
+  FaCreditCard,
+  FaMoneyBillWave,
 } from "react-icons/fa"; // Importing icons from react-icons
 import api from "../../services/api";
 import BackButton from "../common/BackButton"; // Adjust path as needed
@@ -116,6 +119,28 @@ const UserOrders = () => {
                   {order.shippingAddress.address}, {order.shippingAddress.city},{" "}
                   {order.shippingAddress.postalCode},{" "}
                   {order.shippingAddress.country}
+                </p>
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <h4 className="font-semibold text-gray-800">Phone Number:</h4>
+                <p className="text-gray-600 flex items-center">
+                  <FaPhoneAlt className="mr-2 text-blue-500" />
+                  {order.phoneNumber}
+                </p>
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <h4 className="font-semibold text-gray-800">Payment Method:</h4>
+                <p className="text-gray-600 flex items-center">
+                  {order.paymentMethod === "card" ? (
+                    <FaCreditCard className="mr-2 text-green-500" />
+                  ) : (
+                    <FaMoneyBillWave className="mr-2 text-yellow-500" />
+                  )}
+                  {order.paymentMethod === "card"
+                    ? "Paid by Card"
+                    : "Cash on Delivery"}
                 </p>
               </div>
 

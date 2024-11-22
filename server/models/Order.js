@@ -21,6 +21,8 @@ const orderSchema = mongoose.Schema(
       postalCode: { type: String, required: true },
       country: { type: String, required: true },
     },
+    phoneNumber: { type: String, required: true }, // New field
+    paymentMethod: { type: String, enum: ["card", "cash"], required: true }, // New field
     createdAt: { type: Date, default: Date.now },
   },
   { timestamps: true }
