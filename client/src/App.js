@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -6,6 +6,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import { AuthContext } from "../src/context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
@@ -24,8 +25,10 @@ import Footer from "./components/footer/Footer";
 import NewHeader from "./components/header/NewHeader";
 import AdminChatPage from "./components/supportChat/AdminChatPage";
 import FileScanner from "./pages/FileScanner";
+import SupportChat from "./components/supportChat/SupportChat";
 
 function Layout() {
+  const { user } = useContext(AuthContext);
   const location = useLocation();
 
   return (
@@ -57,6 +60,8 @@ function Layout() {
         <Route path="/prescription" element={<FileScanner />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      {/* Show Support Chat for logged-in non-admin users */}
+      {user && !user.isAdmin && <SupportChat />}
       <Footer />
     </div>
   );
