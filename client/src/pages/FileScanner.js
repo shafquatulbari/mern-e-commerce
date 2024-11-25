@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import Tesseract from "tesseract.js";
+import api from "../services/api";
 import axios from "axios";
 
 const FileScanner = () => {
-  const [fileContent, setFileContent] = useState(null);
   const [fileName, setFileName] = useState(null);
+  const [preview, setPreview] = useState(null);
   const [ocrResult, setOcrResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -12,130 +12,118 @@ const FileScanner = () => {
   const handleFileChange = (event) => {
     const file = event.target.files?.[0];
 
-    if (file) {
+    if (file && file.type.startsWith("image/")) {
       setFileName(file.name);
       const reader = new FileReader();
-      reader.onload = (e) => {
-        const fileData = e.target?.result;
-        setFileContent(fileData);
 
-        // Start OCR process if the file is an image
-        if (file.type.startsWith("image/")) {
-          processOCR(fileData, file);
-        } else {
-          setOcrResult("OCR supports image files only.");
+      reader.onload = async (e) => {
+        const fileData = e.target.result;
+        setPreview(fileData);
+
+        // Resize and send file
+        setLoading(true);
+        setError(null);
+        try {
+          const resizedFile = await resizeImage(file);
+          const result = await processOCR(resizedFile);
+          setOcrResult(result);
+        } catch (ocrError) {
+          console.error("OCR Processing Failed:", ocrError);
+          setError("Failed to process the image. Please try again.");
+        } finally {
+          setLoading(false);
         }
       };
+
       reader.readAsDataURL(file);
+    } else {
+      setError("Please upload a valid image file.");
     }
   };
 
-  const preprocessImage = async (file) => {
-    // You can use a library like `sharp` for preprocessing if needed.
+  const resizeImage = async (file) => {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
     const img = new Image();
 
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       img.onload = () => {
-        canvas.width = img.width;
-        canvas.height = img.height;
+        const maxDim = 1024;
+        const scale = Math.min(maxDim / img.width, maxDim / img.height, 1);
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
 
-        // Convert image to grayscale
-        ctx.filter = "grayscale(100%)";
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-        resolve(canvas.toDataURL());
+        canvas.toBlob(
+          (blob) => {
+            resolve(blob);
+          },
+          "image/jpeg",
+          0.7 // Compression quality
+        );
       };
+      img.onerror = reject;
       img.src = URL.createObjectURL(file);
     });
   };
 
-  const processOCR = async (imageData, file) => {
-    setLoading(true);
-    setError(null);
-    setOcrResult(null);
-
+  const processOCR = async (file) => {
     try {
-      const preprocessedImage = await preprocessImage(file);
+      const formData = new FormData();
+      formData.append("image", file);
 
-      const {
-        data: { text },
-      } = await Tesseract.recognize(preprocessedImage, "eng", {
-        logger: (info) => console.log(info),
+      const response = await api.post("google/ocr", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
-      setOcrResult(text);
-    } catch (tesseractError) {
-      console.error(
-        "Tesseract.js failed. Falling back to Google OCR.",
-        tesseractError
-      );
 
-      try {
-        console.log("Calling Google OCR endpoint"); // Log to verify the call
-        const response = await axios.post("/google/ocr", {
-          image: imageData, // Send the original image to backend
-        });
-        console.log("Google OCR response:", response.data); // Log response
-        setOcrResult(response.data.text);
-      } catch (googleError) {
-        console.error("Google OCR failed.", googleError);
-        setError("OCR failed. Please try again with a clearer image.");
-      }
-    } finally {
-      setLoading(false);
+      return response.data.text || "No text detected.";
+    } catch (error) {
+      console.error("Google OCR API Error:", error);
+      throw new Error("OCR API failed.");
     }
   };
 
   return (
-    <div className="file-upload-reader p-4">
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">File Scanner</h1>
       <label
         htmlFor="file-input"
-        className="block mb-2 text-lg font-medium text-gray-700"
+        className="block text-lg font-medium text-gray-700 mb-2"
       >
-        Upload a File (Image for OCR)
+        Upload an Image
       </label>
       <input
         type="file"
         id="file-input"
         accept="image/*"
         onChange={handleFileChange}
-        className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer focus:outline-none"
+        className="block w-full border border-gray-300 rounded-lg p-2"
       />
       {fileName && (
-        <div className="mt-4">
-          <h3 className="text-xl font-bold">File Name:</h3>
-          <p>{fileName}</p>
-        </div>
+        <p className="mt-2 text-gray-700">
+          <strong>File Name:</strong> {fileName}
+        </p>
       )}
-      {fileContent && (
+      {preview && (
         <div className="mt-4">
-          <h3 className="text-xl font-bold">Preview:</h3>
+          <h3 className="text-lg font-bold">Preview:</h3>
           <img
-            src={fileContent}
+            src={preview}
             alt="Uploaded File"
-            className="max-w-full max-h-60 border rounded-lg"
+            className="border rounded-lg max-w-full max-h-60"
           />
         </div>
       )}
-      {loading && (
-        <div className="mt-4 text-blue-500">
-          <p>Processing OCR... Please wait.</p>
-        </div>
-      )}
+      {loading && <p className="mt-4 text-blue-500">Processing OCR...</p>}
       {ocrResult && (
         <div className="mt-4">
-          <h3 className="text-xl font-bold">Extracted Text:</h3>
-          <pre className="p-2 bg-gray-100 rounded-lg max-h-60 overflow-auto text-sm">
+          <h3 className="text-lg font-bold">Extracted Text:</h3>
+          <pre className="bg-gray-100 p-2 rounded-lg text-sm overflow-auto max-h-60">
             {ocrResult}
           </pre>
         </div>
       )}
-      {error && (
-        <div className="mt-4 text-red-500">
-          <p>{error}</p>
-        </div>
-      )}
+      {error && <p className="mt-4 text-red-500">{error}</p>}
     </div>
   );
 };
