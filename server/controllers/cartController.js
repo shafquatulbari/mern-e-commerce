@@ -3,7 +3,31 @@ const Product = require("../models/Product");
 const Order = require("../models/Order");
 const User = require("../models/User");
 const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+dotenv.config();
 const CanceledOrder = require("../models/CanceledOrder");
+const nodemailer = require("nodemailer");
+
+// Function to send an email
+const sendEmail = async (to, subject, text, html) => {
+  const transporter = nodemailer.createTransport({
+    service: "gmail", // Use your email service (Gmail, SMTP, etc.)
+    auth: {
+      user: process.env.EMAIL_USER, // Your email address
+      pass: process.env.EMAIL_PASS, // Your email password or app password
+    },
+  });
+
+  await transporter.sendMail({
+    from: `"PharmaSphere" <${process.env.EMAIL_USER}>`, // Sender
+    to, // Receiver
+    subject, // Subject
+    text, // Plain text content
+    html, // HTML content
+  });
+
+  console.log("Email sent to:", to);
+};
 
 // Add item to cart
 const addToCart = asyncHandler(async (req, res) => {
@@ -122,6 +146,13 @@ const checkout = asyncHandler(async (req, res) => {
     req.body;
   const user = await User.findById(req.user._id);
 
+  const email = user.email; // Get user's email from the database
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    res.status(400);
+    throw new Error("Invalid email address.");
+  }
+
   if (
     !shippingAddress ||
     !shippingAddress.address ||
@@ -185,6 +216,48 @@ const checkout = asyncHandler(async (req, res) => {
   });
 
   const createdOrder = await order.save();
+
+  // Populate items.product to get product details
+  await createdOrder.populate("items.product", "name price images");
+
+  // Email receipt
+  const emailSubject = "Your Order Receipt";
+  const emailText = `Thank you for your order. Your order ID is ${createdOrder._id}.`;
+  const emailHtml = `
+    <h2>Order Receipt</h2>
+    <p>Thank you ${user.username} for ordering from PharmaSphere.</p>
+    <p><strong>Order ID:</strong> ${createdOrder._id}</p>
+    <p><strong>Total Amount:</strong> $${totalAmount}</p>
+    <p><strong>Items:</strong></p>
+    <ul>
+    ${createdOrder.items
+      .map((item) => {
+        const productName = item.product?.name || "Unknown Product";
+        const productPrice = item.product?.price
+          ? `$${item.product.price}`
+          : "Price not available";
+        const productImage = item.product?.images?.[0]
+          ? `<img src="${item.product.images[0]}" alt="${productName}" style="width: 50px; height: 50px;" />`
+          : `<span>No Image Available</span>`;
+
+        return `
+          <li>
+            ${productImage}
+            ${productName} (x${item.quantity}) - ${productPrice}
+          </li>
+        `;
+      })
+      .join("")}
+  </ul>
+    <p><strong>Shipping Address:</strong></p>
+    <p>${shippingAddress.address}, ${shippingAddress.city}, ${
+    shippingAddress.postalCode
+  }, ${shippingAddress.country}</p>
+    <p><strong>Phone:</strong> ${phoneNumber}</p>
+    <p><strong>Payment Method:</strong> ${paymentMethod}</p>
+  `;
+
+  await sendEmail(email, emailSubject, emailText, emailHtml);
 
   //clear the user's cart
   user.cart = [];
