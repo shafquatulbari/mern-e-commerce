@@ -248,14 +248,14 @@ const CartModal = ({ closeModal }) => {
               }
               className="w-full p-2 border rounded mb-4 text-black"
             />
-            {paymentMethod === "card" ? (
+            {cartItems.length > 0 && paymentMethod === "card" ? (
               <PaymentForm
                 closeModal={closeModal}
                 shippingAddress={shippingAddress}
                 phoneNumber={phoneNumber}
                 paymentMethod={paymentMethod}
               />
-            ) : (
+            ) : cartItems.length > 0 ? (
               <button
                 className="bg-blue-500 w-full p-3 rounded text-white mt-4 flex items-center justify-center hover:bg-blue-600 transition duration-300 ease-in-out shadow-lg"
                 onClick={handleOrderNow}
@@ -263,6 +263,10 @@ const CartModal = ({ closeModal }) => {
                 <FaCheckCircle className="mr-2" />
                 Place Order Now
               </button>
+            ) : (
+              <p className="text-black text-center">
+                Your cart is empty. Add items to proceed with checkout.
+              </p>
             )}
           </div>
         </div>

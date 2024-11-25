@@ -21,6 +21,7 @@ This project is a fully functional e-commerce platform for a medicine store, bui
    - [Manufacturer Endpoints](#manufacturer-endpoints)
    - [Order Endpoints](#order-endpoints)
    - [Review Endpoints](#review-endpoints)
+   - [Chat Endpoints](#chat-endpoints)
 8. [Stripe Integration](#stripe-integration)
 9. [Notifications](#notifications)
 10. [Future Improvements](#future-improvements)
@@ -37,6 +38,7 @@ The Medicine Store E-commerce Platform provides an efficient and secure way to m
 ## Features
 
 ### Admin Panel
+
 - **View/Edit Products**: Admins can view, update, or delete any product details, including images, descriptions, stock levels, and prices.
 - **Manage Categories**: Admins can create, edit, or delete product categories.
 - **Manage Manufacturers**: Admins can add, update, or delete manufacturer details.
@@ -45,6 +47,7 @@ The Medicine Store E-commerce Platform provides an efficient and secure way to m
 - **Low Stock Notifications**: Admins receive notifications for products that have a stock level below a specified threshold.
 
 ### Customer Interface
+
 - **Product Browsing**: Customers can browse products by category and search for specific items.
 - **Cart Functionality**: Customers can add products to their cart, update quantities, or remove items.
 - **Order Placement**: Customers can place orders and make payments securely using Stripe.
@@ -67,15 +70,55 @@ The Medicine Store E-commerce Platform provides an efficient and secure way to m
 
 ---
 
+### New Features
+
+#### 1. Support Chat Functionality
+
+The platform now supports real-time chat between customers and admins:
+
+**Admin Panel:**
+
+- View a list of active customer chats.
+- Send and receive messages with real-time updates using Socket.IO.
+- See customer details like name and email in the chat information panel.
+
+**Customer Interface:**
+
+- Start a chat with the admin from the customer dashboard.
+- View chat history and communicate in real time.
+
+**Tech Stack:**
+
+- **Backend**: Implemented with Socket.IO, Express.js, and MongoDB for chat persistence.
+- **Frontend**: Real-time communication integrated into React components using the Socket.IO client.
+
+#### 2. OCR-based Prescription Scanner
+
+The platform introduces a **Prescription Scanner** that uses Google Vision API for Optical Character Recognition (OCR):
+
+- Customers can upload prescription images.
+- Extracted text is matched with the database to fetch recommended medicines.
+- Customers can add the matched medicines directly to the cart.
+
+**Tech Stack:**
+
+- **Backend**: Google Vision API integrated via Express.js for text extraction.
+- **Frontend**: File upload and image preview implemented with React and Tailwind CSS.
+
+---
+
 ## Setup and Installation
 
 ### Prerequisites
+
 - **Node.js** and **npm** installed
 - **MongoDB** set up locally or on a cloud service (e.g., MongoDB Atlas)
 - **Stripe** account for payment processing
+
 ### Installation Steps (continued)
 
 6. **Set Up Frontend Environment Variables**:
+
    - Create a `.env` file in the `frontend` directory (if needed) and configure any environment variables specific to the frontend setup, such as:
      ```env
      REACT_APP_API_URL=http://127.0.0.1:4000/api
@@ -83,6 +126,7 @@ The Medicine Store E-commerce Platform provides an efficient and secure way to m
      ```
 
 7. **Start Both Servers**:
+
    - **Run the backend**:
      ```bash
      cd server
@@ -103,6 +147,7 @@ The Medicine Store E-commerce Platform provides an efficient and secure way to m
 ## Folder Structure
 
 ### Backend
+
 - **controllers/**: Logic for handling requests (user, product, order, etc.)
 - **models/**: Mongoose models for MongoDB collections
 - **routes/**: API routes for different entities
@@ -110,6 +155,7 @@ The Medicine Store E-commerce Platform provides an efficient and secure way to m
 - **utils/**: Utility functions, like token generation
 
 ### Frontend
+
 - **components/**: Reusable React components
 - **context/**: Context API for managing global state (AuthContext, CartContext)
 - **pages/**: Main pages, like Home, Product Details, Cart, and Admin Dashboard
@@ -121,11 +167,13 @@ The Medicine Store E-commerce Platform provides an efficient and secure way to m
 ## API Endpoints
 
 ### User Endpoints
+
 - **POST /api/users/register**: Register a new user
 - **POST /api/users/login**: Authenticate a user and return a JWT
 - **GET /api/users/user-info**: Retrieve information about the logged-in user (protected)
 
 ### Product Endpoints
+
 - **GET /api/products/**: Fetch all products
 - **GET /api/products/:id**: Fetch a specific product by ID
 - **POST /api/products/**: Add a new product (admin only)
@@ -133,18 +181,21 @@ The Medicine Store E-commerce Platform provides an efficient and secure way to m
 - **DELETE /api/products/:id**: Delete a product (admin only)
 
 ### Category Endpoints
+
 - **GET /api/categories/**: Fetch all product categories
 - **POST /api/categories/**: Create a new category (admin only)
 - **PUT /api/categories/:id**: Update category details (admin only)
 - **DELETE /api/categories/:id**: Remove a category (admin only)
 
 ### Manufacturer Endpoints
+
 - **GET /api/manufacturers/**: Fetch all manufacturers
 - **POST /api/manufacturers/**: Add a new manufacturer (admin only)
 - **PUT /api/manufacturers/:id**: Edit manufacturer details (admin only)
 - **DELETE /api/manufacturers/:id**: Remove a manufacturer (admin only)
 
 ### Order Endpoints
+
 - **GET /api/orders/**: Get all orders (admin only)
 - **GET /api/orders/user**: Get orders of the logged-in user
 - **POST /api/orders/**: Place a new order
@@ -152,14 +203,26 @@ The Medicine Store E-commerce Platform provides an efficient and secure way to m
 - **DELETE /api/orders/:id**: Cancel an order (user)
 
 ### Review Endpoints
+
 - **POST /api/products/:id/reviews**: Leave a review for a product
 - **DELETE /api/products/:id/reviews/:reviewId**: Remove a review (user/admin)
+
+### Chat Endpoints
+
+- **GET /api/chats/**: Fetch a list of active chats (admin only).
+- **GET /api/chats/:customerId**: Retrieve all messages exchanged with a specific customer.
+- **POST /api/chats/**: Send a message (admin or customer).
+
+### OCR Endpoint
+
+- **POST /api/google/ocr**: Upload an image to extract text using Google OCR.
 
 ---
 
 ## Stripe Integration
 
 Stripe is used to handle secure payment processing. Ensure your Stripe API keys are correctly set up in your environment variables:
+
 - **STRIPE_SECRET_KEY** for the backend
 - **REACT_APP_STRIPE_PUBLIC_KEY** for the frontend
 
