@@ -10,6 +10,8 @@
   "author": "Shafquat",
   "license": "MIT",
   "dependencies": {
+    "@google-cloud/storage": "^7.14.0",
+    "@google-cloud/vision": "^4.3.2",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",

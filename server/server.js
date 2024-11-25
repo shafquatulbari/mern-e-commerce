@@ -14,6 +14,7 @@ const cartRoutes = require("./routes/cartRoutes");
 const stripeRoutes = require("./routes/stripeRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const chatRoutes = require("./routes/chatRoutes");
+const googleOCRRoutes = require("./routes/googleOCRRoutes");
 
 dotenv.config();
 connectDB();
@@ -41,6 +42,7 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/stripe", stripeRoutes);
 app.use("/api/chats", chatRoutes);
+app.use("/api/google", googleOCRRoutes);
 
 // Socket.IO Logic
 io.on("connection", (socket) => {
