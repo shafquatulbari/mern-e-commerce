@@ -19,6 +19,30 @@ const searchProducts = asyncHandler(async (req, res) => {
   res.json(products);
 });
 
+const searchProductsOCR = asyncHandler(async (req, res) => {
+  const searchQuery = req.query.search; // Extract the search query
+
+  if (!searchQuery) {
+    res.status(400);
+    throw new Error("Search query is required");
+  }
+
+  try {
+    // Split the search query into individual words
+    const keywords = searchQuery.split(/\s+/);
+    const regex = new RegExp(`\\b(${keywords.join("|")})\\b`, "i"); // Match whole words, case-insensitive
+
+    const products = await Product.find({
+      name: regex, // Match product names with stricter criteria
+    });
+
+    res.json(products);
+  } catch (error) {
+    console.error("Error searching products:", error);
+    res.status(500).json({ message: "Error searching products" });
+  }
+});
+
 // Get all products
 const getProducts = asyncHandler(async (req, res) => {
   const { category, manufacturer, sortBy, order = "desc" } = req.query;
@@ -226,4 +250,5 @@ module.exports = {
   addReview,
   deleteReview,
   getProductById,
+  searchProductsOCR,
 };

@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import api from "../services/api";
-import axios from "axios";
 
 const FileScanner = () => {
   const [fileName, setFileName] = useState(null);
   const [preview, setPreview] = useState(null);
-  const [ocrResult, setOcrResult] = useState(null);
+  const [ocrText, setOcrText] = useState(null); // Store extracted text
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -25,8 +25,9 @@ const FileScanner = () => {
         setError(null);
         try {
           const resizedFile = await resizeImage(file);
-          const result = await processOCR(resizedFile);
-          setOcrResult(result);
+          const ocrResult = await processOCR(resizedFile);
+          setOcrText(ocrResult); // Store OCR text
+          await fetchProducts(ocrResult);
         } catch (ocrError) {
           console.error("OCR Processing Failed:", ocrError);
           setError("Failed to process the image. Please try again.");
@@ -76,21 +77,33 @@ const FileScanner = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      return response.data.text || "No text detected.";
+      return response.data.text || "";
     } catch (error) {
       console.error("Google OCR API Error:", error);
       throw new Error("OCR API failed.");
     }
   };
 
+  const fetchProducts = async (ocrText) => {
+    try {
+      const response = await api.get("products/searchOCR", {
+        params: { search: ocrText },
+      });
+      setProducts(response.data);
+    } catch (fetchError) {
+      console.error("Error fetching products:", fetchError);
+      setError("No medicines with the names in our store.");
+    }
+  };
+
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">File Scanner</h1>
+      <h1 className="text-2xl font-bold mb-4">Prescription Scanner</h1>
       <label
         htmlFor="file-input"
         className="block text-lg font-medium text-gray-700 mb-2"
       >
-        Upload an Image
+        Upload a Prescription Image
       </label>
       <input
         type="file"
@@ -114,16 +127,41 @@ const FileScanner = () => {
           />
         </div>
       )}
-      {loading && <p className="mt-4 text-blue-500">Processing OCR...</p>}
-      {ocrResult && (
+      {ocrText && (
         <div className="mt-4">
           <h3 className="text-lg font-bold">Extracted Text:</h3>
-          <pre className="bg-gray-100 p-2 rounded-lg text-sm overflow-auto max-h-60">
-            {ocrResult}
-          </pre>
+          <p className="bg-gray-100 p-2 rounded-lg text-sm">{ocrText}</p>
         </div>
       )}
-      {error && <p className="mt-4 text-red-500">{error}</p>}
+      {loading && <p className="mt-4 text-blue-500">Processing OCR...</p>}
+      {products.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+          {products.map((product) => (
+            <div
+              key={product._id}
+              className="border p-4 rounded-lg shadow-md bg-white transition-all transform hover:scale-105 hover:shadow-2xl hover:border-blue-500"
+            >
+              <h3 className="text-xl font-bold mb-2 text-blue-600 hover:underline">
+                {product.name}
+              </h3>
+              <img
+                src={product.images?.[0] || "https://via.placeholder.com/300"}
+                alt={product.name}
+                className="w-full h-60 object-cover mb-2 rounded-md"
+              />
+              <p className="text-lg text-green-600 font-semibold mb-1">
+                Price: ${product.price}
+              </p>
+              <p className="text-sm text-gray-600">
+                Stock: {product.stock_level}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+      {!loading && products.length === 0 && error && (
+        <p className="mt-4 text-red-500">{error}</p>
+      )}
     </div>
   );
 };
