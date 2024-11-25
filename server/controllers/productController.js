@@ -28,13 +28,58 @@ const searchProductsOCR = asyncHandler(async (req, res) => {
   }
 
   try {
-    // Split the search query into individual words
-    const keywords = searchQuery.split(/\s+/);
-    const regex = new RegExp(`\\b(${keywords.join("|")})\\b`, "i"); // Match whole words, case-insensitive
+    // Check for prescription-related keywords
+    const validPrescriptionKeywords = ["hospital", "clinic", "care", "dr"];
+    const lowerCaseQuery = searchQuery.toLowerCase();
+    const containsPrescriptionKeywords = validPrescriptionKeywords.some(
+      (keyword) => lowerCaseQuery.includes(keyword)
+    );
 
-    const products = await Product.find({
-      name: regex, // Match product names with stricter criteria
+    if (!containsPrescriptionKeywords) {
+      return res
+        .status(400)
+        .json({ message: "This does not appear to be a valid prescription." });
+    }
+
+    // Preprocess the text to extract valid medicine names
+    const keywords = searchQuery
+      .split(/\s+/)
+      .map((word) => word.replace(/[^a-zA-Z]/g, "").trim()) // Remove numbers, punctuation
+      .filter((word) => word.length > 0 && isNaN(word)); // Filter out empty strings and numbers
+
+    console.log("Processed Keywords:", keywords); // Debugging
+
+    if (keywords.length === 0) {
+      return res.status(400).json({
+        message: "No valid medicine names found in the prescription.",
+      });
+    }
+
+    // Attempt exact match first
+    const exactRegexArray = keywords.map(
+      (keyword) => new RegExp(`^${keyword}$`, "i") // Exact match
+    );
+
+    let products = await Product.find({
+      $or: exactRegexArray.map((regex) => ({ name: regex })),
     });
+
+    // If no products found, try partial match
+    if (products.length === 0) {
+      const partialRegexArray = keywords.map(
+        (keyword) => new RegExp(keyword, "i") // Partial match
+      );
+
+      products = await Product.find({
+        $or: partialRegexArray.map((regex) => ({ name: regex })),
+      });
+    }
+
+    if (products.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No matching medicines found in our store." });
+    }
 
     res.json(products);
   } catch (error) {
