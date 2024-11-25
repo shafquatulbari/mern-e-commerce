@@ -4,12 +4,14 @@
   "description": "inventory backend with node",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "server": "nodemon server.js"
+    "start": "node --max-old-space-size=4096 server.js",
+    "server": "nodemon --max-old-space-size=4096 server.js"
   },
   "author": "Shafquat",
   "license": "MIT",
   "dependencies": {
+    "@google-cloud/storage": "^7.14.0",
+    "@google-cloud/vision": "^4.3.2",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
@@ -19,6 +21,9 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.10.0",
     "mongoose": "^8.8.0",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.16",
+    "socket.io": "^4.8.1",
     "stripe": "^17.3.1"
   },
   "devDependencies": {

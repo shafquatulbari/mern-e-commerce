@@ -1,17 +1,84 @@
 import React, { useContext, useState } from "react";
 import { CartContext } from "../../context/CartContext";
 import PaymentForm from "../payment/PaymentForm";
-import { FaPlus, FaMinus, FaTrash } from "react-icons/fa";
+import {
+  FaPlus,
+  FaMinus,
+  FaTrash,
+  FaCheckCircle,
+  FaCreditCard,
+  FaMoneyBillWave,
+} from "react-icons/fa";
+import api from "../../services/api";
 
 const CartModal = ({ closeModal }) => {
   const { cartItems, addItem, removeItem, totalAmount } =
     useContext(CartContext);
+
   const [shippingAddress, setShippingAddress] = useState({
     address: "",
     city: "",
     postalCode: "",
     country: "",
   });
+
+  const [phoneNumber, setPhoneNumber] = useState(""); // New state for phone number
+  const [paymentMethod, setPaymentMethod] = useState("card");
+  const [phoneError, setPhoneError] = useState(""); // State for phone number validation
+
+  // Handle phone number input and validation
+  const handlePhoneNumberChange = (e) => {
+    const value = e.target.value;
+    const phoneRegex = /^[0-9]{10,15}$/; // Validates 10-15 digits
+
+    if (!phoneRegex.test(value)) {
+      setPhoneError("Invalid phone number. Must be 10-15 digits.");
+    } else {
+      setPhoneError("");
+    }
+
+    setPhoneNumber(value);
+  };
+
+  const handleOrderNow = async () => {
+    if (!phoneNumber || phoneError) {
+      alert("Please provide a valid phone number.");
+      return;
+    }
+
+    if (
+      !shippingAddress.address ||
+      !shippingAddress.city ||
+      !shippingAddress.postalCode ||
+      !shippingAddress.country ||
+      !paymentMethod
+    ) {
+      alert("Please fill out all required shipping address fields.");
+      return;
+    }
+
+    try {
+      // Checkout logic: Call your backend to create the order
+      const items = cartItems.map((item) => ({
+        product: item.product._id,
+        quantity: item.quantity,
+      }));
+
+      await api.post("/cart/checkout", {
+        items,
+        totalAmount,
+        shippingAddress,
+        phoneNumber,
+        paymentMethod,
+      });
+
+      alert("Order placed successfully!");
+      closeModal();
+    } catch (error) {
+      console.error("Error during checkout:", error);
+      alert("Something went wrong, please try again.");
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -96,9 +163,46 @@ const CartModal = ({ closeModal }) => {
             )}
           </div>
           <div className="md:w-1/3 md:pl-4 pt-4 md:pt-0">
-            <h2 className="text-2xl font-bold mb-4 text-black">
-              Shipping Address
-            </h2>
+            <h3 className="text-lg font-bold mb-4 text-black">
+              Shipping & Payment Method
+            </h3>
+            <div className="mb-4">
+              <label className="block mb-2 text-black flex items-center">
+                <FaMoneyBillWave className="mr-2 text-yellow-500" />
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="cash"
+                  checked={paymentMethod === "cash"}
+                  onChange={() => setPaymentMethod("cash")}
+                  className="mr-2"
+                />
+                Cash on Delivery
+              </label>
+              <label className="block text-black flex items-center">
+                <FaCreditCard className="mr-2 text-green-500" />
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="card"
+                  checked={paymentMethod === "card"}
+                  onChange={() => setPaymentMethod("card")}
+                  className="mr-2"
+                />
+                Pay by Card
+              </label>
+            </div>
+
+            <input
+              type="text"
+              placeholder="Phone Number"
+              value={phoneNumber}
+              onChange={handlePhoneNumberChange}
+              className={`w-full p-2 border rounded mb-2 text-black ${
+                phoneError ? "border-red-500" : "border-gray-300"
+              }`}
+            />
+            {phoneError && <p className="text-red-500 text-sm">{phoneError}</p>}
             <input
               type="text"
               placeholder="Address"
@@ -144,10 +248,22 @@ const CartModal = ({ closeModal }) => {
               }
               className="w-full p-2 border rounded mb-4 text-black"
             />
-            <PaymentForm
-              closeModal={closeModal}
-              shippingAddress={shippingAddress}
-            />
+            {paymentMethod === "card" ? (
+              <PaymentForm
+                closeModal={closeModal}
+                shippingAddress={shippingAddress}
+                phoneNumber={phoneNumber}
+                paymentMethod={paymentMethod}
+              />
+            ) : (
+              <button
+                className="bg-blue-500 w-full p-3 rounded text-white mt-4 flex items-center justify-center hover:bg-blue-600 transition duration-300 ease-in-out shadow-lg"
+                onClick={handleOrderNow}
+              >
+                <FaCheckCircle className="mr-2" />
+                Place Order Now
+              </button>
+            )}
           </div>
         </div>
       </div>

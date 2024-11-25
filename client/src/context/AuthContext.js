@@ -11,6 +11,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await api.get("user/user-info/");
       setUser({
+        id: response.data._id,
         username: response.data.username,
         isAdmin: response.data.isAdmin,
       });
@@ -42,6 +43,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem("access_token");
+    localStorage.removeItem("user_id");
     setUser(null);
   };
 

@@ -19,6 +19,75 @@ const searchProducts = asyncHandler(async (req, res) => {
   res.json(products);
 });
 
+const searchProductsOCR = asyncHandler(async (req, res) => {
+  const searchQuery = req.query.search; // Extract the search query
+
+  if (!searchQuery) {
+    res.status(400);
+    throw new Error("Search query is required");
+  }
+
+  try {
+    // Check for prescription-related keywords
+    const validPrescriptionKeywords = ["hospital", "clinic", "care", "dr"];
+    const lowerCaseQuery = searchQuery.toLowerCase();
+    const containsPrescriptionKeywords = validPrescriptionKeywords.some(
+      (keyword) => lowerCaseQuery.includes(keyword)
+    );
+
+    if (!containsPrescriptionKeywords) {
+      return res
+        .status(400)
+        .json({ message: "This does not appear to be a valid prescription." });
+    }
+
+    // Preprocess the text to extract valid medicine names
+    const keywords = searchQuery
+      .split(/\s+/)
+      .map((word) => word.replace(/[^a-zA-Z]/g, "").trim()) // Remove numbers, punctuation
+      .filter((word) => word.length > 0 && isNaN(word)); // Filter out empty strings and numbers
+
+    console.log("Processed Keywords:", keywords); // Debugging
+
+    if (keywords.length === 0) {
+      return res.status(400).json({
+        message: "No valid medicine names found in the prescription.",
+      });
+    }
+
+    // Attempt exact match first
+    const exactRegexArray = keywords.map(
+      (keyword) => new RegExp(`^${keyword}$`, "i") // Exact match
+    );
+
+    let products = await Product.find({
+      $or: exactRegexArray.map((regex) => ({ name: regex })),
+    });
+
+    // If no products found, try partial match
+    if (products.length === 0) {
+      const partialRegexArray = keywords.map(
+        (keyword) => new RegExp(keyword, "i") // Partial match
+      );
+
+      products = await Product.find({
+        $or: partialRegexArray.map((regex) => ({ name: regex })),
+      });
+    }
+
+    if (products.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No matching medicines found in our store." });
+    }
+
+    res.json(products);
+  } catch (error) {
+    console.error("Error searching products:", error);
+    res.status(500).json({ message: "Error searching products" });
+  }
+});
+
 // Get all products
 const getProducts = asyncHandler(async (req, res) => {
   const { category, manufacturer, sortBy, order = "desc" } = req.query;
@@ -226,4 +295,5 @@ module.exports = {
   addReview,
   deleteReview,
   getProductById,
+  searchProductsOCR,
 };

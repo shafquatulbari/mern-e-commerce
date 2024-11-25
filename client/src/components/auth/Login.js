@@ -21,6 +21,7 @@ const Login = () => {
         password,
       });
       localStorage.setItem("access_token", response.data.token);
+      localStorage.setItem("user_id", response.data._id);
       login({ username });
       navigate("/homepage");
     } catch (err) {

@@ -51,9 +51,9 @@ const NewHeader = () => {
           <div className="hidden md:flex space-x-8">
             {[
               { to: "/homepage", label: "Home" },
-              { to: "/products", label: "All Products" },
+              { to: "/products", label: "Products" },
               { to: "/categories", label: "Categories" },
-              { to: "/manufacturers", label: "All Manufacturers" },
+              { to: "/manufacturers", label: "Manufacturers" },
             ].map(({ to, label }) => (
               <NavLink
                 key={to}
@@ -68,19 +68,42 @@ const NewHeader = () => {
               </NavLink>
             ))}
             {user && user.isAdmin && (
-              <NavLink
-                to="/admin/orders"
-                className={({ isActive }) =>
-                  `hover:text-gray-500 ${
-                    isActive ? "underline underline-offset-8" : ""
-                  }`
-                }
-              >
-                All User Orders
-              </NavLink>
+              <>
+                <NavLink
+                  to="/admin/orders"
+                  className={({ isActive }) =>
+                    `hover:text-gray-500 ${
+                      isActive ? "underline underline-offset-8" : ""
+                    }`
+                  }
+                >
+                  All User Orders
+                </NavLink>
+                <NavLink
+                  to="/admin/chatbar"
+                  className={({ isActive }) =>
+                    `hover:text-gray-500 ${
+                      isActive ? "underline underline-offset-8" : ""
+                    }`
+                  }
+                >
+                  Chat
+                </NavLink>
+              </>
             )}
             {user && !user.isAdmin && (
               <>
+                <NavLink
+                  to="/prescription"
+                  onClick={() => setIsMenuOpen(false)}
+                  className={({ isActive }) =>
+                    `hover:text-gray-500 ${
+                      isActive ? "underline underline-offset-8" : ""
+                    }`
+                  }
+                >
+                  Prescription
+                </NavLink>
                 <button
                   onClick={toggleCartModal}
                   className="flex items-center text-gray-800"
@@ -155,9 +178,9 @@ const NewHeader = () => {
           <div className="md:hidden flex flex-col space-y-4 mt-4 px-4">
             {[
               { to: "/", label: "Home" },
-              { to: "/products", label: "All Products" },
+              { to: "/products", label: "Products" },
               { to: "/categories", label: "Categories" },
-              { to: "/manufacturers", label: "All Manufacturers" },
+              { to: "/manufacturers", label: "Manufacturers" },
             ].map(({ to, label }) => (
               <NavLink
                 key={to}
@@ -183,6 +206,17 @@ const NewHeader = () => {
             )}
             {user && !user.isAdmin && (
               <>
+                <NavLink
+                  to="/prescription"
+                  onClick={() => setIsMenuOpen(false)}
+                  className={({ isActive }) =>
+                    `hover:text-gray-500 ${
+                      isActive ? "underline underline-offset-8" : ""
+                    }`
+                  }
+                >
+                  Prescription
+                </NavLink>
                 <button
                   onClick={toggleCartModal}
                   className="flex items-center text-gray-800"

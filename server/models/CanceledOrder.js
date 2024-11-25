@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const orderSchema = mongoose.Schema(
+const canceledOrderSchema = mongoose.Schema(
   {
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     items: [
@@ -14,19 +14,19 @@ const orderSchema = mongoose.Schema(
       },
     ],
     totalAmount: { type: Number, required: true },
-    status: { type: String, default: "On-Delivery" }, // Can be "On-Delivery" or "Delivered"
+    status: { type: String, default: "Canceled" },
     shippingAddress: {
       address: { type: String, required: true },
       city: { type: String, required: true },
       postalCode: { type: String, required: true },
       country: { type: String, required: true },
     },
-    phoneNumber: { type: String, required: true }, // New field
-    paymentMethod: { type: String, enum: ["card", "cash"], required: true }, // New field
+    phoneNumber: { type: String, required: true },
+    paymentMethod: { type: String, enum: ["card", "cash"], required: true },
     createdAt: { type: Date, default: Date.now },
   },
   { timestamps: true }
 );
 
-const Order = mongoose.model("Order", orderSchema);
-module.exports = Order;
+const CanceledOrder = mongoose.model("CanceledOrder", canceledOrderSchema);
+module.exports = CanceledOrder;
