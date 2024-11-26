@@ -1,4 +1,4 @@
-# Medicine Store E-commerce Platform
+# Medicine Store E-commerce Platform (https://pharmasphere.onrender.com)
 
 This project is a fully functional e-commerce platform for a medicine store, built with the MERN stack (MongoDB, Express.js, React, and Node.js) and styled using Tailwind CSS. The platform includes both a customer-facing interface and an admin panel to manage the store effectively. It also integrates Stripe for secure payment processing.
 

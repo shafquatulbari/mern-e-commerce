@@ -10,10 +10,16 @@ import {
 import { RxHamburgerMenu } from "react-icons/rx";
 import CartModal from "../cart/CartModal";
 import { AuthContext } from "../../context/AuthContext";
+import { CartContext } from "../../context/CartContext";
 import pha from "../image/pha.webp";
 
 const NewHeader = () => {
   const { user, logout } = useContext(AuthContext);
+  const { cartItems } = useContext(CartContext);
+  const totalItems = cartItems.reduce(
+    (count, item) => count + item.quantity,
+    0
+  ); // Calculate total items in cart
   const navigate = useNavigate();
 
   const [showCartModal, setShowCartModal] = useState(false);
@@ -106,15 +112,15 @@ const NewHeader = () => {
                 </NavLink>
                 <button
                   onClick={toggleCartModal}
-                  className="flex items-center text-gray-800"
+                  className="relative flex items-center text-gray-800"
                 >
-                  <FaShoppingCart className="mr-2" /> Cart
-                </button>
-                <button
-                  onClick={() => navigate("/orders")}
-                  className="flex items-center text-gray-800"
-                >
-                  <FaBoxOpen className="mr-2" /> Orders
+                  <FaShoppingCart className="mr-2" />
+                  {totalItems > 0 && (
+                    <span className="absolute bottom-4 right-6 bg-blue-600 text-white text-xs font-bold rounded-full px-2 py-1">
+                      {totalItems}
+                    </span>
+                  )}
+                  Cart
                 </button>
               </>
             )}

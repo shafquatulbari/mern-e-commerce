@@ -77,6 +77,11 @@ const ProductList = () => {
   };
 
   const handleAddToCart = (product) => {
+    if (product.quantity > product.stock_level) {
+      alert(`Cannot add more than ${product.stock_level} items to the cart.`);
+      return; // Exit the function if the quantity exceeds the stock level
+    }
+
     addItem(product._id, product.quantity); // Adds the product to the cart with the specified quantity
 
     // Reset the quantity to 1 in the product list

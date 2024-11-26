@@ -57,8 +57,13 @@ const ProductDetails = () => {
   };
 
   const handleAddToCart = () => {
+    if (quantity > product.stock_level) {
+      alert(`Cannot add more than ${product.stock_level} items to the cart.`);
+      return;
+    }
     if (product) {
       addItem(product._id, quantity);
+      setQuantity(1); // Reset quantity after adding to cart
     }
   };
 
@@ -113,7 +118,9 @@ const ProductDetails = () => {
                 <span className="font-semibold">{quantity}</span>
                 <button
                   className="bg-gray-300 px-3 py-1 rounded hover:bg-gray-400"
-                  onClick={() => setQuantity(quantity + 1)}
+                  onClick={() =>
+                    setQuantity(Math.min(quantity + 1, product.stock_level))
+                  }
                 >
                   <FaPlus />
                 </button>

@@ -49,7 +49,10 @@ const CategoryProducts = () => {
     setProducts((prevProducts) =>
       prevProducts.map((product) =>
         product._id === productId
-          ? { ...product, quantity: newQuantity }
+          ? {
+              ...product,
+              quantity: Math.min(newQuantity, product.stock_level), // Prevent exceeding stock level
+            }
           : product
       )
     );

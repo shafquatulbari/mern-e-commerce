@@ -130,4 +130,4 @@ dist
 .pnp.*
 
 # ignore .json files in the root
-*.json
+server/decisive-cinema-442805-t7-8514dd159261.json
