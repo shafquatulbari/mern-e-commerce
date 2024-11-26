@@ -122,7 +122,14 @@ const CategoryProducts = () => {
                   </button>
                   <button
                     className="bg-blue-500 text-white p-2 rounded ml-2 hover:bg-blue-600 flex items-center"
-                    onClick={() => addItem(product._id, product.quantity)}
+                    onClick={() => {
+                      addItem(product._id, product.quantity); // Add product to the cart
+                      setProducts((prevProducts) =>
+                        prevProducts.map((p) =>
+                          p._id === product._id ? { ...p, quantity: 1 } : p
+                        )
+                      ); // Reset quantity to 1
+                    }}
                   >
                     <FaShoppingCart className="mr-2" /> Add to Cart
                   </button>

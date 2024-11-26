@@ -78,6 +78,13 @@ const ProductList = () => {
 
   const handleAddToCart = (product) => {
     addItem(product._id, product.quantity); // Adds the product to the cart with the specified quantity
+
+    // Reset the quantity to 1 in the product list
+    setProducts((prevProducts) =>
+      prevProducts.map((p) =>
+        p._id === product._id ? { ...p, quantity: 1 } : p
+      )
+    );
   };
 
   const handleQuantityChange = (productId, newQuantity) => {

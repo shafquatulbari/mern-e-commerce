@@ -34,9 +34,9 @@ export const CartProvider = ({ children }) => {
   };
 
   // Function to add an item to the cart
-  const addItem = async (productId) => {
+  const addItem = async (productId, quantity) => {
     try {
-      const response = await api.post("/cart", { productId, quantity: 1 });
+      const response = await api.post("/cart", { productId, quantity });
       setCartItems(response.data);
       calculateTotal(response.data); // Ensure the total is updated
     } catch (error) {
