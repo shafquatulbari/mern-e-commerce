@@ -1,30 +1,37 @@
 const express = require("express");
 const ChatMessage = require("../models/Chat");
-const { protect, admin } = require("../middleware/authMiddleware");
+const {
+  protect,
+  admin,
+  useSharedAdminId,
+} = require("../middleware/authMiddleware");
 const mongoose = require("mongoose");
 
 const router = express.Router();
 
+const dotenv = require("dotenv");
+dotenv.config();
+const SHARED_ADMIN_ID =
+  process.env.SHARED_ADMIN_ID || "672492e7112262789946add2";
+
 // Get all chats (admin access)
-router.get("/", protect, admin, async (req, res) => {
+router.get("/", protect, admin, useSharedAdminId, async (req, res) => {
   try {
     const chats = await ChatMessage.aggregate([
       {
         $group: {
-          _id: { sender: "$sender", receiver: "$receiver" }, // Group by sender-receiver pair
-          lastMessage: { $last: "$message" }, // Latest message
-          lastMessageAt: { $last: "$createdAt" }, // Timestamp of the latest message
+          _id: { sender: "$sender", receiver: "$receiver" },
+          lastMessage: { $last: "$message" },
+          lastMessageAt: { $last: "$createdAt" },
         },
       },
     ]);
 
-    // Populate sender and receiver details
     const populatedChats = await ChatMessage.populate(chats, [
       { path: "_id.sender", select: "username email", model: "User" },
       { path: "_id.receiver", select: "username email", model: "User" },
     ]);
 
-    // Transform the response to include user details under the appropriate key
     const chatsWithDetails = populatedChats.map((chat) => ({
       ...chat,
       sender: chat._id.sender,
@@ -39,7 +46,8 @@ router.get("/", protect, admin, async (req, res) => {
 });
 
 // Fetch all messages between a customer and an admin
-router.get("/:customerId", protect, async (req, res) => {
+// Fetch all messages between a customer and an admin
+router.get("/:customerId", protect, useSharedAdminId, async (req, res) => {
   const { customerId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(customerId)) {
@@ -48,7 +56,10 @@ router.get("/:customerId", protect, async (req, res) => {
 
   try {
     const messages = await ChatMessage.find({
-      $or: [{ sender: customerId }, { receiver: customerId }],
+      $or: [
+        { sender: customerId, receiver: SHARED_ADMIN_ID },
+        { sender: SHARED_ADMIN_ID, receiver: customerId },
+      ],
     })
       .populate("sender", "username email")
       .populate("receiver", "username email")
@@ -62,10 +73,9 @@ router.get("/:customerId", protect, async (req, res) => {
 });
 
 // Send a chat message
-router.post("/", protect, async (req, res) => {
+router.post("/", protect, useSharedAdminId, async (req, res) => {
   const { receiver, message, isAdmin } = req.body;
 
-  // Ensure receiver and message are provided
   if (!receiver || !message) {
     return res
       .status(400)
@@ -73,15 +83,15 @@ router.post("/", protect, async (req, res) => {
   }
 
   const chatMessage = new ChatMessage({
-    sender: req.user._id, // Admin's ID (or current user's ID)
-    receiver, // The ID of the selected user (customer)
+    sender: req.user._id, // Shared admin ID if admin, else the user's ID
+    receiver,
     message,
-    isAdmin: req.user.isAdmin || false, // Whether the sender is an admin
+    isAdmin: req.user.isAdmin || false,
   });
 
   try {
-    const savedMessage = await chatMessage.save(); // Save the message to the database
-    res.status(201).json(savedMessage); // Respond with the saved message
+    const savedMessage = await chatMessage.save();
+    res.status(201).json(savedMessage);
   } catch (error) {
     console.error("Error saving chat message:", error);
     res.status(400).json({ message: error.message });
