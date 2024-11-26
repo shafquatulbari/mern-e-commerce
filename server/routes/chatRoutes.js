@@ -1,101 +1,29 @@
 const express = require("express");
-const ChatMessage = require("../models/Chat");
+const {
+  getAllChats,
+  getMessagesBetweenCustomerAndAdmin,
+  sendChatMessage,
+} = require("../controllers/chatController");
 const {
   protect,
   admin,
   useSharedAdminId,
 } = require("../middleware/authMiddleware");
-const mongoose = require("mongoose");
 
 const router = express.Router();
 
-const dotenv = require("dotenv");
-dotenv.config();
-const SHARED_ADMIN_ID =
-  process.env.SHARED_ADMIN_ID || "672492e7112262789946add2";
-
 // Get all chats (admin access)
-router.get("/", protect, admin, useSharedAdminId, async (req, res) => {
-  try {
-    const chats = await ChatMessage.aggregate([
-      {
-        $group: {
-          _id: { sender: "$sender", receiver: "$receiver" },
-          lastMessage: { $last: "$message" },
-          lastMessageAt: { $last: "$createdAt" },
-        },
-      },
-    ]);
-
-    const populatedChats = await ChatMessage.populate(chats, [
-      { path: "_id.sender", select: "username email", model: "User" },
-      { path: "_id.receiver", select: "username email", model: "User" },
-    ]);
-
-    const chatsWithDetails = populatedChats.map((chat) => ({
-      ...chat,
-      sender: chat._id.sender,
-      receiver: chat._id.receiver,
-    }));
-
-    res.json(chatsWithDetails);
-  } catch (error) {
-    console.error("Error fetching chats:", error);
-    res.status(500).json({ message: error.message });
-  }
-});
+router.get("/", protect, admin, useSharedAdminId, getAllChats);
 
 // Fetch all messages between a customer and an admin
-// Fetch all messages between a customer and an admin
-router.get("/:customerId", protect, useSharedAdminId, async (req, res) => {
-  const { customerId } = req.params;
-
-  if (!mongoose.Types.ObjectId.isValid(customerId)) {
-    return res.status(400).json({ message: "Invalid customer ID" });
-  }
-
-  try {
-    const messages = await ChatMessage.find({
-      $or: [
-        { sender: customerId, receiver: SHARED_ADMIN_ID },
-        { sender: SHARED_ADMIN_ID, receiver: customerId },
-      ],
-    })
-      .populate("sender", "username email")
-      .populate("receiver", "username email")
-      .sort({ createdAt: 1 });
-
-    res.json(messages);
-  } catch (error) {
-    console.error("Error fetching chat messages:", error);
-    res.status(500).json({ message: error.message });
-  }
-});
+router.get(
+  "/:customerId",
+  protect,
+  useSharedAdminId,
+  getMessagesBetweenCustomerAndAdmin
+);
 
 // Send a chat message
-router.post("/", protect, useSharedAdminId, async (req, res) => {
-  const { receiver, message, isAdmin } = req.body;
-
-  if (!receiver || !message) {
-    return res
-      .status(400)
-      .json({ message: "Receiver and message are required" });
-  }
-
-  const chatMessage = new ChatMessage({
-    sender: req.user._id, // Shared admin ID if admin, else the user's ID
-    receiver,
-    message,
-    isAdmin: req.user.isAdmin || false,
-  });
-
-  try {
-    const savedMessage = await chatMessage.save();
-    res.status(201).json(savedMessage);
-  } catch (error) {
-    console.error("Error saving chat message:", error);
-    res.status(400).json({ message: error.message });
-  }
-});
+router.post("/", protect, useSharedAdminId, sendChatMessage);
 
 module.exports = router;
