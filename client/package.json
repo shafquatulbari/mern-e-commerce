@@ -10,6 +10,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.7",
     "moment": "^2.30.1",
+    "mongoose": "^8.8.2",
     "opencv.js": "^1.2.1",
     "react": "^18.3.1",
     "react-countup": "^6.5.3",

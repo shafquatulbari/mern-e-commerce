@@ -14,14 +14,22 @@ const AdminChatPage = () => {
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const AdminId = "672492e7112262789946add2"; // Admin user ID
+
   // Fetch active chats
   const fetchChats = async () => {
     setIsLoading(true);
     try {
       const response = await api.get("chats/");
       if (response.data && Array.isArray(response.data)) {
+        const filteredChats = response.data.filter(
+          (chat) =>
+            !(chat.sender?._id === AdminId) &&
+            !chat.sender?.isAdmin // Exclude chats between admins
+        );
+
         setChats(
-          response.data.map((chat) => ({
+          filteredChats.map((chat) => ({
             id: chat.sender?._id || chat.receiver?._id, // Use sender or receiver ID
             username:
               chat.sender?.username ||
