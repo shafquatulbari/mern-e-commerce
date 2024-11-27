@@ -110,6 +110,17 @@ const NewHeader = () => {
                 >
                   Prescription
                 </NavLink>
+                <NavLink
+                  to="/orders"
+                  onClick={() => setIsMenuOpen(false)}
+                  className={({ isActive }) =>
+                    `hover:text-gray-500 ${
+                      isActive ? "underline underline-offset-8" : ""
+                    }`
+                  }
+                >
+                  Orders
+                </NavLink>
                 <button
                   onClick={toggleCartModal}
                   className="relative flex items-center text-gray-800"
