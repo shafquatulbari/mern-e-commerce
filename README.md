@@ -29,6 +29,12 @@ This project is a fully functional e-commerce platform for a medicine store, bui
 
 ---
 
+## Presentation/Demo
+
+Link - https://www.youtube.com/watch?v=IB_T3vxsG1Y
+
+---
+
 ## Overview
 
 The Medicine Store E-commerce Platform provides an efficient and secure way to manage an online medicine store. Customers can browse and order products, while the admin has full control over product management, order status, and reviews. The application is built using the MERN stack, with real-time updates and notifications to enhance the user experience.
